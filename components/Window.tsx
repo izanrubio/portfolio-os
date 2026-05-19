@@ -15,7 +15,7 @@ interface WindowProps {
   children: React.ReactNode;
 }
 
-const TASKBAR_H = 56;
+const TASKBAR_H = 110;
 
 export default function Window({
   window: win,

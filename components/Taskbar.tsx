@@ -2,71 +2,24 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { WindowState, WindowId } from '@/types/windows';
+import BrowserIcon from './icons/BrowserIcon';
+import FilesIcon from './icons/FilesIcon';
+import TerminalIcon from './icons/TerminalIcon';
 
-const DOCK_ITEMS: { id: WindowId; label: string; icon: React.ReactNode }[] = [
-  {
-    id: 'browser',
-    label: 'browser.exe',
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-        <circle cx="14" cy="14" r="12" fill="url(#ff-grad)" opacity="0.95"/>
-        <ellipse cx="14" cy="14" rx="5" ry="12" fill="url(#ff-inner)" opacity="0.7"/>
-        <circle cx="14" cy="14" r="12" stroke="rgba(255,255,255,0.15)" strokeWidth="0.8" fill="none"/>
-        <ellipse cx="14" cy="14" rx="12" ry="5" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="0.7"/>
-        <defs>
-          <radialGradient id="ff-grad" cx="35%" cy="30%" r="70%">
-            <stop offset="0%" stopColor="#ff9500"/>
-            <stop offset="40%" stopColor="#ff6b00"/>
-            <stop offset="100%" stopColor="#9b3cff"/>
-          </radialGradient>
-          <radialGradient id="ff-inner" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="rgba(255,255,255,0.3)"/>
-            <stop offset="100%" stopColor="rgba(255,255,255,0)"/>
-          </radialGradient>
-        </defs>
-      </svg>
-    ),
-  },
-  {
-    id: 'files',
-    label: 'files.exe',
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-        {/* Folder back */}
-        <path d="M3 9C3 7.9 3.9 7 5 7H11L13 9H23C24.1 9 25 9.9 25 11V21C25 22.1 24.1 23 23 23H5C3.9 23 3 22.1 3 21V9Z" fill="url(#folder-grad)"/>
-        {/* Folder tab */}
-        <path d="M3 9H13L11 7H5C3.9 7 3 7.9 3 9Z" fill="url(#folder-tab)"/>
-        {/* Shine */}
-        <path d="M5 11H23V13H5V11Z" fill="rgba(255,255,255,0.12)" rx="1"/>
-        <defs>
-          <linearGradient id="folder-grad" x1="3" y1="9" x2="25" y2="23" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#5ac8fa"/>
-            <stop offset="100%" stopColor="#007aff"/>
-          </linearGradient>
-          <linearGradient id="folder-tab" x1="3" y1="7" x2="13" y2="9" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#4ab8ea"/>
-            <stop offset="100%" stopColor="#3da8da"/>
-          </linearGradient>
-        </defs>
-      </svg>
-    ),
-  },
-  {
-    id: 'terminal',
-    label: 'terminal.exe',
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-        <rect x="2" y="4" width="24" height="20" rx="3" fill="#1a1a2e"/>
-        <rect x="2" y="4" width="24" height="5" rx="3" fill="#2a2a4e"/>
-        <circle cx="7" cy="6.5" r="1.2" fill="#ff4757"/>
-        <circle cx="11" cy="6.5" r="1.2" fill="#ffd32a"/>
-        <circle cx="15" cy="6.5" r="1.2" fill="#00ff88"/>
-        <text x="5" y="18" fontFamily="monospace" fontSize="8" fill="#00ff88" fontWeight="700">&gt;_</text>
-        <rect x="13" y="14.5" width="8" height="1.2" rx="0.6" fill="rgba(0,255,136,0.4)"/>
-        <rect x="5" y="18.5" width="6" height="1.2" rx="0.6" fill="rgba(0,255,136,0.25)"/>
-      </svg>
-    ),
-  },
+// Magnification constants — match prototype exactly
+const SCALE_MAX = 1.35;
+const RANGE = 110;
+
+const DOCK_ITEMS: {
+  id: WindowId;
+  label: string;
+  color: string;
+  glowClass: string;
+  Icon: () => React.ReactElement;
+}[] = [
+  { id: 'browser',  label: 'browser.exe',  color: '#ff6b00', glowClass: 'browser',  Icon: BrowserIcon  },
+  { id: 'files',    label: 'files.exe',    color: '#06b6d4', glowClass: 'files',    Icon: FilesIcon    },
+  { id: 'terminal', label: 'terminal.exe', color: '#00ff88', glowClass: 'terminal', Icon: TerminalIcon },
 ];
 
 interface TaskbarProps {
@@ -80,47 +33,59 @@ export default function Taskbar({ windows, onWindowFocus, onWindowToggle, onOpen
   const [time, setTime] = useState('');
   const [date, setDate] = useState('');
   const [mouseX, setMouseX] = useState<number | null>(null);
-  const [tooltip, setTooltip] = useState<WindowId | null>(null);
-  const dockRef = useRef<HTMLDivElement>(null);
-  const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  const [pressedIdx, setPressedIdx] = useState<number | null>(null);
+  const iconRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
-    const update = () => {
+    const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+    const days   = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+    const pad = (n: number) => n < 10 ? '0' + n : '' + n;
+
+    const tick = () => {
       const now = new Date();
-      setTime(now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
-      setDate(now.toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short' }).toUpperCase());
+      setTime(`${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`);
+      setDate(`${days[now.getDay()]} ${pad(now.getDate())} ${months[now.getMonth()]}`);
     };
-    update();
-    const id = setInterval(update, 1000);
+    tick();
+    const id = setInterval(tick, 1000);
     return () => clearInterval(id);
   }, []);
 
   const getScale = (idx: number): number => {
     if (mouseX === null) return 1;
-    const el = itemRefs.current[idx];
+    const el = iconRefs.current[idx];
     if (!el) return 1;
     const rect = el.getBoundingClientRect();
-    const center = rect.left + rect.width / 2;
-    const dist = Math.abs(mouseX - center);
-    const RANGE = 72;
-    const MAX_SCALE = 1.55;
-    if (dist > RANGE) return 1;
-    return 1 + (MAX_SCALE - 1) * Math.cos((dist / RANGE) * (Math.PI / 2));
+    const cx = rect.left + rect.width / 2;
+    const d = Math.abs(mouseX - cx);
+    if (d >= RANGE) return 1;
+    return 1 + (SCALE_MAX - 1) * Math.cos((d / RANGE) * (Math.PI / 2));
   };
 
   const handleDockMouseMove = (e: React.MouseEvent) => {
     setMouseX(e.clientX);
+    // Find nearest icon for tooltip
+    let nearestIdx = 0;
+    let nearestDist = Infinity;
+    iconRefs.current.forEach((el, idx) => {
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const d = Math.abs(e.clientX - cx);
+      if (d < nearestDist) { nearestDist = d; nearestIdx = idx; }
+    });
+    setHoveredIdx(nearestDist < 60 ? nearestIdx : null);
   };
 
   const handleDockMouseLeave = () => {
     setMouseX(null);
-    setTooltip(null);
+    setHoveredIdx(null);
   };
 
   const handleItemClick = (item: typeof DOCK_ITEMS[0]) => {
     const win = windows.find(w => w.id === item.id);
-    if (!win) return;
-    if (!win.isOpen) {
+    if (!win || !win.isOpen) {
       onOpenWindow(item.id);
     } else if (win.isMinimized) {
       onWindowToggle(item.id);
@@ -129,108 +94,211 @@ export default function Taskbar({ windows, onWindowFocus, onWindowToggle, onOpen
     }
   };
 
-  const isOpen = (id: WindowId) => {
-    const win = windows.find(w => w.id === id);
-    return win?.isOpen ?? false;
-  };
+  const isOpen = (id: WindowId) => windows.find(w => w.id === id)?.isOpen ?? false;
+
+  const isHovering = mouseX !== null;
 
   return (
-    <div
-      className="fixed bottom-0 left-0 right-0 flex items-center px-4 z-50"
-      style={{
-        height: '56px',
-        background: 'rgba(6, 8, 16, 0.92)',
-        backdropFilter: 'blur(30px)',
-        borderTop: '1px solid rgba(0, 212, 255, 0.1)',
-      }}
-    >
-      {/* IzanOS Logo — left */}
+    <>
+      {/* ── Brand — bottom left ── */}
       <div
-        className="flex items-center gap-2 shrink-0 pr-4"
-        style={{ borderRight: '1px solid rgba(255,255,255,0.06)' }}
+        className="fixed z-50 flex items-center gap-2.5 select-none pointer-events-none"
+        style={{ bottom: '22px', left: '24px' }}
       >
-        <svg width="20" height="20" viewBox="0 0 96 96" fill="none">
-          <polygon points="48,4 88,26 88,70 48,92 8,70 8,26" stroke="#00d4ff" strokeWidth="2" fill="none" opacity="0.7"/>
-          <polygon points="48,20 72,48 48,76 24,48" stroke="#00d4ff" strokeWidth="1.5" fill="none" opacity="0.5"/>
-          <circle cx="48" cy="48" r="7" fill="rgba(0,212,255,0.2)"/>
-          <circle cx="48" cy="48" r="3.5" fill="#00d4ff" opacity="0.9"/>
+        <svg
+          width="22" height="22" viewBox="0 0 32 32" fill="none"
+          style={{ filter: 'drop-shadow(0 0 8px rgba(0,212,255,0.55))' }}
+        >
+          <defs>
+            <linearGradient id="dragon-grad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+              <stop offset="0%"  stopColor="#00d4ff"/>
+              <stop offset="100%" stopColor="#7c3aed"/>
+            </linearGradient>
+          </defs>
+          <path
+            d="M4 16 L11 9 L17 11 L24 6 L28 11 L24 16 L28 21 L24 26 L17 21 L11 23 Z"
+            stroke="url(#dragon-grad)" strokeWidth="1.6" strokeLinejoin="round" fill="none" opacity=".95"
+          />
+          <path d="M11 16 L24 16" stroke="#00d4ff" strokeWidth="1.2" strokeLinecap="round" opacity=".55"/>
+          <circle cx="22.5" cy="13" r="1.2" fill="#00d4ff"/>
+          <circle cx="22.5" cy="13" r="0.5" fill="#fff"/>
+          <path
+            d="M15 14 L19 16 L15 18"
+            stroke="#00d4ff" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"
+            opacity=".7" fill="none"
+          />
         </svg>
-        <span style={{ fontFamily: 'var(--font-inter), Inter, sans-serif', fontWeight: 700, fontSize: '13px', color: '#f0f4ff' }}>
-          IzanOS
+        <span
+          style={{
+            fontFamily: 'var(--font-inter), Inter, sans-serif',
+            fontWeight: 700,
+            fontSize: '13px',
+            color: '#f0f4ff',
+            letterSpacing: '0.01em',
+          }}
+        >
+          Izan<span style={{ color: '#00d4ff', fontWeight: 800 }}>OS</span>
         </span>
       </div>
 
-      {/* Dock — center */}
-      <div className="flex-1 flex items-end justify-center pb-1">
+      {/* ── Clock — bottom right ── */}
+      <div
+        className="fixed z-50 text-right select-none pointer-events-none"
+        style={{ bottom: '22px', right: '24px', fontFamily: 'var(--font-jetbrains), monospace' }}
+      >
+        <div style={{ fontSize: '13px', color: '#aab3c3', fontWeight: 500, letterSpacing: '0.04em', fontVariantNumeric: 'tabular-nums' }}>
+          {time}
+        </div>
+        <div style={{ fontSize: '10.5px', color: '#4a5568', marginTop: '2px', letterSpacing: '0.14em' }}>
+          {date}
+        </div>
+      </div>
+
+      {/* ── Dock — floating centered bottom ── */}
+      <div
+        className="fixed z-50"
+        style={{ left: '50%', bottom: '18px', transform: 'translateX(-50%)' }}
+      >
         <div
-          ref={dockRef}
-          className="relative flex items-end gap-3 px-4 py-1.5 rounded-2xl"
+          className="relative flex items-end gap-3.5"
           style={{
-            background: 'rgba(255,255,255,0.04)',
-            border: '1px solid rgba(255,255,255,0.07)',
+            padding: '10px 14px',
+            borderRadius: '22px',
+            background: 'linear-gradient(180deg, rgba(20,26,44,.55), rgba(8,11,22,.78))',
+            border: '1px solid rgba(0, 212, 255, 0.12)',
+            boxShadow: '0 30px 60px -20px rgba(0,0,0,.85), 0 12px 30px -10px rgba(0,212,255,.08), inset 0 1px 0 rgba(255,255,255,.06), inset 0 -1px 0 rgba(0,0,0,.4)',
+            backdropFilter: 'blur(22px) saturate(180%)',
           }}
           onMouseMove={handleDockMouseMove}
           onMouseLeave={handleDockMouseLeave}
         >
+          {/* Top hairline accent */}
+          <div
+            className="absolute top-0 pointer-events-none"
+            style={{
+              left: '20%', right: '20%', height: '1px',
+              background: 'linear-gradient(90deg, transparent, rgba(0,212,255,0.35), transparent)',
+            }}
+          />
+
           {DOCK_ITEMS.map((item, idx) => {
             const scale = getScale(idx);
+            const lift = (scale - 1) * 18;
             const open = isOpen(item.id);
+            const isHov = hoveredIdx === idx;
+            const isPressed = pressedIdx === idx;
+            const pressScale = isPressed ? 0.92 : 1;
 
             return (
-              <div key={item.id} className="relative flex flex-col items-center">
+              <div
+                key={item.id}
+                className="relative flex flex-col items-center"
+                style={{ color: item.color }}
+              >
                 {/* Tooltip */}
-                {tooltip === item.id && (
-                  <div
-                    className="absolute bottom-full mb-2 px-2 py-1 rounded-md whitespace-nowrap pointer-events-none"
-                    style={{
-                      background: 'rgba(8,12,24,0.9)',
-                      border: '1px solid rgba(0,212,255,0.15)',
-                      fontFamily: 'var(--font-jetbrains), monospace',
-                      fontSize: '11px',
-                      color: '#f0f4ff',
-                      backdropFilter: 'blur(8px)',
-                      transform: 'translateX(-50%)',
-                      left: '50%',
-                    }}
-                  >
-                    {item.label}
-                  </div>
-                )}
-
-                <button
-                  ref={el => { itemRefs.current[idx] = el; }}
-                  onClick={() => handleItemClick(item)}
-                  onMouseEnter={() => setTooltip(item.id)}
-                  onMouseLeave={() => setTooltip(null)}
+                <div
                   style={{
+                    position: 'absolute',
+                    bottom: 'calc(100% + 18px)',
+                    left: '50%',
+                    transform: `translateX(-50%) translateY(${isHov ? '0px' : '4px'})`,
+                    padding: '6px 10px',
+                    background: 'rgba(10,14,28,0.85)',
+                    border: '1px solid rgba(0,212,255,0.22)',
+                    borderRadius: '8px',
+                    backdropFilter: 'blur(14px) saturate(180%)',
+                    boxShadow: '0 12px 30px -10px rgba(0,0,0,.7)',
+                    fontFamily: 'var(--font-jetbrains), monospace',
+                    fontSize: '11px',
+                    fontWeight: 500,
+                    color: '#f0f4ff',
+                    letterSpacing: '0.02em',
+                    whiteSpace: 'nowrap',
+                    pointerEvents: 'none',
+                    opacity: isHov ? 1 : 0,
+                    transition: 'opacity 0.15s ease, transform 0.15s ease',
+                    zIndex: 10,
+                  }}
+                >
+                  {item.label}
+                  {/* Arrow */}
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '100%',
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      width: 0,
+                      height: 0,
+                      borderLeft: '5px solid transparent',
+                      borderRight: '5px solid transparent',
+                      borderTop: '5px solid rgba(0,212,255,0.22)',
+                    }}
+                  />
+                </div>
+
+                {/* Color glow underlay */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    inset: '-10px',
+                    borderRadius: '22px',
+                    pointerEvents: 'none',
+                    opacity: isHov ? 0.55 : 0,
+                    transition: 'opacity 0.3s ease',
+                    filter: 'blur(14px)',
+                    zIndex: -1,
+                    background: item.id === 'browser'
+                      ? 'radial-gradient(circle, rgba(255,107,0,0.7), transparent 65%)'
+                      : item.id === 'files'
+                      ? 'radial-gradient(circle, rgba(6,182,212,0.7), transparent 65%)'
+                      : 'radial-gradient(circle, rgba(0,255,136,0.6), transparent 65%)',
+                  }}
+                />
+
+                {/* Icon */}
+                <div
+                  ref={el => { iconRefs.current[idx] = el; }}
+                  style={{
+                    width: '52px',
+                    height: '52px',
+                    borderRadius: '14px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: '36px',
-                    height: '36px',
-                    transform: `scale(${scale}) translateY(${-(scale - 1) * 6}px)`,
-                    transformOrigin: 'bottom center',
-                    transition: mouseX === null ? 'transform 0.25s cubic-bezier(0.34,1.56,0.64,1)' : 'transform 0.1s ease-out',
-                    background: 'none',
-                    border: 'none',
                     cursor: 'pointer',
-                    padding: 0,
-                    filter: open ? 'drop-shadow(0 0 6px rgba(0,212,255,0.35))' : 'none',
+                    transformOrigin: 'bottom center',
+                    transform: `translateY(${-lift}px) scale(${scale * pressScale})`,
+                    transition: isHovering
+                      ? 'transform .12s cubic-bezier(.2,.8,.2,1), filter .25s ease'
+                      : 'transform .35s cubic-bezier(.34,1.56,.64,1), filter .25s ease',
+                    filter: isHov
+                      ? 'drop-shadow(0 12px 16px rgba(0,0,0,.55))'
+                      : open
+                      ? `drop-shadow(0 0 8px ${item.color}55)`
+                      : 'none',
+                    willChange: 'transform, filter',
                   }}
+                  onClick={() => handleItemClick(item)}
+                  onMouseDown={() => setPressedIdx(idx)}
+                  onMouseUp={() => setPressedIdx(null)}
+                  onMouseLeave={() => setPressedIdx(null)}
                 >
-                  {item.icon}
-                </button>
+                  <item.Icon />
+                </div>
 
                 {/* Open indicator dot */}
                 <div
                   style={{
-                    width: '4px',
-                    height: '4px',
+                    width: '5px',
+                    height: '5px',
                     borderRadius: '50%',
-                    background: open ? '#00d4ff' : 'transparent',
-                    boxShadow: open ? '0 0 4px #00d4ff' : 'none',
-                    marginTop: '3px',
-                    transition: 'background 0.2s, box-shadow 0.2s',
+                    marginTop: '8px',
+                    background: open ? item.color : 'transparent',
+                    boxShadow: open ? `0 0 8px ${item.color}, 0 0 16px ${item.color}` : 'none',
+                    opacity: open ? 1 : 0,
+                    transition: 'opacity .25s ease, background .25s ease, box-shadow .25s ease',
+                    animation: open ? 'dot-pulse 2.2s ease-in-out infinite' : 'none',
                   }}
                 />
               </div>
@@ -239,14 +307,13 @@ export default function Taskbar({ windows, onWindowFocus, onWindowToggle, onOpen
         </div>
       </div>
 
-      {/* Clock — right */}
-      <div
-        className="text-right shrink-0 pl-4"
-        style={{ borderLeft: '1px solid rgba(255,255,255,0.06)', fontFamily: 'var(--font-jetbrains), monospace' }}
-      >
-        <div style={{ fontSize: '12px', color: '#8892a4' }}>{time}</div>
-        <div style={{ fontSize: '10px', color: '#4a5568' }}>{date}</div>
-      </div>
-    </div>
+      {/* Pulse animation */}
+      <style>{`
+        @keyframes dot-pulse {
+          0%, 100% { transform: scale(1);    box-shadow: 0 0 6px currentColor, 0 0 12px currentColor; }
+          50%       { transform: scale(1.35); box-shadow: 0 0 10px currentColor, 0 0 22px currentColor; }
+        }
+      `}</style>
+    </>
   );
 }

@@ -23,11 +23,15 @@ npm run build   # production build
   globals.css        — reset, custom scrollbars
 /components
   BootScreen.tsx     — 4s boot: dragon SVG, progress bar, system messages
-  Desktop.tsx        — #060810 bg, ParticleField, 7 left-column icons
+  Desktop.tsx        — #060810 bg + radial gradients + scanlines, ParticleField, 7 left-column icons
   ParticleField.tsx  — canvas ~60 particle field (cyan, connections)
-  Taskbar.tsx        — 48px bottom bar: logo, window pills, live clock
-  Window.tsx         — draggable, resizable, glassmorphism shell
+  Taskbar.tsx        — floating dock (3 icons) + brand bottom-left + clock bottom-right
+  Window.tsx         — draggable, resizable, glassmorphism shell (TASKBAR_H = 110)
   WindowManager.tsx  — useWindowManager hook + 7-window renderer
+  /icons
+    BrowserIcon.tsx  — Firefox-style SVG (56×56, detailed globe+flame)
+    FilesIcon.tsx    — Nautilus-style SVG (56×56, folder with depth)
+    TerminalIcon.tsx — Terminal SVG (56×56, title bar + >_ prompt)
   /windows
     ProjectsWindow.tsx  — numbered list, expandable with longDescription
     WhoamiWindow.tsx    — photo + bio two-column layout
@@ -71,6 +75,17 @@ All content in `/data/content.ts`. No hardcoded strings elsewhere.
 3. Create `components/windows/YourWindow.tsx`
 4. Add to `CONTENT` map in `WindowManager.tsx`
 5. Add icon to `ICONS` array in `Desktop.tsx`
+
+## Taskbar architecture
+
+Three separate fixed elements (no full-width bar):
+- **Brand** (`bottom: 22px; left: 24px`) — new dragon path SVG (cyan→purple gradient) + "Izan**OS**" wordmark
+- **Clock** (`bottom: 22px; right: 24px`) — ticking HH:MM:SS + day/date
+- **Dock** (`bottom: 18px`, centered) — floating pill with 3 icons: browser, files, terminal
+
+Magnification: cosine falloff, `SCALE_MAX=1.35`, `RANGE=110px`. Tooltip appears when nearest icon distance `< 60px`. Per-icon color glow underlay (`blur(14px)`) on hover. Open indicator dot pulses with icon color. Press feedback scales icon to `0.92×`.
+
+Dock only controls browser/files/terminal. projects/whoami/skills/contact are desktop-icon-only.
 
 ## Design system
 

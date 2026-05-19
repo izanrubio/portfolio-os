@@ -44,9 +44,26 @@ export default function Desktop({ openWindows, onOpenWindow, children }: Desktop
   return (
     <div
       className="fixed inset-0 overflow-hidden"
-      style={{ background: '#060810', paddingBottom: '56px' }}
+      style={{
+        background: `
+          radial-gradient(ellipse 80% 60% at 20% 10%, rgba(124,58,237,0.08), transparent 70%),
+          radial-gradient(ellipse 70% 50% at 85% 90%, rgba(0,212,255,0.06), transparent 70%),
+          #060810
+        `,
+        paddingBottom: '110px',
+      }}
     >
       <ParticleField />
+
+      {/* Scanline veil */}
+      <div
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          background: 'repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0 1px, transparent 1px 3px)',
+          mixBlendMode: 'overlay',
+          zIndex: 1,
+        }}
+      />
 
       {/* Icons — left column */}
       <div className="absolute left-6 top-6 flex flex-col gap-1 z-10">
