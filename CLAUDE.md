@@ -33,13 +33,13 @@ npm run build   # production build
     FilesIcon.tsx    — Nautilus-style SVG (56×56, folder with depth)
     TerminalIcon.tsx — Terminal SVG (56×56, title bar + >_ prompt)
   /windows
-    ProjectsWindow.tsx  — numbered list, expandable with longDescription
-    WhoamiWindow.tsx    — photo + bio two-column layout
-    SkillsWindow.tsx    — category pills with color coding
-    ContactWindow.tsx   — links + contact form
+    ProjectsWindow.tsx  — sidebar (200px) + detail panel, useState project selector
+    WhoamiWindow.tsx    — photo with duotone overlays + role typer animation (useEffect)
+    SkillsWindow.tsx    — categorized skill cards with proficiency bars (Expert/Advanced/Proficient)
+    ContactWindow.tsx   — split layout: contact items left, form right
     BrowserWindow.tsx   — simulated browser: internal portfolio or iframe
-    FilesWindow.tsx     — sidebar + grid file explorer with navigation
-    TerminalWindow.tsx  — typewriter terminal with history
+    FilesWindow.tsx     — sidebar groups + breadcrumb toolbar + file grid + statusbar
+    TerminalWindow.tsx  — Kali-style prompt ┌──(izanos㉿IzanOS)-[~] with interactive history
     PortfolioSite.tsx   — internal website rendered inside BrowserWindow
 /data
   content.ts         — ALL content: personal, projects, skills, filesystem, terminal, browser
@@ -55,9 +55,9 @@ npm run build   # production build
 
 All content in `/data/content.ts`. No hardcoded strings elsewhere.
 
-- **Personal**: `personal` — name, role, bio, email, github, linkedin, photo
-- **Projects**: `projects[]` — slug, name, description, longDescription, stack, demo, repo
-- **Skills**: `skills` — languages/frontend/backend/security/devops arrays
+- **Personal**: `personal` — name, role, roles[], bio, email, github, linkedin, location, photo
+- **Projects**: `projects[]` — slug, name, category, description, longDescription, stack, demo, repo, repoShort, launched, status
+- **Skills**: `skills: SkillCategory[]` — array of `{key, label, proficiency, items[]}`. `ProficiencyLevel = 'Expert' | 'Advanced' | 'Proficient'`
 - **File system**: `filesystem` — nested `FileNode` tree. Files have `action: { type, payload }` — types: `browser` (open URL), `download`, `preview`
 - **Terminal**: `terminal.commands`, `terminal.easterEggs`, `terminal.projectDetails`
 - **Browser**: `browser.homepage`, `browser.bookmarks`
@@ -89,6 +89,7 @@ Dock only controls browser/files/terminal. projects/whoami/skills/contact are de
 
 ## Design system
 
+- CSS variables in `app/globals.css` `:root` block: `--cyan`, `--violet`, `--green`, `--orange`, `--pink`, `--text`, `--text-2` through `--text-4`, `--hairline`, `--glass`, `--mono`, `--inter`, etc.
 - Background: `#060810` | Accent: `#00d4ff` | Secondary: `#7c3aed`
 - Window glass: `rgba(10,15,30,0.92)` + `backdrop-filter: blur(20px) saturate(180%)`
 - Window border: `1px solid rgba(0,212,255,0.2)`

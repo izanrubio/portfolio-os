@@ -3,59 +3,86 @@ import { FileNode } from '@/types/windows';
 export const personal = {
   name: 'Izan Rubio Cerezo',
   role: 'Full Stack Developer & Cybersecurity Specialist',
-  bio: 'Developer focused on building secure, performant web applications. Passionate about cybersecurity, ethical hacking, and creating tools that push the boundaries of what\'s possible on the web. Open to full-time roles and freelance projects.',
+  roles: ['Full Stack Developer', 'Cybersecurity Specialist', 'Problem Solver', 'OS-style designer'],
+  bio: 'Developer focused on building secure, performant web applications. Five years writing TypeScript and PHP, last two pivoting hard into offensive security and OS-style frontend experiments. Currently based in Barcelona.',
   photo: '/images/foto-portafolio.png',
-  email: 'izan@videoatencion.com',
+  email: 'izanrubiocerezo@gmail.com',
   github: 'https://github.com/izanrubio',
   linkedin: 'https://linkedin.com/in/izanrubio',
+  location: 'Barcelona, Spain · UTC+1',
 };
 
 export const projects = [
   {
     slug: 'stastarat',
     name: 'StasTarat.es',
+    category: 'FULL STACK',
     description: 'Statistics and analytics platform for online communities. Real-time data dashboards, growth tracking, and automated reports.',
-    longDescription: 'Full-stack SaaS platform for tracking community growth metrics. Built with Next.js frontend, Node.js API, WebSocket streaming, and PostgreSQL. Features role-based access, PDF report generation, and Stripe billing integration.',
+    longDescription: 'Real-time statistics and analytics platform for online communities. Live dashboards, growth tracking, automated weekly reports and a custom alerting engine — all wired together with Server-Sent Events and a tuned PostgreSQL backend.',
     stack: ['Next.js', 'Node.js', 'PostgreSQL', 'WebSockets', 'Stripe'],
     demo: 'https://stastatat.es',
     repo: 'https://github.com/izanrubio/stastarat',
+    repoShort: 'izanrubio/stastarat',
+    launched: 'Q3 · 2025',
+    status: 'In production',
   },
   {
     slug: 'laraveles',
     name: 'Laraveles.es',
+    category: 'LARAVEL · CONTENT',
     description: 'Spanish-language Laravel community hub. Tutorials, packages, and resources for the Laravel ecosystem.',
-    longDescription: 'Community platform and knowledge base for Spanish-speaking Laravel developers. Features blog engine, package directory, interactive tutorials, and user forum. SEO optimized with structured data.',
-    stack: ['Laravel', 'PHP', 'MySQL', 'Alpine.js', 'Tailwind CSS'],
+    longDescription: 'Spanish-language Laravel learning hub. Long-form tutorials, a versioned curriculum and a content pipeline that converts MDX to printable PDFs. 75+ articles, 29 lessons, 12K monthly readers.',
+    stack: ['Laravel', 'MySQL', 'Alpine.js', 'Tailwind CSS'],
     demo: 'https://laraveles.es',
     repo: 'https://github.com/izanrubio/laraveles',
+    repoShort: 'izanrubio/laraveles',
+    launched: 'Q1 · 2024',
+    status: 'In production',
   },
   {
     slug: 'goldenbids',
     name: 'GoldenBids',
+    category: 'FULL STACK · REALTIME',
     description: 'Real-time auction platform. Live bidding engine, fraud detection, and automated dispute resolution.',
     longDescription: 'Production auction platform handling concurrent bidding at scale. WebSocket-based live bid updates with optimistic UI. Fraud detection via behavioral analysis. Dispute resolution workflow with admin dashboard.',
     stack: ['React', 'Laravel', 'Redis', 'WebSockets', 'MySQL'],
     demo: 'https://goldenbids.izanrubio.dev',
     repo: 'https://github.com/izanrubio/goldenbids',
+    repoShort: 'izanrubio/goldenbids',
+    launched: 'Q2 · 2024',
+    status: 'In production',
   },
   {
     slug: 'rooming',
     name: 'Rooming',
+    category: 'SAAS · BOOKING',
     description: 'Smart room booking and coworking space management platform with calendar sync and access control.',
     longDescription: 'End-to-end space management solution for coworking operators. Drag-and-drop booking calendar, Google Calendar sync, RFID access control integration, and Stripe subscription management. Multi-tenant architecture.',
     stack: ['Next.js', 'TypeScript', 'Prisma', 'PostgreSQL', 'Stripe'],
     demo: 'https://rooming.izanrubio.dev',
     repo: 'https://github.com/izanrubio/rooming',
+    repoShort: 'izanrubio/rooming',
+    launched: 'Q4 · 2024',
+    status: 'In production',
   },
 ];
 
-export const skills = {
-  languages: ['TypeScript', 'JavaScript', 'PHP', 'Python', 'Bash', 'SQL'],
-  frontend: ['React', 'Next.js', 'Tailwind CSS', 'Framer Motion', 'Alpine.js', 'HTML5'],
-  backend: ['Node.js', 'Laravel', 'Express', 'FastAPI', 'PostgreSQL', 'MySQL', 'Redis'],
-  security: ['Penetration Testing', 'OWASP Top 10', 'Burp Suite', 'Nmap', 'Wireshark', 'Kali Linux'],
-  devops: ['Docker', 'Linux', 'Git', 'CI/CD', 'Nginx', 'Vercel'],
-};
+export type ProficiencyLevel = 'Expert' | 'Advanced' | 'Proficient';
+
+export interface SkillCategory {
+  key: string;
+  label: string;
+  proficiency: ProficiencyLevel;
+  items: string[];
+}
+
+export const skills: SkillCategory[] = [
+  { key: 'languages', label: 'Languages', proficiency: 'Expert',    items: ['TypeScript', 'JavaScript', 'PHP', 'Python', 'Bash', 'SQL'] },
+  { key: 'frontend',  label: 'Frontend',  proficiency: 'Expert',    items: ['React', 'Next.js', 'Tailwind CSS', 'Framer Motion', 'Vue 3', 'Three.js'] },
+  { key: 'backend',   label: 'Backend',   proficiency: 'Advanced',  items: ['Node.js', 'Laravel', 'Express', 'PostgreSQL', 'Redis', 'GraphQL'] },
+  { key: 'security',  label: 'Security',  proficiency: 'Advanced',  items: ['Nmap', 'Burp Suite', 'Wireshark', 'Metasploit', 'OWASP Top 10'] },
+  { key: 'devops',    label: 'DevOps',    proficiency: 'Proficient', items: ['Docker', 'Vercel', 'GitHub Actions', 'Nginx', 'Linux servers'] },
+];
 
 export const filesystem: FileNode = {
   name: 'Home',
@@ -157,10 +184,10 @@ Type 'help' for available commands.
   cat <slug>    Read project details
   clear         Clear terminal`,
 
-    whoami: `izanos@portfolio — Izan Rubio Cerezo
+    whoami: `izanos@IzanOS — Izan Rubio Cerezo
 ──────────────────────────────────────
 Role    Full Stack Developer & Cybersecurity Specialist
-Email   izan@videoatencion.com
+Email   izanrubiocerezo@gmail.com
 GitHub  github.com/izanrubio
 Status  Available — open to work`,
 
@@ -171,16 +198,16 @@ drwxr-xr-x  Downloads/
 drwxr-xr-x  Trash/`,
 
     'ls projects': `total 4
--rw-r--r--  StasTarat.es       Analytics & stats platform
--rw-r--r--  Laraveles.es       Laravel Spanish community
--rw-r--r--  GoldenBids.exe     Real-time auction engine
--rw-r--r--  Rooming.exe        Coworking booking system`,
+drwxr-xr-x  izan  stastarat    → Next.js · Postgres · Stripe
+drwxr-xr-x  izan  laraveles    → Laravel · MySQL · Alpine
+drwxr-xr-x  izan  goldenbids   → React · Laravel · Redis
+drwxr-xr-x  izan  rooming      → Next.js · Prisma · Stripe`,
 
-    skills: `LANGUAGES    TypeScript  JavaScript  PHP  Python  Bash
-FRONTEND     React  Next.js  Tailwind  Framer Motion  Alpine.js
-BACKEND      Node.js  Laravel  Express  FastAPI  PostgreSQL  Redis
-SECURITY     PenTest  OWASP  Burp Suite  Nmap  Wireshark
-DEVOPS       Docker  Linux  Git  CI/CD  Nginx  Vercel`,
+    skills: `LANGUAGES    TypeScript · JavaScript · PHP · Python · Bash · SQL
+FRONTEND     React · Next.js · Tailwind CSS · Framer Motion · Vue 3
+BACKEND      Node.js · Laravel · Express · PostgreSQL · Redis · GraphQL
+SECURITY     Nmap · Burp Suite · Wireshark · Metasploit · OWASP Top 10
+DEVOPS       Docker · Vercel · GitHub Actions · Nginx · Linux servers`,
 
     'ping izan': `PING izan (10.0.1.337) 56 bytes of data.
 64 bytes from izan: icmp_seq=0 ttl=64 time=0.420ms
@@ -197,7 +224,7 @@ Verifying credentials...
 ✓ Portfolio reviewed
 ✓ Background check passed
 
-HIRE GRANTED — contact: izan@videoatencion.com`,
+HIRE GRANTED — contact: izanrubiocerezo@gmail.com`,
   },
   easterEggs: {
     'nmap localhost': `Starting Nmap 7.94 ( https://nmap.org )
@@ -210,7 +237,7 @@ PORT      STATE     SERVICE
 1337/tcp  filtered  leet
 
 All ports filtered by IzanOS firewall.
-Nice try. Try email instead → izan@videoatencion.com`,
+Nice try. Try email instead → izanrubiocerezo@gmail.com`,
 
     exploit: `[*] Initializing exploit module...
 [*] Target: localhost
@@ -221,7 +248,7 @@ Nice try. Try email instead → izan@videoatencion.com`,
 [-] Social engineering rejected (no one home)
 [!] EXPLOIT FAILED
 
-Suggestion: email works better → izan@videoatencion.com`,
+Suggestion: email works better → izanrubiocerezo@gmail.com`,
 
     'sudo rm -rf /': `[sudo] password for visitor: ••••••••
 rm: cannot remove '/': Operation not permitted
@@ -237,7 +264,7 @@ Stack   Next.js · Node.js · PostgreSQL · WebSockets
 Demo    https://stastatat.es
 Repo    github.com/izanrubio/stastarat
 
-Full-stack SaaS for community growth metrics.
+Real-time stats platform for online communities.
 WebSocket streaming, role-based access, Stripe billing.`,
 
     laraveles: `Laraveles.es — Laravel Community Hub
@@ -247,7 +274,7 @@ Demo    https://laraveles.es
 Repo    github.com/izanrubio/laraveles
 
 Spanish-language knowledge base for Laravel devs.
-Blog engine, package directory, SEO optimized.`,
+75+ articles, 29 lessons, 12K monthly readers.`,
 
     goldenbids: `GoldenBids — Auction Platform
 ──────────────────────────────

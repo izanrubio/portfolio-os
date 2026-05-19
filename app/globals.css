@@ -1,5 +1,31 @@
 @import "tailwindcss";
 
+:root {
+  --bg: #060810;
+  --bg-2: #0a0e1c;
+  --glass: rgba(10,15,30,0.92);
+  --titlebar: rgba(8,12,24,0.95);
+  --cyan: #00d4ff;
+  --cyan-soft: rgba(0,212,255,0.12);
+  --cyan-glow: rgba(0,212,255,0.35);
+  --violet: #7c3aed;
+  --violet-soft: rgba(124,58,237,0.18);
+  --green: #00ff88;
+  --green-soft: rgba(0,255,136,0.15);
+  --orange: #ff9500;
+  --pink: #ec4899;
+  --red: #ff4757;
+  --yellow: #ffd32a;
+  --text: #f0f4ff;
+  --text-2: #aab3c3;
+  --text-3: #8892a4;
+  --text-4: #4a5568;
+  --hairline: rgba(0,212,255,0.12);
+  --hairline-2: rgba(255,255,255,0.06);
+  --inter: 'Inter', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
 }

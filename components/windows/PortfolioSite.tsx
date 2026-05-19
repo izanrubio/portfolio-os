@@ -130,7 +130,7 @@ export default function PortfolioSite() {
           TECH STACK
         </p>
         <div className="flex flex-wrap gap-2">
-          {Object.values(skills).flat().map(tech => (
+          {skills.flatMap(cat => cat.items).map(tech => (
             <span
               key={tech}
               style={{
