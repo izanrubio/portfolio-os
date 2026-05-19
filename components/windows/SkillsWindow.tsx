@@ -1,56 +1,70 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import { skills } from '@/data/content';
 
-const categoryColors: Record<string, string> = {
-  Languages: '#dbeafe',
-  Frontend: '#dcfce7',
-  Backend: '#fef3c7',
-  Security: '#fee2e2',
-  DevOps: '#f3e8ff',
-};
+const MONO = 'var(--font-jetbrains), monospace';
 
-const categoryTextColors: Record<string, string> = {
-  Languages: '#1e40af',
-  Frontend: '#166534',
-  Backend: '#92400e',
-  Security: '#991b1b',
-  DevOps: '#6b21a8',
-};
+const CATEGORIES = [
+  { key: 'languages' as const, label: 'LANGUAGES', color: '#00d4ff' },
+  { key: 'frontend' as const, label: 'FRONTEND', color: '#7c3aed' },
+  { key: 'backend' as const, label: 'BACKEND', color: '#00d4ff' },
+  { key: 'security' as const, label: 'SECURITY', color: '#00ff88' },
+  { key: 'devops' as const, label: 'DEVOPS', color: '#7c3aed' },
+];
 
 export default function SkillsWindow() {
   return (
-    <div className="p-6 h-full overflow-y-auto" style={{ fontFamily: 'Inter, sans-serif' }}>
-      <div className="max-w-xl mx-auto">
-        <p className="text-xs font-medium tracking-widest text-gray-400 uppercase mb-6">~/skills</p>
+    <div
+      className="h-full overflow-y-auto p-5"
+      style={{ background: '#0d1117' }}
+    >
+      <p style={{ fontFamily: MONO, fontSize: '11px', color: '#00d4ff', letterSpacing: '0.2em', marginBottom: '24px' }}>
+        ~/SKILLS
+      </p>
 
-        <div className="flex flex-col gap-6">
-          {Object.entries(skills).map(([category, techs]) => (
-            <div key={category}>
-              <h3
-                className="text-xs font-semibold tracking-widest uppercase mb-3"
-                style={{ color: categoryTextColors[category] || '#374151' }}
-              >
-                {category}
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {techs.map(tech => (
-                  <span
-                    key={tech}
-                    className="text-xs px-3 py-1.5 rounded-full font-medium transition-transform hover:scale-105 cursor-default"
-                    style={{
-                      background: categoryColors[category] || '#f3f4f6',
-                      color: categoryTextColors[category] || '#374151',
-                      border: `1px solid ${categoryTextColors[category] || '#e5e7eb'}22`,
-                    }}
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
+      <div className="flex flex-col gap-6">
+        {CATEGORIES.map((cat, catIdx) => (
+          <motion.div
+            key={cat.key}
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: catIdx * 0.08, duration: 0.3 }}
+          >
+            <p
+              style={{
+                fontFamily: MONO,
+                fontSize: '10px',
+                color: cat.color,
+                letterSpacing: '0.2em',
+                marginBottom: '10px',
+              }}
+            >
+              {cat.label}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {skills[cat.key].map((tech, i) => (
+                <motion.span
+                  key={tech}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: catIdx * 0.08 + i * 0.03, duration: 0.2 }}
+                  style={{
+                    fontFamily: MONO,
+                    fontSize: '11px',
+                    color: cat.color,
+                    border: `1px solid ${cat.color}40`,
+                    padding: '4px 12px',
+                    borderRadius: '4px',
+                    background: `${cat.color}08`,
+                  }}
+                >
+                  {tech}
+                </motion.span>
+              ))}
             </div>
-          ))}
-        </div>
+          </motion.div>
+        ))}
       </div>
     </div>
   );

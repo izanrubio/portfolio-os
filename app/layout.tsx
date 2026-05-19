@@ -17,7 +17,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'IzanOS — Izan Rubio Portfolio',
   description: 'Full Stack Developer & Cybersecurity Specialist. Interactive OS-inspired portfolio.',
-  keywords: ['portfolio', 'full stack', 'cybersecurity', 'developer', 'Kali Linux'],
+  keywords: ['portfolio', 'full stack', 'cybersecurity', 'developer'],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -1,88 +1,131 @@
 'use client';
 
 import Image from 'next/image';
-import { personalInfo } from '@/data/content';
+import { motion } from 'framer-motion';
+import { personal } from '@/data/content';
+
+const MONO = 'var(--font-jetbrains), monospace';
+const INTER = 'var(--font-inter), Inter, sans-serif';
 
 export default function WhoamiWindow() {
   return (
-    <div className="h-full flex flex-col md:flex-row overflow-hidden" style={{ fontFamily: 'Inter, sans-serif' }}>
+    <div className="h-full flex flex-col md:flex-row overflow-hidden" style={{ background: '#0d1117' }}>
       {/* Left: Photo */}
-      <div
-        className="md:w-2/5 w-full h-48 md:h-full relative shrink-0"
-        style={{ background: '#0d1117' }}
-      >
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="relative w-full h-full">
-            <Image
-              src={personalInfo.photo}
-              alt={personalInfo.name}
-              fill
-              className="object-cover grayscale"
-              style={{ objectPosition: 'center top' }}
-              onError={() => {}}
-            />
-            {/* Overlay gradient */}
-            <div
-              className="absolute inset-0"
-              style={{ background: 'linear-gradient(to right, transparent 60%, rgba(248,249,250,0.15) 100%)' }}
-            />
-          </div>
-        </div>
+      <div className="md:w-2/5 w-full h-52 md:h-full relative shrink-0 overflow-hidden">
+        <Image
+          src={personal.photo}
+          alt={personal.name}
+          fill
+          className="object-cover"
+          style={{
+            objectPosition: 'center top',
+            filter: 'grayscale(100%) brightness(0.8)',
+            mixBlendMode: 'luminosity',
+          }}
+          onError={() => {}}
+        />
+        {/* Cyan overlay */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: 'linear-gradient(135deg, rgba(0,212,255,0.08) 0%, rgba(124,58,237,0.06) 100%)',
+            mixBlendMode: 'color-dodge',
+          }}
+        />
+        {/* Right fade */}
+        <div
+          className="absolute inset-y-0 right-0 w-24 hidden md:block"
+          style={{ background: 'linear-gradient(to right, transparent, #0d1117)' }}
+        />
       </div>
 
       {/* Right: Info */}
-      <div className="flex-1 p-8 overflow-y-auto flex flex-col justify-center" style={{ background: '#f8f9fa' }}>
-        <div className="max-w-sm">
-          <p className="text-xs font-medium tracking-widest text-gray-400 uppercase mb-2">whoami</p>
-          <h1 className="text-2xl font-bold text-gray-900 leading-tight">{personalInfo.name}</h1>
-          <p className="text-sm font-medium mt-1 mb-4" style={{ color: '#00d4ff', filter: 'brightness(0.7)' }}>
-            {personalInfo.role}
-          </p>
-          <p className="text-gray-600 text-sm leading-relaxed mb-6">{personalInfo.bio}</p>
+      <div className="flex-1 overflow-y-auto flex flex-col justify-center" style={{ padding: '32px' }}>
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+        >
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.1 }}
+            style={{ fontFamily: MONO, fontSize: '11px', color: '#00d4ff', letterSpacing: '0.2em', marginBottom: '12px' }}
+          >
+            ~/WHOAMI
+          </motion.p>
 
-          <div className="flex flex-col gap-2.5">
-            <a
-              href={`mailto:${personalInfo.email}`}
-              className="flex items-center gap-3 text-sm text-gray-700 hover:text-gray-900 transition-colors group"
-            >
-              <span
-                className="text-xs px-2 py-0.5 rounded font-medium"
-                style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', color: '#6b7280', fontFamily: 'JetBrains Mono, monospace' }}
+          <motion.h1
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            style={{ fontFamily: INTER, fontWeight: 700, fontSize: '28px', color: '#f0f4ff', lineHeight: 1.2, marginBottom: '8px' }}
+          >
+            {personal.name}
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            style={{ fontFamily: MONO, fontSize: '11px', color: '#00d4ff', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '20px' }}
+          >
+            {personal.role}
+          </motion.p>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.25 }}
+            style={{ fontFamily: INTER, fontSize: '14px', color: '#8892a4', lineHeight: 1.8, marginBottom: '28px' }}
+          >
+            {personal.bio}
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="flex flex-col gap-3"
+          >
+            {[
+              { label: 'email', value: personal.email, href: `mailto:${personal.email}` },
+              { label: 'github', value: 'izanrubio', href: personal.github },
+              { label: 'linkedin', value: 'in/izanrubio', href: personal.linkedin },
+            ].map(link => (
+              <a
+                key={link.label}
+                href={link.href}
+                target={link.href.startsWith('mailto') ? undefined : '_blank'}
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 group"
               >
-                email
-              </span>
-              <span className="group-hover:underline">{personalInfo.email}</span>
-            </a>
-            <a
-              href={personalInfo.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-3 text-sm text-gray-700 hover:text-gray-900 transition-colors group"
-            >
-              <span
-                className="text-xs px-2 py-0.5 rounded font-medium"
-                style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', color: '#6b7280', fontFamily: 'JetBrains Mono, monospace' }}
-              >
-                github
-              </span>
-              <span className="group-hover:underline">izanrubio</span>
-            </a>
-            <a
-              href={personalInfo.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-3 text-sm text-gray-700 hover:text-gray-900 transition-colors group"
-            >
-              <span
-                className="text-xs px-2 py-0.5 rounded font-medium"
-                style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', color: '#6b7280', fontFamily: 'JetBrains Mono, monospace' }}
-              >
-                linkedin
-              </span>
-              <span className="group-hover:underline">in/izanrubio</span>
-            </a>
-          </div>
-        </div>
+                <span
+                  style={{
+                    fontFamily: MONO,
+                    fontSize: '10px',
+                    color: '#4a5568',
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase',
+                    minWidth: '56px',
+                  }}
+                >
+                  {link.label}
+                </span>
+                <span
+                  className="transition-colors duration-150 group-hover:underline"
+                  style={{
+                    fontFamily: MONO,
+                    fontSize: '13px',
+                    color: '#f0f4ff',
+                  }}
+                >
+                  {link.value}
+                </span>
+              </a>
+            ))}
+          </motion.div>
+        </motion.div>
       </div>
     </div>
   );

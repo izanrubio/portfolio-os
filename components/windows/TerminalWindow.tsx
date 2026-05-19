@@ -1,22 +1,21 @@
 'use client';
 
 import { useState, useRef, useEffect, KeyboardEvent } from 'react';
-import { terminalCommands } from '@/data/content';
+import { terminal } from '@/data/content';
 
 interface TerminalLine {
+  id: number;
   type: 'input' | 'output' | 'error';
   content: string;
+  typing?: boolean;
 }
 
-const PROMPT = 'izanos@portfolio:~$ ';
-
-const WELCOME = `IzanOS Terminal v1.0.0
-Type 'help' to see available commands.
-──────────────────────────────────────`;
+const PROMPT_TEXT = 'izanos@portfolio:~$ ';
+let lineIdCounter = 0;
 
 export default function TerminalWindow() {
   const [lines, setLines] = useState<TerminalLine[]>([
-    { type: 'output', content: WELCOME },
+    { id: lineIdCounter++, type: 'output', content: terminal.welcomeMessage },
   ]);
   const [input, setInput] = useState('');
   const [history, setHistory] = useState<string[]>([]);
@@ -32,31 +31,65 @@ export default function TerminalWindow() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [lines]);
 
+  const typeOutput = (text: string, type: 'output' | 'error' = 'output') => {
+    const id = lineIdCounter++;
+    setLines(prev => [...prev, { id, type, content: '', typing: true }]);
+
+    let i = 0;
+    const interval = setInterval(() => {
+      i++;
+      setLines(prev => prev.map(l =>
+        l.id === id ? { ...l, content: text.slice(0, i) } : l
+      ));
+      if (i >= text.length) {
+        clearInterval(interval);
+        setLines(prev => prev.map(l =>
+          l.id === id ? { ...l, typing: false } : l
+        ));
+      }
+    }, 6);
+  };
+
   const runCommand = (raw: string) => {
     const cmd = raw.trim().toLowerCase();
-
-    setLines(prev => [...prev, { type: 'input', content: PROMPT + raw }]);
+    setLines(prev => [...prev, { id: lineIdCounter++, type: 'input', content: raw }]);
 
     if (!cmd) return;
-
     setHistory(prev => [raw, ...prev]);
     setHistoryIdx(-1);
 
     if (cmd === 'clear') {
-      setLines([{ type: 'output', content: WELCOME }]);
+      setLines([{ id: lineIdCounter++, type: 'output', content: terminal.welcomeMessage }]);
       return;
     }
 
-    const result = terminalCommands[cmd];
-    if (result !== undefined) {
-      const output = typeof result === 'function' ? result([]) : result;
-      setLines(prev => [...prev, { type: 'output', content: output }]);
-    } else {
-      setLines(prev => [...prev, {
-        type: 'error',
-        content: `bash: ${cmd}: command not found\nType 'help' for available commands.`,
-      }]);
+    // Check regular commands
+    const cmdResult = terminal.commands[cmd as keyof typeof terminal.commands];
+    if (cmdResult) {
+      typeOutput(cmdResult);
+      return;
     }
+
+    // Check easter eggs
+    const eggResult = terminal.easterEggs[cmd as keyof typeof terminal.easterEggs];
+    if (eggResult) {
+      typeOutput(eggResult);
+      return;
+    }
+
+    // cat <project>
+    if (cmd.startsWith('cat ')) {
+      const slug = cmd.slice(4).trim();
+      const detail = terminal.projectDetails[slug as keyof typeof terminal.projectDetails];
+      if (detail) {
+        typeOutput(detail);
+        return;
+      }
+      typeOutput(`cat: ${cmd.slice(4)}: No such file or directory`, 'error');
+      return;
+    }
+
+    typeOutput(`bash: ${cmd}: command not found\nType 'help' for available commands.`, 'error');
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -83,36 +116,54 @@ export default function TerminalWindow() {
     }
   };
 
+  const MONO = 'var(--font-jetbrains), monospace';
+
   return (
     <div
-      className="h-full flex flex-col p-4 overflow-hidden cursor-text"
-      style={{
-        background: '#0a0c10',
-        fontFamily: 'JetBrains Mono, monospace',
-        color: '#e2e8f0',
-        fontSize: '12px',
-        lineHeight: '1.6',
-      }}
+      className="h-full flex flex-col overflow-hidden cursor-text"
+      style={{ background: '#0a0a0a', fontFamily: MONO, fontSize: '12px', lineHeight: 1.6 }}
       onClick={() => inputRef.current?.focus()}
     >
-      <div className="flex-1 overflow-y-auto">
-        {lines.map((line, i) => (
-          <div key={i} className="whitespace-pre-wrap break-words">
+      <div className="flex-1 overflow-y-auto p-4">
+        {lines.map(line => (
+          <div key={line.id} className="whitespace-pre-wrap break-words">
             {line.type === 'input' && (
-              <span style={{ color: '#00d4ff' }}>{line.content}</span>
+              <div>
+                <span style={{ color: '#00d4ff' }}>izanos</span>
+                <span style={{ color: '#7c3aed' }}>@portfolio</span>
+                <span style={{ color: '#f0f4ff' }}>:~$ </span>
+                <span style={{ color: '#f0f4ff' }}>{line.content}</span>
+              </div>
             )}
             {line.type === 'output' && (
-              <span style={{ color: '#94a3b8' }}>{line.content}</span>
+              <span style={{ color: '#8892a4' }}>
+                {line.content}
+                {line.typing && (
+                  <span
+                    style={{
+                      display: 'inline-block',
+                      width: '7px',
+                      height: '13px',
+                      background: '#00d4ff',
+                      marginLeft: '1px',
+                      verticalAlign: 'text-bottom',
+                      animation: 'blink 1s step-end infinite',
+                    }}
+                  />
+                )}
+              </span>
             )}
             {line.type === 'error' && (
-              <span style={{ color: '#f87171' }}>{line.content}</span>
+              <span style={{ color: '#ff4757' }}>{line.content}</span>
             )}
           </div>
         ))}
 
-        {/* Active input line */}
+        {/* Input line */}
         <div className="flex items-center">
-          <span style={{ color: '#00d4ff' }}>{PROMPT}</span>
+          <span style={{ color: '#00d4ff' }}>izanos</span>
+          <span style={{ color: '#7c3aed' }}>@portfolio</span>
+          <span style={{ color: '#f0f4ff' }}>:~$ </span>
           <span className="relative flex-1">
             <input
               ref={inputRef}
@@ -120,8 +171,8 @@ export default function TerminalWindow() {
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="absolute inset-0 w-full bg-transparent outline-none border-none caret-[#00d4ff]"
-              style={{ color: '#e2e8f0', fontFamily: 'inherit', fontSize: 'inherit' }}
+              className="absolute inset-0 w-full bg-transparent outline-none border-none"
+              style={{ color: '#f0f4ff', fontFamily: MONO, fontSize: '12px', caretColor: '#00d4ff' }}
               autoComplete="off"
               autoCorrect="off"
               autoCapitalize="off"
@@ -133,6 +184,13 @@ export default function TerminalWindow() {
 
         <div ref={bottomRef} />
       </div>
+
+      <style>{`
+        @keyframes blink {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0; }
+        }
+      `}</style>
     </div>
   );
 }

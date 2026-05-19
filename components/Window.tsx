@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useCallback, useEffect } from 'react';
+import { useRef, useState, useCallback, CSSProperties } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { WindowState, WindowId } from '@/types/windows';
 
@@ -15,7 +15,7 @@ interface WindowProps {
   children: React.ReactNode;
 }
 
-const TASKBAR_HEIGHT = 40;
+const TASKBAR_H = 48;
 
 export default function Window({
   window: win,
@@ -27,169 +27,160 @@ export default function Window({
   onResize,
   children,
 }: WindowProps) {
-  const dragRef = useRef<{ startX: number; startY: number; origX: number; origY: number } | null>(null);
-  const resizeRef = useRef<{ startX: number; startY: number; origW: number; origH: number } | null>(null);
-  const windowRef = useRef<HTMLDivElement>(null);
-
+  const [dragging, setDragging] = useState(false);
+  const [resizing, setResizing] = useState(false);
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
-  const handleTitleBarMouseDown = useCallback((e: React.MouseEvent) => {
+  const handleTitleMouseDown = useCallback((e: React.MouseEvent) => {
     if (win.isMaximized || isMobile) return;
     e.preventDefault();
-    dragRef.current = {
-      startX: e.clientX,
-      startY: e.clientY,
-      origX: win.position.x,
-      origY: win.position.y,
+    setDragging(true);
+
+    const startX = e.clientX - win.position.x;
+    const startY = e.clientY - win.position.y;
+
+    const onMove_ = (ev: MouseEvent) => {
+      const x = Math.max(0, Math.min(globalThis.innerWidth - 120, ev.clientX - startX));
+      const y = Math.max(0, Math.min(globalThis.innerHeight - TASKBAR_H - 36, ev.clientY - startY));
+      onMove(win.id, { x, y });
     };
 
-    const onMouseMove = (ev: MouseEvent) => {
-      if (!dragRef.current) return;
-      const dx = ev.clientX - dragRef.current.startX;
-      const dy = ev.clientY - dragRef.current.startY;
-      const newX = Math.max(0, Math.min(globalThis.innerWidth - 200, dragRef.current.origX + dx));
-      const newY = Math.max(0, Math.min(globalThis.innerHeight - TASKBAR_HEIGHT - 40, dragRef.current.origY + dy));
-      onMove(win.id, { x: newX, y: newY });
+    const onUp = () => {
+      setDragging(false);
+      document.removeEventListener('mousemove', onMove_);
+      document.removeEventListener('mouseup', onUp);
     };
 
-    const onMouseUp = () => {
-      dragRef.current = null;
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
-    };
-
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
+    document.addEventListener('mousemove', onMove_);
+    document.addEventListener('mouseup', onUp);
   }, [win, isMobile, onMove]);
 
   const handleResizeMouseDown = useCallback((e: React.MouseEvent) => {
     if (win.isMaximized || isMobile) return;
     e.preventDefault();
     e.stopPropagation();
-    resizeRef.current = {
-      startX: e.clientX,
-      startY: e.clientY,
-      origW: win.size.width,
-      origH: win.size.height,
-    };
+    setResizing(true);
 
-    const onMouseMove = (ev: MouseEvent) => {
-      if (!resizeRef.current) return;
-      const dx = ev.clientX - resizeRef.current.startX;
-      const dy = ev.clientY - resizeRef.current.startY;
+    const origW = win.size.width;
+    const origH = win.size.height;
+    const startX = e.clientX;
+    const startY = e.clientY;
+
+    const onMove_ = (ev: MouseEvent) => {
       onResize(win.id, {
-        width: Math.max(340, resizeRef.current.origW + dx),
-        height: Math.max(240, resizeRef.current.origH + dy),
+        width: Math.max(340, origW + ev.clientX - startX),
+        height: Math.max(240, origH + ev.clientY - startY),
       });
     };
 
-    const onMouseUp = () => {
-      resizeRef.current = null;
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
+    const onUp = () => {
+      setResizing(false);
+      document.removeEventListener('mousemove', onMove_);
+      document.removeEventListener('mouseup', onUp);
     };
 
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
+    document.addEventListener('mousemove', onMove_);
+    document.addEventListener('mouseup', onUp);
   }, [win, isMobile, onResize]);
 
-  const style = isMobile
-    ? {
-        position: 'fixed' as const,
-        inset: 0,
-        bottom: `${TASKBAR_HEIGHT}px`,
-        zIndex: win.zIndex,
-        borderRadius: 0,
-      }
+  const positionStyle: CSSProperties = isMobile
+    ? { position: 'fixed', inset: 0, bottom: `${TASKBAR_H}px` }
     : win.isMaximized
-    ? {
-        position: 'fixed' as const,
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: `${TASKBAR_HEIGHT}px`,
-        zIndex: win.zIndex,
-        borderRadius: '0px',
-      }
+    ? { position: 'fixed', left: 0, top: 0, right: 0, bottom: `${TASKBAR_H}px` }
     : {
-        position: 'fixed' as const,
+        position: 'fixed',
         left: win.position.x,
         top: win.position.y,
         width: win.size.width,
         height: win.size.height,
-        zIndex: win.zIndex,
+        transition: dragging || resizing
+          ? 'none'
+          : 'left 0.28s cubic-bezier(0.16,1,0.3,1), top 0.28s cubic-bezier(0.16,1,0.3,1), width 0.28s cubic-bezier(0.16,1,0.3,1), height 0.28s cubic-bezier(0.16,1,0.3,1)',
       };
+
+  const borderRadius = win.isMaximized || isMobile ? '0px' : '10px';
 
   return (
     <AnimatePresence>
       {win.isOpen && !win.isMinimized && (
         <motion.div
-          ref={windowRef}
           key={win.id}
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.94 }}
           animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          transition={{ duration: 0.18, ease: 'easeOut' }}
-          style={style}
-          className="flex flex-col overflow-hidden shadow-2xl"
+          exit={{ opacity: 0, scale: 0.94 }}
+          transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+          style={{
+            ...positionStyle,
+            zIndex: win.zIndex,
+          }}
+          className="flex flex-col"
           onMouseDown={() => onFocus(win.id)}
-          onClick={() => onFocus(win.id)}
         >
-          {/* Window border */}
           <div
             className="flex flex-col flex-1 overflow-hidden"
             style={{
-              border: '1px solid rgba(0, 212, 255, 0.18)',
-              borderRadius: win.isMaximized || isMobile ? 0 : '8px',
-              background: '#f8f9fa',
+              borderRadius,
+              border: '1px solid rgba(0, 212, 255, 0.2)',
+              boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,212,255,0.08)',
+              background: 'rgba(10, 15, 30, 0.92)',
+              backdropFilter: 'blur(20px) saturate(180%)',
             }}
           >
             {/* Title bar */}
             <div
-              className="flex items-center px-3 h-9 shrink-0 select-none"
+              className="flex items-center px-3 shrink-0 select-none"
               style={{
-                background: '#0d1117',
-                borderBottom: '1px solid rgba(0, 212, 255, 0.12)',
+                height: '36px',
+                background: 'rgba(8, 12, 24, 0.95)',
+                borderBottom: '1px solid rgba(0, 212, 255, 0.1)',
+                borderRadius: win.isMaximized || isMobile ? '0' : '9px 9px 0 0',
                 cursor: win.isMaximized || isMobile ? 'default' : 'grab',
-                borderRadius: win.isMaximized || isMobile ? 0 : '7px 7px 0 0',
               }}
-              onMouseDown={handleTitleBarMouseDown}
+              onMouseDown={handleTitleMouseDown}
             >
               {/* Traffic lights */}
-              <div className="flex items-center gap-1.5 mr-3">
+              <div className="flex items-center gap-1.5 shrink-0">
                 <button
-                  className="w-3 h-3 rounded-full transition-opacity hover:opacity-80"
-                  style={{ background: '#ff5f57' }}
+                  className="rounded-full transition-opacity hover:opacity-75 active:scale-90"
+                  style={{ width: '12px', height: '12px', background: '#ff4757' }}
                   onMouseDown={e => e.stopPropagation()}
                   onClick={e => { e.stopPropagation(); onClose(win.id); }}
                   title="Close"
                 />
                 <button
-                  className="w-3 h-3 rounded-full transition-opacity hover:opacity-80"
-                  style={{ background: '#febc2e' }}
+                  className="rounded-full transition-opacity hover:opacity-75 active:scale-90"
+                  style={{ width: '12px', height: '12px', background: '#ffd32a' }}
                   onMouseDown={e => e.stopPropagation()}
                   onClick={e => { e.stopPropagation(); onMinimize(win.id); }}
                   title="Minimize"
                 />
                 <button
-                  className="w-3 h-3 rounded-full transition-opacity hover:opacity-80"
-                  style={{ background: '#28c840' }}
+                  className="rounded-full transition-opacity hover:opacity-75 active:scale-90"
+                  style={{ width: '12px', height: '12px', background: '#00ff88' }}
                   onMouseDown={e => e.stopPropagation()}
                   onClick={e => { e.stopPropagation(); onMaximize(win.id); }}
                   title="Maximize"
                 />
               </div>
 
+              {/* Title */}
               <span
-                className="flex-1 text-center text-xs text-white/60 truncate"
-                style={{ fontFamily: 'JetBrains Mono, monospace' }}
+                className="flex-1 text-center truncate px-4"
+                style={{
+                  fontFamily: 'var(--font-jetbrains), monospace',
+                  fontSize: '12px',
+                  color: '#8892a4',
+                }}
               >
                 {win.title}
               </span>
+
+              {/* Spacer to center title */}
+              <div style={{ width: '52px' }} />
             </div>
 
-            {/* Content */}
-            <div className="flex-1 overflow-auto" style={{ background: '#f8f9fa' }}>
+            {/* Window content */}
+            <div className="flex-1 overflow-hidden">
               {children}
             </div>
           </div>
@@ -197,14 +188,18 @@ export default function Window({
           {/* Resize handle */}
           {!win.isMaximized && !isMobile && (
             <div
-              className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize"
-              onMouseDown={handleResizeMouseDown}
+              className="absolute bottom-0 right-0 w-5 h-5 cursor-se-resize group"
               style={{ zIndex: 1 }}
+              onMouseDown={handleResizeMouseDown}
             >
-              <svg width="10" height="10" viewBox="0 0 10 10" className="absolute bottom-1 right-1 opacity-30">
-                <line x1="10" y1="0" x2="0" y2="10" stroke="#00d4ff" strokeWidth="1"/>
-                <line x1="10" y1="4" x2="4" y2="10" stroke="#00d4ff" strokeWidth="1"/>
-                <line x1="10" y1="8" x2="8" y2="10" stroke="#00d4ff" strokeWidth="1"/>
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 10 10"
+                className="absolute bottom-1.5 right-1.5 transition-opacity opacity-30 group-hover:opacity-70"
+              >
+                <line x1="9" y1="1" x2="1" y2="9" stroke="#00d4ff" strokeWidth="1.2"/>
+                <line x1="9" y1="5" x2="5" y2="9" stroke="#00d4ff" strokeWidth="1.2"/>
               </svg>
             </div>
           )}

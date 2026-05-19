@@ -1,18 +1,18 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const bootMessages = [
-  '[    0.000000] Booting IzanOS kernel...',
-  '[    0.142857] Loading security modules...',
-  '[    0.420000] Initializing network interfaces...',
-  '[    0.831337] Starting window compositor...',
-  '[    1.337000] Mounting portfolio filesystem...',
-  '[    1.960000] Loading user environment...',
-  '[    2.480000] Starting desktop session...',
-  '[    2.990000] IzanOS ready.',
+const BOOT_MESSAGES = [
+  '[ OK ] Starting IzanOS kernel...',
+  '[ OK ] Loading display manager...',
+  '[ OK ] Mounting filesystems...',
+  '[ OK ] Starting network services...',
+  '[ OK ] Loading portfolio modules...',
+  '[ OK ] Welcome, visitor.',
 ];
+
+const MESSAGE_TIMINGS = [400, 900, 1400, 2000, 2700, 3300];
 
 interface BootScreenProps {
   onComplete: () => void;
@@ -21,117 +21,176 @@ interface BootScreenProps {
 export default function BootScreen({ onComplete }: BootScreenProps) {
   const [progress, setProgress] = useState(0);
   const [messages, setMessages] = useState<string[]>([]);
-  const [phase, setPhase] = useState<'logo' | 'loading' | 'flash'>('logo');
+  const [phase, setPhase] = useState<'boot' | 'flash' | 'done'>('boot');
+  const doneRef = useRef(false);
 
   useEffect(() => {
-    const logoTimer = setTimeout(() => setPhase('loading'), 800);
-    return () => clearTimeout(logoTimer);
-  }, []);
+    const timers: ReturnType<typeof setTimeout>[] = [];
 
-  useEffect(() => {
-    if (phase !== 'loading') return;
-
-    const intervals: ReturnType<typeof setTimeout>[] = [];
-
-    bootMessages.forEach((msg, i) => {
-      const t = setTimeout(() => {
-        setMessages(prev => [...prev, msg]);
-      }, i * 280);
-      intervals.push(t);
+    MESSAGE_TIMINGS.forEach((t, i) => {
+      timers.push(setTimeout(() => {
+        setMessages(prev => [...prev, BOOT_MESSAGES[i]]);
+      }, t));
     });
 
-    const progressInterval = setInterval(() => {
-      setProgress(prev => {
-        const next = prev + (100 - prev) * 0.08 + 0.5;
-        return Math.min(next, 99);
-      });
-    }, 60);
+    // Non-linear progress: fast → slow → fast
+    let startTime: number | null = null;
+    const TOTAL = 4000;
+    let rafId: number;
 
-    const doneTimer = setTimeout(() => {
-      clearInterval(progressInterval);
-      setProgress(100);
-      setTimeout(() => {
-        setPhase('flash');
-        setTimeout(onComplete, 400);
-      }, 400);
-    }, 3200);
+    const easeProgress = (t: number) => {
+      // Fast at start and end, slow in middle
+      const x = t / TOTAL;
+      return Math.sin(x * Math.PI * 0.5) * 0.6 + x * 0.4;
+    };
+
+    const animate = (ts: number) => {
+      if (!startTime) startTime = ts;
+      const elapsed = ts - startTime;
+      if (elapsed < TOTAL) {
+        setProgress(Math.min(99, easeProgress(elapsed) * 100));
+        rafId = requestAnimationFrame(animate);
+      } else {
+        setProgress(100);
+      }
+    };
+    rafId = requestAnimationFrame(animate);
+
+    timers.push(setTimeout(() => {
+      if (doneRef.current) return;
+      doneRef.current = true;
+      setPhase('flash');
+      setTimeout(onComplete, 600);
+    }, 4200));
 
     return () => {
-      intervals.forEach(clearTimeout);
-      clearInterval(progressInterval);
-      clearTimeout(doneTimer);
+      timers.forEach(clearTimeout);
+      cancelAnimationFrame(rafId);
     };
-  }, [phase, onComplete]);
+  }, [onComplete]);
 
   return (
     <AnimatePresence>
-      <motion.div
-        key="boot"
-        className="fixed inset-0 bg-black flex flex-col items-center justify-center z-50"
-        animate={phase === 'flash' ? { opacity: 0 } : { opacity: 1 }}
-        transition={{ duration: 0.35 }}
-      >
+      {phase !== 'done' && (
         <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
-          className="flex flex-col items-center gap-6"
+          key="boot"
+          className="fixed inset-0 flex flex-col items-center justify-center z-50"
+          style={{ background: '#000000' }}
+          animate={phase === 'flash' ? { opacity: 0, backgroundColor: '#ffffff' } : { opacity: 1 }}
+          transition={{ duration: 0.5, ease: 'easeInOut' }}
         >
-          {/* Kali-inspired geometric dragon logo */}
-          <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="40,4 76,28 76,52 40,76 4,52 4,28" stroke="#00d4ff" strokeWidth="1.5" fill="none" opacity="0.6"/>
-            <polygon points="40,14 66,30 66,50 40,66 14,50 14,30" stroke="#00d4ff" strokeWidth="1" fill="none" opacity="0.4"/>
-            <polygon points="40,22 58,32 58,48 40,58 22,48 22,32" fill="#00d4ff" opacity="0.12"/>
-            <line x1="40" y1="4" x2="40" y2="76" stroke="#00d4ff" strokeWidth="0.5" opacity="0.3"/>
-            <line x1="4" y1="28" x2="76" y2="52" stroke="#00d4ff" strokeWidth="0.5" opacity="0.3"/>
-            <line x1="76" y1="28" x2="4" y2="52" stroke="#00d4ff" strokeWidth="0.5" opacity="0.3"/>
-            <circle cx="40" cy="40" r="6" fill="#00d4ff" opacity="0.8"/>
-            <circle cx="40" cy="40" r="3" fill="#ffffff" opacity="0.9"/>
-          </svg>
-
-          <div className="text-center">
-            <h1
-              className="text-white text-2xl font-bold tracking-[0.3em]"
-              style={{ fontFamily: 'JetBrains Mono, monospace' }}
-            >
-              IzanOS
-            </h1>
-            <p className="text-[#00d4ff] text-xs tracking-widest mt-1 opacity-70">
-              v1.0.0-kali
-            </p>
-          </div>
-
-          {phase === 'loading' && (
+          {/* Center content */}
+          <div className="flex flex-col items-center gap-8">
+            {/* Geometric dragon SVG */}
             <motion.div
+              initial={{ opacity: 0, scale: 0.7 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <motion.svg
+                width="96"
+                height="96"
+                viewBox="0 0 96 96"
+                fill="none"
+                animate={{ filter: ['drop-shadow(0 0 8px #00d4ff44)', 'drop-shadow(0 0 16px #00d4ff88)', 'drop-shadow(0 0 8px #00d4ff44)'] }}
+                transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                {/* Outer hexagon */}
+                <polygon points="48,4 88,26 88,70 48,92 8,70 8,26" stroke="#00d4ff" strokeWidth="1.5" fill="none" opacity="0.5"/>
+                {/* Inner diamond */}
+                <polygon points="48,20 72,48 48,76 24,48" stroke="#00d4ff" strokeWidth="1" fill="none" opacity="0.7"/>
+                {/* Dragon wings — left */}
+                <path d="M24,48 L8,26 L30,38" stroke="#00d4ff" strokeWidth="1.5" fill="rgba(0,212,255,0.06)" opacity="0.8"/>
+                {/* Dragon wings — right */}
+                <path d="M72,48 L88,26 L66,38" stroke="#00d4ff" strokeWidth="1.5" fill="rgba(0,212,255,0.06)" opacity="0.8"/>
+                {/* Dragon tail */}
+                <path d="M48,76 L38,92 L48,82 L58,92Z" stroke="#00d4ff" strokeWidth="1" fill="rgba(0,212,255,0.1)" opacity="0.8"/>
+                {/* Dragon head */}
+                <path d="M36,26 L48,4 L60,26 L48,20Z" stroke="#00d4ff" strokeWidth="1" fill="rgba(0,212,255,0.12)" opacity="0.9"/>
+                {/* Eyes */}
+                <circle cx="43" cy="36" r="2.5" fill="#00d4ff" opacity="0.9"/>
+                <circle cx="53" cy="36" r="2.5" fill="#00d4ff" opacity="0.9"/>
+                {/* Core glow */}
+                <circle cx="48" cy="48" r="8" fill="rgba(0,212,255,0.15)"/>
+                <circle cx="48" cy="48" r="4" fill="rgba(0,212,255,0.3)"/>
+                {/* Center cross-lines */}
+                <line x1="48" y1="20" x2="48" y2="76" stroke="#00d4ff" strokeWidth="0.5" opacity="0.3"/>
+                <line x1="24" y1="48" x2="72" y2="48" stroke="#00d4ff" strokeWidth="0.5" opacity="0.3"/>
+              </motion.svg>
+            </motion.div>
+
+            {/* Text */}
+            <motion.div
+              className="flex flex-col items-center gap-2"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+            >
+              <h1
+                style={{
+                  fontFamily: 'var(--font-inter), Inter, sans-serif',
+                  fontWeight: 800,
+                  fontSize: '24px',
+                  letterSpacing: '0.4em',
+                  color: '#f0f4ff',
+                }}
+              >
+                IzanOS
+              </h1>
+              <p
+                style={{
+                  fontFamily: 'var(--font-jetbrains), monospace',
+                  fontSize: '11px',
+                  color: '#4a5568',
+                  letterSpacing: '0.05em',
+                }}
+              >
+                v2.0.4 — Powered by Izan Rubio
+              </p>
+            </motion.div>
+
+            {/* Progress bar */}
+            <motion.div
+              className="w-56 flex flex-col gap-2"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="w-64 flex flex-col gap-3"
+              transition={{ delay: 0.6 }}
             >
-              <div className="w-full h-0.5 bg-white/10 rounded-full overflow-hidden">
+              <div
+                className="w-full overflow-hidden"
+                style={{ height: '2px', background: '#1a1a2e', borderRadius: '1px' }}
+              >
                 <motion.div
-                  className="h-full bg-[#00d4ff] rounded-full"
-                  style={{ width: `${progress}%` }}
+                  style={{
+                    height: '100%',
+                    background: 'linear-gradient(to right, #00d4ff, #7c3aed)',
+                    borderRadius: '1px',
+                    width: `${progress}%`,
+                  }}
                   transition={{ duration: 0.1 }}
                 />
               </div>
-
-              <div className="h-28 overflow-hidden flex flex-col justify-end">
-                {messages.map((msg, i) => (
-                  <motion.p
-                    key={i}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: i === messages.length - 1 ? 0.7 : 0.35 }}
-                    className="text-gray-400 text-[10px] leading-5"
-                    style={{ fontFamily: 'JetBrains Mono, monospace' }}
-                  >
-                    {msg}
-                  </motion.p>
-                ))}
-              </div>
             </motion.div>
-          )}
+          </div>
+
+          {/* System messages — bottom left */}
+          <div
+            className="absolute bottom-8 left-8 flex flex-col gap-0.5"
+            style={{ fontFamily: 'var(--font-jetbrains), monospace', fontSize: '11px', color: '#4a5568' }}
+          >
+            {messages.map((msg, i) => (
+              <motion.p
+                key={i}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                {msg}
+              </motion.p>
+            ))}
+          </div>
         </motion.div>
-      </motion.div>
+      )}
     </AnimatePresence>
   );
 }

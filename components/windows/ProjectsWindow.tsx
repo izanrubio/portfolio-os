@@ -4,53 +4,77 @@ import { useState } from 'react';
 import { projects } from '@/data/content';
 import { motion, AnimatePresence } from 'framer-motion';
 
+const MONO = 'var(--font-jetbrains), monospace';
+
 export default function ProjectsWindow() {
   const [expanded, setExpanded] = useState<string | null>(null);
 
   return (
-    <div className="p-6 h-full overflow-y-auto" style={{ fontFamily: 'Inter, sans-serif' }}>
-      <div className="max-w-2xl mx-auto">
-        <h2 className="text-xs font-medium tracking-widest text-gray-400 uppercase mb-6">
-          ~/projects
-        </h2>
+    <div
+      className="h-full overflow-y-auto p-5"
+      style={{ background: '#0d1117', color: '#f0f4ff' }}
+    >
+      {/* Header */}
+      <p style={{ fontFamily: MONO, fontSize: '11px', color: '#00d4ff', letterSpacing: '0.2em', marginBottom: '20px' }}>
+        ~/PROJECTS
+      </p>
 
-        <div className="flex flex-col gap-3">
-          {projects.map(project => (
-            <div key={project.id}>
+      <div className="flex flex-col gap-1">
+        {projects.map((project, idx) => {
+          const isExpanded = expanded === project.slug;
+          const isOther = expanded !== null && !isExpanded;
+
+          return (
+            <div key={project.slug}>
               <button
-                className="w-full text-left group"
-                onClick={() => setExpanded(expanded === project.id ? null : project.id)}
+                className="w-full text-left transition-all duration-300"
+                style={{ opacity: isOther ? 0.35 : 1 }}
+                onClick={() => setExpanded(isExpanded ? null : project.slug)}
               >
-                <div
-                  className="flex items-start gap-4 p-4 rounded-lg transition-all duration-200"
-                  style={{
-                    background: expanded === project.id ? '#f0f4ff' : '#ffffff',
-                    border: `1px solid ${expanded === project.id ? '#c7d2fe' : '#e5e7eb'}`,
-                  }}
-                >
+                <div className="flex items-start gap-4 py-4 px-2">
+                  {/* Number */}
                   <span
-                    className="text-4xl font-bold leading-none select-none"
-                    style={{ color: '#f3f4f6', minWidth: '2.5rem' }}
+                    style={{
+                      fontFamily: MONO,
+                      fontSize: '42px',
+                      fontWeight: 800,
+                      color: '#1a2332',
+                      lineHeight: 1,
+                      minWidth: '56px',
+                      userSelect: 'none',
+                    }}
                   >
-                    {project.id}
+                    {project.slug === 'stastarat' ? '01' : project.slug === 'laraveles' ? '02' : project.slug === 'goldenbids' ? '03' : '04'}
                   </span>
+
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-2">
-                      <h3 className="font-semibold text-gray-900 text-sm">{project.name}</h3>
-                      <span
-                        className="text-[10px] transition-transform duration-200"
-                        style={{ transform: expanded === project.id ? 'rotate(180deg)' : 'rotate(0deg)', color: '#6b7280' }}
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 style={{ fontSize: '18px', fontWeight: 600, color: '#f0f4ff' }}>
+                        {project.name}
+                      </h3>
+                      <motion.span
+                        animate={{ rotate: isExpanded ? 180 : 0 }}
+                        transition={{ duration: 0.2 }}
+                        style={{ color: '#4a5568', fontSize: '10px' }}
                       >
                         ▼
-                      </span>
+                      </motion.span>
                     </div>
-                    <p className="text-gray-500 text-xs mt-1 leading-relaxed">{project.description}</p>
+                    <p style={{ fontSize: '13px', color: '#8892a4', lineHeight: 1.7 }}>
+                      {project.description}
+                    </p>
                     <div className="flex flex-wrap gap-1.5 mt-2">
                       {project.stack.map(tech => (
                         <span
                           key={tech}
-                          className="text-[10px] px-2 py-0.5 rounded-full"
-                          style={{ background: '#f3f4f6', color: '#4b5563', border: '1px solid #e5e7eb' }}
+                          style={{
+                            fontFamily: MONO,
+                            fontSize: '10px',
+                            color: '#00d4ff',
+                            border: '1px solid rgba(0,212,255,0.3)',
+                            padding: '2px 8px',
+                            borderRadius: '3px',
+                          }}
                         >
                           {tech}
                         </span>
@@ -61,51 +85,66 @@ export default function ProjectsWindow() {
               </button>
 
               <AnimatePresence>
-                {expanded === project.id && (
+                {isExpanded && (
                   <motion.div
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2, ease: 'easeOut' }}
+                    transition={{ duration: 0.22, ease: 'easeOut' }}
                     className="overflow-hidden"
                   >
                     <div
-                      className="px-4 py-4 mx-px"
-                      style={{
-                        background: '#f8f9ff',
-                        border: '1px solid #c7d2fe',
-                        borderTop: 'none',
-                        borderRadius: '0 0 8px 8px',
-                      }}
+                      className="mx-2 mb-4 p-4 rounded-lg"
+                      style={{ background: '#111827', border: '1px solid rgba(0,212,255,0.12)' }}
                     >
-                      <p className="text-gray-600 text-xs leading-relaxed mb-4">{project.details}</p>
+                      <p style={{ fontSize: '13px', color: '#8892a4', lineHeight: 1.8, marginBottom: '16px' }}>
+                        {project.longDescription}
+                      </p>
                       <div className="flex gap-3">
-                        <a
-                          href={project.demo}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs px-4 py-1.5 rounded-md font-medium transition-colors"
-                          style={{ background: '#1e1e2e', color: '#ffffff' }}
-                        >
-                          Live Demo →
-                        </a>
-                        <a
-                          href={project.github}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs px-4 py-1.5 rounded-md font-medium transition-colors"
-                          style={{ background: '#f3f4f6', color: '#374151', border: '1px solid #e5e7eb' }}
-                        >
-                          GitHub
-                        </a>
+                        {project.demo && (
+                          <a
+                            href={project.demo}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="transition-opacity hover:opacity-70"
+                            style={{
+                              fontFamily: MONO,
+                              fontSize: '11px',
+                              color: '#00d4ff',
+                              letterSpacing: '0.1em',
+                              textTransform: 'uppercase',
+                            }}
+                          >
+                            DEMO →
+                          </a>
+                        )}
+                        {project.repo && (
+                          <a
+                            href={project.repo}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="transition-opacity hover:opacity-70"
+                            style={{
+                              fontFamily: MONO,
+                              fontSize: '11px',
+                              color: '#8892a4',
+                              letterSpacing: '0.1em',
+                              textTransform: 'uppercase',
+                            }}
+                          >
+                            GITHUB →
+                          </a>
+                        )}
                       </div>
                     </div>
                   </motion.div>
                 )}
               </AnimatePresence>
+
+              <div style={{ height: '1px', background: '#1a2332', margin: '0 8px' }} />
             </div>
-          ))}
-        </div>
+          );
+        })}
       </div>
     </div>
   );
