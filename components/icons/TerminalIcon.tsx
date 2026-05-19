@@ -1,6 +1,6 @@
 export default function TerminalIcon() {
   return (
-    <svg viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg" width="52" height="52">
+    <svg viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg" width="48" height="48" style={{ display: 'block' }}>
       <defs>
         <linearGradient id="tm-bg" x1="0" y1="0" x2="0" y2="56" gradientUnits="userSpaceOnUse">
           <stop offset="0%"  stopColor="#0a0d14"/>
@@ -43,8 +43,7 @@ export default function TerminalIcon() {
       <rect x="7" y="17" width="42" height="29" fill="url(#tm-scan)" opacity=".7"/>
 
       {/* Prompt > */}
-      <text x="11" y="29" fontSize="7" fill="#00ff88" fontFamily="JetBrains Mono, ui-monospace, monospace" fontWeight="700"
-        style={{ filter: 'drop-shadow(0 0 2px rgba(0,255,136,.7))' }}>
+      <text x="11" y="29" fontSize="7" fill="#00ff88" fontFamily="JetBrains Mono, ui-monospace, monospace" fontWeight="700">
         &gt;
       </text>
 

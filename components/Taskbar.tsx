@@ -260,9 +260,8 @@ export default function Taskbar({ windows, onWindowFocus, onWindowToggle, onOpen
                 <div
                   ref={el => { iconRefs.current[idx] = el; }}
                   style={{
-                    width: '52px',
-                    height: '52px',
-                    borderRadius: '14px',
+                    width: '48px',
+                    height: '48px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -270,14 +269,9 @@ export default function Taskbar({ windows, onWindowFocus, onWindowToggle, onOpen
                     transformOrigin: 'bottom center',
                     transform: `translateY(${-lift}px) scale(${scale * pressScale})`,
                     transition: isHovering
-                      ? 'transform .12s cubic-bezier(.2,.8,.2,1), filter .25s ease'
-                      : 'transform .35s cubic-bezier(.34,1.56,.64,1), filter .25s ease',
-                    filter: isHov
-                      ? 'drop-shadow(0 12px 16px rgba(0,0,0,.55))'
-                      : open
-                      ? `drop-shadow(0 0 8px ${item.color}55)`
-                      : 'none',
-                    willChange: 'transform, filter',
+                      ? 'transform .12s cubic-bezier(.2,.8,.2,1)'
+                      : 'transform .35s cubic-bezier(.34,1.56,.64,1)',
+                    willChange: 'transform',
                   }}
                   onClick={() => handleItemClick(item)}
                   onMouseDown={() => setPressedIdx(idx)}

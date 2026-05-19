@@ -1,6 +1,6 @@
 export default function BrowserIcon() {
   return (
-    <svg viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg" width="52" height="52">
+    <svg viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg" width="48" height="48" style={{ display: 'block' }}>
       <defs>
         <linearGradient id="br-bg" x1="0" y1="0" x2="0" y2="56" gradientUnits="userSpaceOnUse">
           <stop offset="0%" stopColor="#0d1530"/>
