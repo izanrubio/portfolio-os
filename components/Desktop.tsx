@@ -44,7 +44,7 @@ export default function Desktop({ openWindows, onOpenWindow, children }: Desktop
   return (
     <div
       className="fixed inset-0 overflow-hidden"
-      style={{ background: '#060810', paddingBottom: '48px' }}
+      style={{ background: '#060810', paddingBottom: '56px' }}
     >
       <ParticleField />
 

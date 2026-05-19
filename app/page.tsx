@@ -55,6 +55,7 @@ export default function Home() {
             windows={windows}
             onWindowFocus={focusWindow}
             onWindowToggle={toggleWindow}
+            onOpenWindow={openWindow}
           />
         </>
       )}
