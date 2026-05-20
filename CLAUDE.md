@@ -84,9 +84,9 @@ All content in `/data/content.ts`. No hardcoded strings elsewhere.
 
 ## App state flow
 
-`page.tsx` manages a `AppState = 'locked' | 'booting' | 'desktop'` enum:
-1. **locked** — `LockScreen` renders; click or any keypress triggers Framer Motion fade-out (600ms)
-2. **booting** — `BootScreen` renders (4s boot sequence)
+`page.tsx` manages a `AppState = 'booting' | 'locked' | 'desktop'` enum:
+1. **booting** — `BootScreen` renders (4s boot sequence)
+2. **locked** — `LockScreen` renders; click or any keypress triggers Framer Motion fade-out (600ms)
 3. **desktop** — Menubar + Desktop + Taskbar render; `useWindowManager` state active
 
 ## Taskbar / Menubar architecture

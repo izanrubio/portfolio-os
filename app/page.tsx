@@ -8,10 +8,10 @@ import Menubar from '@/components/Menubar';
 import Taskbar from '@/components/Taskbar';
 import WindowManager, { useWindowManager } from '@/components/WindowManager';
 
-type AppState = 'locked' | 'booting' | 'desktop';
+type AppState = 'booting' | 'locked' | 'desktop';
 
 export default function Home() {
-  const [appState, setAppState] = useState<AppState>('locked');
+  const [appState, setAppState] = useState<AppState>('booting');
 
   const {
     windows,
@@ -28,12 +28,12 @@ export default function Home() {
 
   return (
     <>
-      {appState === 'locked' && (
-        <LockScreen onUnlocked={() => setAppState('booting')} />
+      {appState === 'booting' && (
+        <BootScreen onComplete={() => setAppState('locked')} />
       )}
 
-      {appState === 'booting' && (
-        <BootScreen onComplete={() => setAppState('desktop')} />
+      {appState === 'locked' && (
+        <LockScreen onUnlocked={() => setAppState('desktop')} />
       )}
 
       {appState === 'desktop' && (
