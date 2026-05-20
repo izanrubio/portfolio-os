@@ -1,10 +1,10 @@
 @AGENTS.md
 
-# IzanOS — Kali Linux Premium Portfolio
+# IzanOS — Aurora Portfolio
 
-Interactive OS-style portfolio for Izan Rubio Cerezo. Simulates a Kali Linux-inspired desktop with glassmorphism windows, boot sequence, particle background, file explorer, embedded browser, and real terminal.
+Interactive OS-style portfolio for Izan Rubio Cerezo. macOS-inspired desktop with aurora animated background, glassmorphism windows, boot sequence, file explorer, embedded browser, and real terminal.
 
-Stack: **Next.js 15 (App Router)**, React 19, TypeScript, Tailwind CSS v4, Framer Motion. Deployed on Vercel.
+Stack: **Next.js 16 (App Router)**, React 19, TypeScript, Tailwind CSS v4. Deployed on Vercel.
 
 ## Run locally
 
@@ -23,15 +23,19 @@ npm run build   # production build
   globals.css        — reset, custom scrollbars
 /components
   BootScreen.tsx     — 4s boot: dragon SVG, progress bar, system messages
-  Desktop.tsx        — #060810 bg + radial gradients + scanlines, ParticleField, 7 left-column icons
-  ParticleField.tsx  — canvas ~60 particle field (cyan, connections)
-  Taskbar.tsx        — floating dock (3 icons) + brand bottom-left + clock bottom-right
+  Desktop.tsx        — #000 bg + 3 aurora CSS blobs (green/blue/cyan) + film grain, no desktop icons
+  Menubar.tsx        — fixed top 28px: IzanOS logo left, wifi+battery+clock right, blur bg
+  Taskbar.tsx        — floating dock (7 icons, all apps), centered bottom-18px
   Window.tsx         — draggable, resizable, glassmorphism shell (TASKBAR_H = 110)
   WindowManager.tsx  — useWindowManager hook + 7-window renderer
   /icons
-    BrowserIcon.tsx  — Firefox-style SVG (56×56, detailed globe+flame)
-    FilesIcon.tsx    — Nautilus-style SVG (56×56, folder with depth)
-    TerminalIcon.tsx — Terminal SVG (56×56, title bar + >_ prompt)
+    ProjectsIcon.tsx — 60×60, green gradient #00c97a→#00ff9d + folder SVG
+    AboutIcon.tsx    — 60×60, purple gradient #7b2ff7→#a855f7 + person SVG
+    SkillsIcon.tsx   — 60×60, blue gradient #0066ff→#00d4ff + lightning SVG
+    ContactIcon.tsx  — 60×60, orange gradient #ff6b00→#ff9500 + mail SVG
+    BrowserIcon.tsx  — 60×60, blue-purple gradient + globe SVG
+    FilesIcon.tsx    — 60×60, green-blue gradient + folder SVG
+    TerminalIcon.tsx — 60×60, dark gradient + green >_ SVG
   /windows
     ProjectsWindow.tsx  — sidebar (200px) + detail panel, useState project selector
     WhoamiWindow.tsx    — photo with duotone overlays + role typer animation (useEffect)
@@ -74,23 +78,24 @@ All content in `/data/content.ts`. No hardcoded strings elsewhere.
 2. Add to `DEFAULT_WINDOWS` in `WindowManager.tsx` with default position/size
 3. Create `components/windows/YourWindow.tsx`
 4. Add to `CONTENT` map in `WindowManager.tsx`
-5. Add icon to `ICONS` array in `Desktop.tsx`
+5. Add icon component to `components/icons/` and add to `DOCK_ITEMS` in `Taskbar.tsx`
 
-## Taskbar architecture
+## Taskbar / Menubar architecture
 
-Three separate fixed elements (no full-width bar):
-- **Brand** (`bottom: 22px; left: 24px`) — new dragon path SVG (cyan→purple gradient) + "Izan**OS**" wordmark
-- **Clock** (`bottom: 22px; right: 24px`) — ticking HH:MM:SS + day/date
-- **Dock** (`bottom: 18px`, centered) — floating pill with 3 icons: browser, files, terminal
-
-Magnification: cosine falloff, `SCALE_MAX=1.35`, `RANGE=110px`. Tooltip appears when nearest icon distance `< 60px`. Per-icon color glow underlay (`blur(14px)`) on hover. Open indicator dot pulses with icon color. Press feedback scales icon to `0.92×`.
-
-Dock only controls browser/files/terminal. projects/whoami/skills/contact are desktop-icon-only.
+- **Menubar** (`top: 0`) — fixed 28px bar: IzanOS logo left, wifi+battery+clock right. `z-index: 100`.
+- **Dock** (`bottom: 18px`, centered) — floating pill with ALL 7 icons. `z-index: 50`.
+  - Icons: projects / whoami / skills / contact | separator | browser / files / terminal
+  - Magnification: cosine falloff, `SCALE_MAX=1.40`, `RANGE=130px`
+  - Tooltip: appears on nearest icon within 60px, `position:absolute bottom:calc(100%+12px)`
+  - Open indicator: white `#fff` dot below each icon, opacity 0→1 when window open
+  - Press feedback: `scale(0.92)` on mousedown
+  - No desktop icons — all apps via dock only
 
 ## Design system
 
-- CSS variables in `app/globals.css` `:root` block: `--cyan`, `--violet`, `--green`, `--orange`, `--pink`, `--text`, `--text-2` through `--text-4`, `--hairline`, `--glass`, `--mono`, `--inter`, etc.
-- Background: `#060810` | Accent: `#00d4ff` | Secondary: `#7c3aed`
+- Background: `#000` + aurora blobs (green `rgba(0,255,102,0.32)`, blue `rgba(0,102,255,0.28)`, cyan `rgba(0,255,255,0.18)`) with `filter:blur(120px)` + `mix-blend-mode:screen`
+- Aurora keyframes in `app/globals.css`: `aurora-drift-1` (20s), `aurora-drift-2` (25s), `aurora-pulse-3` (15s)
+- Dock glass: `rgba(255,255,255,0.08)` + `backdrop-filter:blur(40px) saturate(180%)`, border `rgba(255,255,255,0.12)`
 - Window glass: `rgba(10,15,30,0.92)` + `backdrop-filter: blur(20px) saturate(180%)`
 - Window border: `1px solid rgba(0,212,255,0.2)`
 - Title bar: `rgba(8,12,24,0.95)`, traffic lights: `#ff4757` / `#ffd32a` / `#00ff88`

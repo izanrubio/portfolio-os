@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState } from 'react';
 import BootScreen from '@/components/BootScreen';
 import Desktop from '@/components/Desktop';
+import Menubar from '@/components/Menubar';
 import Taskbar from '@/components/Taskbar';
 import WindowManager, { useWindowManager } from '@/components/WindowManager';
-import { WindowId } from '@/types/windows';
 
 export default function Home() {
   const [booted, setBooted] = useState(false);
@@ -23,22 +23,15 @@ export default function Home() {
     navigateBrowser,
   } = useWindowManager();
 
-  const openWindowIds = useMemo(
-    () => new Set(windows.filter(w => w.isOpen).map(w => w.id)),
-    [windows]
-  );
-
-  const handleOpenWindow = useCallback((id: WindowId) => {
-    openWindow(id);
-  }, [openWindow]);
-
   return (
     <>
       {!booted && <BootScreen onComplete={() => setBooted(true)} />}
 
       {booted && (
         <>
-          <Desktop openWindows={openWindowIds} onOpenWindow={handleOpenWindow}>
+          <Menubar />
+
+          <Desktop>
             <WindowManager
               windows={windows}
               closeWindow={closeWindow}
