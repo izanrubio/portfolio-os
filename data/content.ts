@@ -316,6 +316,7 @@ export const spotlight = {
     { id: 'browser',  name: 'Browser'  },
     { id: 'files',    name: 'Files'    },
     { id: 'terminal', name: 'Terminal' },
+    { id: 'game',     name: 'Game',    file: 'game.exe' },
   ],
   actions: [
     { id: 'cv',     name: 'Download CV',  cta: 'Download' },

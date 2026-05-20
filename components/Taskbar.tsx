@@ -9,6 +9,7 @@ import ContactIcon  from './icons/ContactIcon';
 import BrowserIcon  from './icons/BrowserIcon';
 import FilesIcon    from './icons/FilesIcon';
 import TerminalIcon from './icons/TerminalIcon';
+import GameIcon     from './icons/GameIcon';
 
 const SCALE_MAX = 1.40;
 const RANGE     = 130;
@@ -27,6 +28,7 @@ const DOCK_ITEMS: DockItem[] = [
   { id: 'browser',  label: 'Browser',  Icon: BrowserIcon  },
   { id: 'files',    label: 'Files',    Icon: FilesIcon    },
   { id: 'terminal', label: 'Terminal', Icon: TerminalIcon },
+  { id: 'game',     label: 'Game',     Icon: GameIcon     },
 ];
 
 const SEPARATOR_BEFORE = 4; // vertical rule before browser/files/terminal

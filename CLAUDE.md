@@ -28,9 +28,9 @@ npm run build   # production build
   BootScreen.tsx     — 4s boot: dragon SVG, progress bar, system messages
   Desktop.tsx        — #000 bg + 3 aurora CSS blobs (green/blue/cyan) + film grain, no desktop icons
   Menubar.tsx        — fixed top 28px: IzanOS logo left, wifi+battery+clock right, blur bg
-  Taskbar.tsx        — floating dock (7 icons, all apps), centered bottom-18px
+  Taskbar.tsx        — floating dock (8 icons, all apps), centered bottom-18px
   Window.tsx         — draggable, resizable, glassmorphism shell (TASKBAR_H = 110)
-  WindowManager.tsx  — useWindowManager hook + 7-window renderer
+  WindowManager.tsx  — useWindowManager hook + 8-window renderer
   /icons
     ProjectsIcon.tsx — 60×60, green gradient #00c97a→#00ff9d + folder SVG
     AboutIcon.tsx    — 60×60, purple gradient #7b2ff7→#a855f7 + person SVG
@@ -38,6 +38,7 @@ npm run build   # production build
     ContactIcon.tsx  — 60×60, orange gradient #ff6b00→#ff9500 + mail SVG
     BrowserIcon.tsx  — 60×60, blue-purple gradient + globe SVG
     FilesIcon.tsx    — 60×60, green-blue gradient + folder SVG
+    GameIcon.tsx     — 60×60, red gradient #ff4757→#ff6b35 + game controller SVG
     TerminalIcon.tsx — 60×60, dark gradient + green >_ SVG
   /windows
     ProjectsWindow.tsx  — sidebar (200px) + detail panel, useState project selector
@@ -47,6 +48,7 @@ npm run build   # production build
     BrowserWindow.tsx   — simulated browser: internal portfolio or iframe
     FilesWindow.tsx     — sidebar groups + breadcrumb toolbar + file grid + statusbar
     TerminalWindow.tsx  — Kali-style prompt ┌──(izanos㉿IzanOS)-[~] with interactive history
+    GameWindow.tsx      — Firewall Breaker breakout game; canvas + useRef game loop, 3 levels, RAF cleanup
     PortfolioSite.tsx   — internal website rendered inside BrowserWindow
 /data
   content.ts         — ALL content: personal, projects, skills, filesystem, terminal, browser

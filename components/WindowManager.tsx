@@ -10,6 +10,7 @@ import ContactWindow from './windows/ContactWindow';
 import BrowserWindow from './windows/BrowserWindow';
 import FilesWindow from './windows/FilesWindow';
 import TerminalWindow from './windows/TerminalWindow';
+import GameWindow     from './windows/GameWindow';
 
 const DEFAULT_WINDOWS: WindowState[] = [
   {
@@ -75,6 +76,15 @@ const DEFAULT_WINDOWS: WindowState[] = [
     zIndex: 10,
     position: { x: 200, y: 100 },
     size: { width: 660, height: 420 },
+  },
+  {
+    id: 'game',
+    title: 'game.exe',
+    icon: '🎮',
+    isOpen: false, isMinimized: false, isMaximized: false,
+    zIndex: 10,
+    position: { x: 380, y: 80 },
+    size: { width: 640, height: 560 },
   },
 ];
 
@@ -192,6 +202,7 @@ export default function WindowManager({
     browser: <BrowserWindow initialUrl={browserState?.browserUrl ?? 'izanrubio.dev'} />,
     files: <FilesWindow onOpenBrowser={navigateBrowser} />,
     terminal: <TerminalWindow />,
+    game:     <GameWindow />,
   };
 
   return (
