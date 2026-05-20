@@ -69,6 +69,16 @@ html, body {
   to   { transform: translate(-50%, -50%) scale(1.4);  opacity: 1; }
 }
 
+@keyframes aurora-drift-4 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(25vw, -15vh) scale(1.1); }
+}
+
+@keyframes ls-breathe {
+  0%, 100% { opacity: 0.35; }
+  50%      { opacity: 0.6; }
+}
+
 /* Remove default focus outlines — replaced with custom */
 button:focus-visible {
   outline: 1px solid rgba(0, 212, 255, 0.5);

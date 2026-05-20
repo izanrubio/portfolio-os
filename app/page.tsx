@@ -1,14 +1,17 @@
 'use client';
 
 import { useState } from 'react';
+import LockScreen from '@/components/LockScreen';
 import BootScreen from '@/components/BootScreen';
 import Desktop from '@/components/Desktop';
 import Menubar from '@/components/Menubar';
 import Taskbar from '@/components/Taskbar';
 import WindowManager, { useWindowManager } from '@/components/WindowManager';
 
+type AppState = 'locked' | 'booting' | 'desktop';
+
 export default function Home() {
-  const [booted, setBooted] = useState(false);
+  const [appState, setAppState] = useState<AppState>('locked');
 
   const {
     windows,
@@ -25,9 +28,15 @@ export default function Home() {
 
   return (
     <>
-      {!booted && <BootScreen onComplete={() => setBooted(true)} />}
+      {appState === 'locked' && (
+        <LockScreen onUnlocked={() => setAppState('booting')} />
+      )}
 
-      {booted && (
+      {appState === 'booting' && (
+        <BootScreen onComplete={() => setAppState('desktop')} />
+      )}
+
+      {appState === 'desktop' && (
         <>
           <Menubar />
 

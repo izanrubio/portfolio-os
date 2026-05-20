@@ -2,6 +2,7 @@ import { FileNode } from '@/types/windows';
 
 export const personal = {
   name: 'Izan Rubio Cerezo',
+  shortName: 'Izan Rubio',
   role: 'Full Stack Developer & Cybersecurity Specialist',
   roles: ['Full Stack Developer', 'Cybersecurity Specialist', 'Problem Solver', 'OS-style designer'],
   bio: 'Developer focused on building secure, performant web applications. Five years writing TypeScript and PHP, last two pivoting hard into offensive security and OS-style frontend experiments. Currently based in Barcelona.',
@@ -304,4 +305,8 @@ export const browser = {
     { title: 'StasTarat', url: 'https://stastatat.es' },
     { title: 'Laraveles', url: 'https://laraveles.es' },
   ],
+};
+
+export const lockScreen = {
+  version: 'Aurora 0.3',
 };
