@@ -310,3 +310,42 @@ export const browser = {
 export const lockScreen = {
   version: 'Aurora 0.3',
 };
+
+export const notifications = {
+  welcome: {
+    type: 'system'      as const,
+    app:  'terminal.exe',
+    title: 'Welcome to IzanOS',
+    body:  'Type or click any icon to explore.',
+  },
+  projectsOpened: {
+    type: 'achievement' as const,
+    app:  'projects.exe',
+    title: 'Projects loaded',
+    body:  'StasTarat.es — 12K monthly readers online right now.',
+  },
+  contactOpened: {
+    type: 'message'     as const,
+    app:  'contact.exe',
+    title: 'New message received',
+    body:  'Someone wants to get in touch.',
+  },
+  terminalOpened: {
+    type: 'system'      as const,
+    app:  'terminal.exe',
+    title: 'IzanOS Aurora 0.3',
+    body:  'All systems operational.',
+  },
+  idleHire: {
+    type: 'message'     as const,
+    app:  'contact.exe',
+    title: 'Available for hire',
+    body:  'Izan is open to new opportunities. Say hello.',
+  },
+  intrusionDetected: {
+    type: 'alert'       as const,
+    app:  'terminal.exe',
+    title: 'Intrusion attempt detected',
+    body:  'Nice try. Access denied. I see you.',
+  },
+};

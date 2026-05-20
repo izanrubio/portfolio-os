@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useRef, useEffect, KeyboardEvent } from 'react';
-import { terminal } from '@/data/content';
+import { terminal, notifications } from '@/data/content';
+import { useNotifications } from '@/components/NotificationSystem';
 
 interface TerminalLine {
   id: number;
@@ -37,7 +38,10 @@ function Prompt({ path = '~' }: { path?: string }) {
   );
 }
 
+const INTRUSION_CMDS = new Set(['nmap localhost', 'exploit']);
+
 export default function TerminalWindow() {
+  const { notify } = useNotifications();
   const [lines, setLines] = useState<TerminalLine[]>([
     { id: lineIdCounter++, type: 'output', content: terminal.welcomeMessage },
   ]);
@@ -70,6 +74,8 @@ export default function TerminalWindow() {
     if (!cmd) return;
     setHistory(prev => [raw, ...prev]);
     setHistoryIdx(-1);
+
+    if (INTRUSION_CMDS.has(cmd)) notify(notifications.intrusionDetected);
 
     if (cmd === 'clear') {
       setLines([{ id: lineIdCounter++, type: 'output', content: terminal.welcomeMessage }]);

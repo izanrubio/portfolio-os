@@ -79,6 +79,11 @@ html, body {
   50%      { opacity: 0.6; }
 }
 
+@keyframes notif-progress {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0); }
+}
+
 /* Remove default focus outlines — replaced with custom */
 button:focus-visible {
   outline: 1px solid rgba(0, 212, 255, 0.5);

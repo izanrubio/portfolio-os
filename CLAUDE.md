@@ -23,6 +23,7 @@ npm run build   # production build
   globals.css        — reset, custom scrollbars
 /components
   LockScreen.tsx     — aurora bg + frosted glass, clock, profile, breathe hint, Framer Motion unlock fade
+  NotificationSystem.tsx — context + hook + stack UI; NotificationProvider, useNotifications, default export
   BootScreen.tsx     — 4s boot: dragon SVG, progress bar, system messages
   Desktop.tsx        — #000 bg + 3 aurora CSS blobs (green/blue/cyan) + film grain, no desktop icons
   Menubar.tsx        — fixed top 28px: IzanOS logo left, wifi+battery+clock right, blur bg
@@ -62,6 +63,7 @@ All content in `/data/content.ts`. No hardcoded strings elsewhere.
 
 - **Personal**: `personal` — name, shortName, role, roles[], bio, email, github, linkedin, location, photo
 - **Lock screen**: `lockScreen` — version string (e.g. `'Aurora 0.3'`)
+- **Notifications**: `notifications` — all notification copy: `welcome`, `projectsOpened`, `contactOpened`, `terminalOpened`, `idleHire`, `intrusionDetected`
 - **Projects**: `projects[]` — slug, name, category, description, longDescription, stack, demo, repo, repoShort, launched, status
 - **Skills**: `skills: SkillCategory[]` — array of `{key, label, proficiency, items[]}`. `ProficiencyLevel = 'Expert' | 'Advanced' | 'Proficient'`
 - **File system**: `filesystem` — nested `FileNode` tree. Files have `action: { type, payload }` — types: `browser` (open URL), `download`, `preview`
@@ -81,6 +83,18 @@ All content in `/data/content.ts`. No hardcoded strings elsewhere.
 3. Create `components/windows/YourWindow.tsx`
 4. Add to `CONTENT` map in `WindowManager.tsx`
 5. Add icon component to `components/icons/` and add to `DOCK_ITEMS` in `Taskbar.tsx`
+
+## Notification system
+
+- `NotificationProvider` wraps the entire app in `page.tsx`; `<NotificationSystem />` is a sibling inside the provider
+- `useNotifications()` → `{ notify }` — call from any client component
+- `notify({ type, app, title, body })` — types: `message` | `system` | `alert` | `achievement`
+- Stack: `fixed top:44px right:16px`, `width:320px`, `z-index:9999`, newest on top
+- Enter: `x:110%→0 + opacity 0→1`, 400ms spring. Exit: `x:0→110% + opacity 1→0`, 300ms ease-in
+- Auto-dismiss: 5s; progress bar at bottom of each card
+- Triggers: welcome 3s after desktop, per-window on first open (projects/contact/terminal), idle 60s, intrusion on `nmap localhost`/`exploit` in terminal
+- Dev-only test button (renders in `next dev`, stripped from production build)
+- All copy in `data/content.ts` under `notifications`
 
 ## App state flow
 
