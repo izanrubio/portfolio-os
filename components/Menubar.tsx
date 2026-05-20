@@ -24,6 +24,7 @@ export default function Menubar() {
 
   return (
     <div
+      className="menubar-bar"
       style={{
         position: 'fixed', top: 0, left: 0, right: 0, height: '28px',
         background: 'rgba(0,0,0,0.5)',

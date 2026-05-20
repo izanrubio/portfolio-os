@@ -95,3 +95,79 @@ button:focus-visible {
   background: rgba(0, 212, 255, 0.25);
   color: #f0f4ff;
 }
+
+/* ─────────────────────────────────────────────────────────
+   Performance mode
+   Applied via .perf-mode on <body> (JS-toggled), or
+   automatically when the OS reports prefers-reduced-motion.
+
+   What it does:
+     • Kills all backdrop-filter blur (main GPU cost)
+     • Replaces glass backgrounds with opaque solid equivalents
+     • Hides aurora blobs (filter:blur(120px) is expensive)
+     • Pauses decorative CSS animations / transitions
+   ───────────────────────────────────────────────────────── */
+
+/* ── Kill every backdrop-filter in the tree ── */
+.perf-mode *,
+.perf-mode *::before,
+.perf-mode *::after {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* ── Dock pill: 8 % white → opaque dark glass ── */
+.perf-mode .dock-pill {
+  background: rgba(10, 12, 20, 0.95) !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+}
+
+/* ── Menubar: 50 % black → nearly opaque ── */
+.perf-mode .menubar-bar {
+  background: rgba(0, 0, 0, 0.92) !important;
+}
+
+/* ── Aurora blobs: hide to save filter:blur(120px) cost ── */
+.perf-mode .aurora-blob {
+  opacity: 0 !important;
+  animation: none !important;
+  filter: none !important;
+  will-change: auto !important;
+}
+
+/* ── Pause all remaining decorative animations ── */
+.perf-mode *:not([class*="framer"]) {
+  animation-play-state: paused !important;
+  transition-duration: 0.1ms !important;
+}
+
+/* ─────────────────────────────────────────────────────────
+   Auto-apply when the OS signals reduced-motion preference.
+   Mirrors every rule above without needing JS.
+   ───────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    animation-play-state: paused !important;
+    transition-duration: 0.1ms !important;
+  }
+
+  .dock-pill {
+    background: rgba(10, 12, 20, 0.95) !important;
+    border-color: rgba(255, 255, 255, 0.14) !important;
+  }
+
+  .menubar-bar {
+    background: rgba(0, 0, 0, 0.92) !important;
+  }
+
+  .aurora-blob {
+    opacity: 0 !important;
+    animation: none !important;
+    filter: none !important;
+    will-change: auto !important;
+  }
+}

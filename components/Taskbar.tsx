@@ -92,6 +92,7 @@ export default function Taskbar({ windows, onWindowFocus, onWindowToggle, onOpen
       style={{ left: '50%', bottom: '18px', transform: 'translateX(-50%)', overflow: 'visible' }}
     >
       <div
+        className="dock-pill"
         style={{
           display: 'flex', alignItems: 'flex-end', gap: '12px',
           padding: '10px 18px',

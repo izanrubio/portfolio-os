@@ -10,7 +10,7 @@ export default function Desktop({ children }: DesktopProps) {
       {/* Aurora blobs */}
       <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 0 }}>
         {/* Blob 1 — green, top-left */}
-        <div style={{
+        <div className="aurora-blob" style={{
           position: 'absolute',
           width: '60vw', height: '60vw',
           top: '-20vw', left: '-15vw',
@@ -22,7 +22,7 @@ export default function Desktop({ children }: DesktopProps) {
           willChange: 'transform',
         }} />
         {/* Blob 2 — blue, bottom-right */}
-        <div style={{
+        <div className="aurora-blob" style={{
           position: 'absolute',
           width: '65vw', height: '65vw',
           bottom: '-25vw', right: '-20vw',
@@ -34,7 +34,7 @@ export default function Desktop({ children }: DesktopProps) {
           willChange: 'transform',
         }} />
         {/* Blob 3 — cyan, center */}
-        <div style={{
+        <div className="aurora-blob" style={{
           position: 'absolute',
           width: '45vw', height: '45vw',
           top: '50%', left: '50%',
