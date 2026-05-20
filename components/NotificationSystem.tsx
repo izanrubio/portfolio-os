@@ -229,9 +229,8 @@ function NotifCard({ notif, onDismiss }: { notif: NotifItem; onDismiss: () => vo
 
       {/* Progress bar */}
       <div style={{
-        position: 'absolute', left: '12px', right: '12px', bottom: '6px',
-        height: '1.5px', borderRadius: '1px', overflow: 'hidden',
-        background: 'rgba(255,255,255,.05)',
+        position: 'absolute', left: 0, right: 0, bottom: 0,
+        height: '2px', borderRadius: '0 0 12px 12px', overflow: 'hidden',
       }}>
         <div style={{
           height: '100%', background: accent,
@@ -243,63 +242,22 @@ function NotifCard({ notif, onDismiss }: { notif: NotifItem; onDismiss: () => vo
   );
 }
 
-/* ── Dev test pool ── */
-const TEST_POOL = [
-  { type: 'message'     as const, app: 'contact.exe',  title: 'Recruiter pinged you',  body: 'A recruiter is asking about your availability for a senior FE role.' },
-  { type: 'system'      as const, app: 'terminal.exe', title: 'Build succeeded',        body: 'next build · 27 routes · 4.2s. Vercel deploy preview ready.' },
-  { type: 'achievement' as const, app: 'projects.exe', title: 'Project starred',        body: 'stastarat just hit 250 stars on GitHub. Nice.' },
-  { type: 'alert'       as const, app: 'skills.exe',   title: 'TLS cert expires soon',  body: 'videoatencion.com expires in 7 days. Time to rotate.' },
-  { type: 'system'      as const, app: 'files.exe',    title: 'Backup complete',        body: '847 files synced to kali-rootfs. 14.2 MB compressed.' },
-];
-
 /* ── Main component ── */
 export default function NotificationSystem() {
-  const { notifs, dismiss, notify } = useContext(NotifCtx);
+  const { notifs, dismiss } = useContext(NotifCtx);
 
   return (
-    <>
-      {/* Notification stack */}
-      <div style={{
-        position: 'fixed', top: '44px', right: '16px',
-        width: '320px', zIndex: 9999,
-        display: 'flex', flexDirection: 'column', gap: '8px',
-        pointerEvents: 'none',
-      }}>
-        <AnimatePresence mode="popLayout">
-          {notifs.map(n => (
-            <NotifCard key={n.id} notif={n} onDismiss={() => dismiss(n.id)} />
-          ))}
-        </AnimatePresence>
-      </div>
-
-      {/* Dev-only test button */}
-      {process.env.NODE_ENV === 'development' && (
-        <DevTrigger notify={notify} />
-      )}
-    </>
-  );
-}
-
-let testCursor = 0;
-function DevTrigger({ notify }: { notify: (n: NotifyInput) => void }) {
-  return (
-    <button
-      onClick={() => { notify(TEST_POOL[testCursor % TEST_POOL.length]); testCursor++; }}
-      style={{
-        position: 'fixed', bottom: '90px', right: '16px', zIndex: 9998,
-        padding: '8px 14px', borderRadius: '999px',
-        background: 'rgba(20,20,30,0.85)',
-        backdropFilter: 'blur(20px) saturate(180%)',
-        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-        border: '1px solid rgba(255,255,255,0.12)',
-        boxShadow: '0 8px 32px rgba(0,0,0,.45)',
-        color: '#fff', fontFamily: MONO, fontSize: '11px', fontWeight: 500,
-        letterSpacing: '0.05em', cursor: 'pointer',
-        display: 'inline-flex', alignItems: 'center', gap: '8px',
-      }}
-    >
-      <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#00ff88', boxShadow: '0 0 8px #00ff88', flexShrink: 0 }} />
-      test notif
-    </button>
+    <div style={{
+      position: 'fixed', top: '44px', right: '16px',
+      width: '320px', zIndex: 9999,
+      display: 'flex', flexDirection: 'column', gap: '8px',
+      pointerEvents: 'none',
+    }}>
+      <AnimatePresence mode="popLayout">
+        {notifs.map(n => (
+          <NotifCard key={n.id} notif={n} onDismiss={() => dismiss(n.id)} />
+        ))}
+      </AnimatePresence>
+    </div>
   );
 }
