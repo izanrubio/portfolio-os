@@ -22,10 +22,6 @@ export default function Menubar() {
     return () => clearInterval(id);
   }, []);
 
-  const openSpotlight = () => {
-    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true, bubbles: true }));
-  };
-
   return (
     <div
       style={{
@@ -56,38 +52,6 @@ export default function Menubar() {
         <span style={{ fontFamily: INTER, fontWeight: 700, fontSize: '13px', color: '#fff' }}>
           IzanOS
         </span>
-      </div>
-
-      {/* Center: search hint */}
-      <div
-        onClick={openSpotlight}
-        style={{
-          position: 'absolute', left: '50%', transform: 'translateX(-50%)',
-          width: '200px', height: '22px',
-          background: 'rgba(255,255,255,0.08)',
-          border: '1px solid rgba(255,255,255,0.12)',
-          borderRadius: '999px',
-          display: 'flex', alignItems: 'center',
-          padding: '0 8px', gap: '6px',
-          cursor: 'pointer',
-          transition: 'background .15s ease',
-        }}
-        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.12)')}
-        onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.08)')}
-      >
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-          <circle cx="11" cy="11" r="7"/>
-          <path d="M21 21l-4.3-4.3"/>
-        </svg>
-        <span style={{ flex: 1, fontFamily: INTER, fontSize: '12px', color: 'rgba(255,255,255,0.3)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-          Search IzanOS...
-        </span>
-        <span style={{
-          flexShrink: 0, fontFamily: MONO, fontSize: '10px',
-          color: 'rgba(255,255,255,0.25)',
-          border: '1px solid rgba(255,255,255,0.15)',
-          padding: '1px 6px', borderRadius: '3px',
-        }}>⌘K</span>
       </div>
 
       {/* Right: wifi + battery + clock */}

@@ -9,6 +9,7 @@ import Taskbar from '@/components/Taskbar';
 import WindowManager, { useWindowManager } from '@/components/WindowManager';
 import NotificationSystem, { NotificationProvider, useNotifications } from '@/components/NotificationSystem';
 import Spotlight from '@/components/Spotlight';
+import SpotlightTrigger from '@/components/SpotlightTrigger';
 import { notifications } from '@/data/content';
 import { WindowId } from '@/types/windows';
 
@@ -122,6 +123,7 @@ function HomeContent() {
           />
 
           <Spotlight onOpenWindow={openWindow} onNavigate={navigateBrowser} />
+          <SpotlightTrigger />
         </>
       )}
     </>
