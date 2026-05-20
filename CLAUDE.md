@@ -24,6 +24,7 @@ npm run build   # production build
 /components
   LockScreen.tsx     — aurora bg + frosted glass, clock, profile, breathe hint, Framer Motion unlock fade
   NotificationSystem.tsx — context + hook + stack UI; NotificationProvider, useNotifications, default export
+  Spotlight.tsx          — Cmd/Ctrl+K search overlay; apps, skills, projects, quick actions
   BootScreen.tsx     — 4s boot: dragon SVG, progress bar, system messages
   Desktop.tsx        — #000 bg + 3 aurora CSS blobs (green/blue/cyan) + film grain, no desktop icons
   Menubar.tsx        — fixed top 28px: IzanOS logo left, wifi+battery+clock right, blur bg
@@ -63,7 +64,8 @@ All content in `/data/content.ts`. No hardcoded strings elsewhere.
 
 - **Personal**: `personal` — name, shortName, role, roles[], bio, email, github, linkedin, location, photo
 - **Lock screen**: `lockScreen` — version string (e.g. `'Aurora 0.3'`)
-- **Notifications**: `notifications` — all notification copy: `welcome`, `projectsOpened`, `contactOpened`, `terminalOpened`, `idleHire`, `intrusionDetected`
+- **Notifications**: `notifications` — all notification copy
+- **Spotlight**: `spotlight` — apps list and quick actions copy (`{ apps[], actions[] }`): `welcome`, `projectsOpened`, `contactOpened`, `terminalOpened`, `idleHire`, `intrusionDetected`
 - **Projects**: `projects[]` — slug, name, category, description, longDescription, stack, demo, repo, repoShort, launched, status
 - **Skills**: `skills: SkillCategory[]` — array of `{key, label, proficiency, items[]}`. `ProficiencyLevel = 'Expert' | 'Advanced' | 'Proficient'`
 - **File system**: `filesystem` — nested `FileNode` tree. Files have `action: { type, payload }` — types: `browser` (open URL), `download`, `preview`
@@ -83,6 +85,17 @@ All content in `/data/content.ts`. No hardcoded strings elsewhere.
 3. Create `components/windows/YourWindow.tsx`
 4. Add to `CONTENT` map in `WindowManager.tsx`
 5. Add icon component to `components/icons/` and add to `DOCK_ITEMS` in `Taskbar.tsx`
+
+## Spotlight
+
+- Trigger: `Cmd+K` / `Ctrl+K` toggles; `Escape` or click-outside closes
+- Mounted inside `appState === 'desktop'` in `page.tsx` with `onOpenWindow` and `onNavigate` props
+- `z-index: 500`; overlay `rgba(0,0,0,0.5) + blur(8px)`; panel `640px` centered at `top: 20vh`
+- Sections: **Applications** (7 apps) → **Quick Actions** (CV download, Send email, View GitHub) → **Search Results** (skills + projects, query-filtered)
+- Arrow keys navigate, Enter commits, mouse hover updates active row
+- Query highlights matched text in cyan (`#00d4ff`)
+- Quick actions: CV downloads `/cv.pdf`, email opens `contact`, GitHub calls `navigateBrowser('https://github.com/izanrubio')`
+- All app/action copy in `data/content.ts` under `spotlight`; skills/projects sourced from existing exports
 
 ## Notification system
 

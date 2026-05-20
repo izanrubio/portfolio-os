@@ -8,6 +8,7 @@ import Menubar from '@/components/Menubar';
 import Taskbar from '@/components/Taskbar';
 import WindowManager, { useWindowManager } from '@/components/WindowManager';
 import NotificationSystem, { NotificationProvider, useNotifications } from '@/components/NotificationSystem';
+import Spotlight from '@/components/Spotlight';
 import { notifications } from '@/data/content';
 import { WindowId } from '@/types/windows';
 
@@ -119,6 +120,8 @@ function HomeContent() {
             onWindowToggle={toggleWindow}
             onOpenWindow={openWindow}
           />
+
+          <Spotlight onOpenWindow={openWindow} onNavigate={navigateBrowser} />
         </>
       )}
     </>

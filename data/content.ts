@@ -307,6 +307,23 @@ export const browser = {
   ],
 };
 
+export const spotlight = {
+  apps: [
+    { id: 'projects', name: 'Projects' },
+    { id: 'whoami',   name: 'About'    },
+    { id: 'skills',   name: 'Skills'   },
+    { id: 'contact',  name: 'Contact'  },
+    { id: 'browser',  name: 'Browser'  },
+    { id: 'files',    name: 'Files'    },
+    { id: 'terminal', name: 'Terminal' },
+  ],
+  actions: [
+    { id: 'cv',     name: 'Download CV',  cta: 'Download' },
+    { id: 'email',  name: 'Send email',   cta: 'Open'     },
+    { id: 'github', name: 'View GitHub',  cta: 'Open'     },
+  ],
+};
+
 export const lockScreen = {
   version: 'Aurora 0.3',
 };
