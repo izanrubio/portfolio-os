@@ -233,8 +233,7 @@ function NotifCard({ notif, onDismiss }: { notif: NotifItem; onDismiss: () => vo
         height: '2px', borderRadius: '0 0 12px 12px', overflow: 'hidden',
       }}>
         <div style={{
-          height: '100%', background: accent,
-          transformOrigin: 'left',
+          width: '100%', height: '100%', background: accent,
           animation: 'notif-progress 5s linear forwards',
         }} />
       </div>

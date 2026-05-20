@@ -14,9 +14,10 @@ export default function SpotlightTrigger() {
     <div
       style={{
         position: 'fixed',
-        bottom: '80px',
+        // dock is bottom:18px, inner padding-bottom:10px → icon bottom edge at 28px
+        bottom: '28px',
         right: '24px',
-        zIndex: 60,
+        zIndex: 50,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -29,24 +30,27 @@ export default function SpotlightTrigger() {
       <div
         style={{
           position: 'absolute',
-          bottom: 'calc(100% + 8px)',
+          bottom: 'calc(100% + 12px)',
           left: '50%',
-          transform: 'translateX(-50%)',
+          transform: `translateX(-50%) translateY(${showTip ? '0px' : '4px'})`,
           whiteSpace: 'nowrap',
-          background: 'rgba(15,15,25,0.92)',
-          backdropFilter: 'blur(12px)',
-          border: '1px solid rgba(255,255,255,0.12)',
+          background: 'rgba(0,0,0,0.8)',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)',
+          border: '1px solid rgba(255,255,255,0.1)',
           borderRadius: '8px',
-          padding: '5px 10px',
-          fontSize: '12px',
-          fontFamily: 'var(--font-inter), Inter, sans-serif',
-          color: 'rgba(255,255,255,0.85)',
+          padding: '6px 12px',
+          fontSize: '11px',
+          fontFamily: 'var(--font-jetbrains), monospace',
+          fontWeight: 500,
+          color: '#fff',
           display: 'flex',
           alignItems: 'center',
           gap: '6px',
           opacity: showTip ? 1 : 0,
-          transition: 'opacity 0.15s ease',
+          transition: 'opacity 0.15s ease, transform 0.15s ease',
           pointerEvents: 'none',
+          zIndex: 9999,
         }}
       >
         Search IzanOS...
@@ -60,31 +64,42 @@ export default function SpotlightTrigger() {
             borderRadius: '3px',
           }}
         >⌘K</span>
+        <div style={{
+          position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)',
+          width: 0, height: 0,
+          borderLeft: '5px solid transparent',
+          borderRight: '5px solid transparent',
+          borderTop: '5px solid rgba(0,0,0,0.8)',
+        }} />
       </div>
 
-      {/* Button */}
+      {/* Button — matches 60×60 dock icon size */}
       <button
         onClick={open}
         aria-label="Open Spotlight search"
         style={{
-          width: '36px',
-          height: '36px',
-          background: hovered ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.08)',
+          width: '60px',
+          height: '60px',
+          background: hovered ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.08)',
+          backdropFilter: 'blur(40px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(40px) saturate(180%)',
           border: '1px solid rgba(255,255,255,0.12)',
-          borderRadius: '10px',
+          borderRadius: '16px',
           cursor: 'pointer',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          transform: hovered ? 'scale(1.05)' : 'scale(1)',
-          transition: 'background 0.15s ease, transform 0.15s ease',
+          transform: hovered ? 'scale(1.08)' : 'scale(1)',
+          filter: hovered ? 'brightness(1.15)' : 'brightness(1)',
+          transition: 'background 0.15s ease, transform 0.15s ease, filter 0.15s ease',
           padding: 0,
+          boxShadow: '0 8px 20px -6px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.1)',
         }}
       >
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
           {[4, 10, 16].flatMap(cy =>
             [4, 10, 16].map(cx => (
-              <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r="1.5" fill="rgba(255,255,255,0.75)" />
+              <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r="1.5" fill="rgba(255,255,255,0.85)" />
             ))
           )}
         </svg>

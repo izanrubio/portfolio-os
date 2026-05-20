@@ -80,8 +80,8 @@ html, body {
 }
 
 @keyframes notif-progress {
-  from { transform: scaleX(1); }
-  to   { transform: scaleX(0); }
+  from { width: 100%; }
+  to   { width: 0%; }
 }
 
 /* Remove default focus outlines — replaced with custom */
