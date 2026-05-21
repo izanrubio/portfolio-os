@@ -23,9 +23,6 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" data-theme="dark" className={`${jetbrainsMono.variable} ${inter.variable} h-full`}>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('izanos-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})()` }} />
-      </head>
       <body className="h-full overflow-hidden">{children}</body>
     </html>
   );
