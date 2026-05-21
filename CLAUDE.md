@@ -20,7 +20,7 @@ npm run build   # production build
 /app
   layout.tsx         — fonts (JetBrains Mono, Inter), metadata
   page.tsx           — boot → desktop orchestration
-  globals.css        — reset, custom scrollbars
+  globals.css        — CSS theme vars (dark/light), aurora blob classes, reset, scrollbars
 /components
   LockScreen.tsx     — aurora bg + frosted glass, clock, profile, breathe hint, Framer Motion unlock fade
   NotificationSystem.tsx — context + hook + stack UI; NotificationProvider, useNotifications, default export
@@ -52,6 +52,7 @@ npm run build   # production build
     PortfolioSite.tsx   — internal website rendered inside BrowserWindow
 /contexts
   LanguageContext.tsx — Lang type ('CAS'|'CAT'|'ENG'), LanguageProvider, useLanguage(); persists to localStorage key 'izanos-lang'; default 'CAS'
+  ThemeContext.tsx   — Theme type ('dark'|'light'), ThemeProvider, useTheme(); persists to localStorage key 'izanos-theme'; default 'dark'
 /data
   content.ts         — ALL content: personal, projects, skills, filesystem, terminal, browser
   translations.ts    — All UI strings in 3 languages + t(key, lang) helper + tRoles(lang) for the WhoamiWindow typing animation
@@ -62,6 +63,17 @@ npm run build   # production build
     foto-portafolio.png  — profile photo (grayscale in whoami)
   cv.pdf                 — CV download (referenced in files.exe)
 ```
+
+## Dark / Light theme
+
+- **Toggle button**: sun/moon icon in Menubar, between lang switcher and wifi. Calls `toggleTheme()`. CSS crossfade animation defined in `globals.css` via `.theme-toggle .moon/.sun`.
+- **ThemeProvider**: wraps entire app in `page.tsx` (outermost). `useTheme()` → `{ theme, toggleTheme }`
+- **Persistence**: `localStorage.setItem('izanos-theme', theme)`. Anti-flash inline script in `layout.tsx` sets `data-theme` before React hydrates.
+- **CSS vars**: `globals.css` defines full variable sets under `html[data-theme="dark"]` and `html[data-theme="light"]` — `--bg`, `--menubar-bg/bd/text`, `--dock-bg/bd`, `--tip-bg/text/bd`, `--win-body/bd`, `--titlebar-bg/bd`, `--title-text`, `--b1/b2/b3-color`, `--aurora-blend`, `--grain-opacity/blend`, etc.
+- **Components**: Desktop uses CSS classes `.aurora-blob-1/2/3`, `.aurora-grain`, `.desktop-bg`. Menubar uses `.menubar-bar` class. Dock uses `.dock-pill`. Window chrome uses `.win-chrome`, `.win-titlebar`, `.win-title-text`.
+- **Terminal always dark**: terminal window gets `.w-term` class on its chrome div — overrides theme vars with hardcoded dark values via `!important`.
+- **Terminal command**: `theme --switch` toggles theme and prints confirmation.
+- Transitions: `background-color 400ms ease, border-color 400ms ease, color 400ms ease` on shell elements.
 
 ## i18n / Language switcher
 
@@ -131,7 +143,7 @@ All content in `/data/content.ts`. No hardcoded strings elsewhere.
 
 ## Taskbar / Menubar architecture
 
-- **Menubar** (`top: 0`) — fixed 28px bar: IzanOS logo left, wifi+battery+clock right. `z-index: 100`.
+- **Menubar** (`top: 0`) — fixed 28px bar: IzanOS logo left, lang switcher + theme toggle + wifi+battery+clock right. `z-index: 100`.
 - **Dock** (`bottom: 18px`, centered) — floating pill with ALL 7 icons. `z-index: 50`.
   - Icons: projects / whoami / skills / contact | separator | browser / files / terminal
   - Magnification: cosine falloff, `SCALE_MAX=1.40`, `RANGE=130px`
