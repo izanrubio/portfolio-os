@@ -103,6 +103,19 @@ All content in `/data/content.ts`. No hardcoded strings elsewhere.
 - `windowState.browserUrl` controls BrowserWindow navigation (updated via `navigateBrowser()`)
 - FilesWindow receives `onOpenBrowser` callback to trigger browser navigation
 
+## Window snap
+
+Implemented in `Window.tsx`. All snap state is local (`useState`) — no changes to WindowManager needed.
+
+- **Left snap**: drag title bar to x < 20px → snaps to `{ x:0, y:28, width:50vw, height:100vh-28-48 }`
+- **Right snap**: drag to x > innerWidth-20px → snaps to `{ x:50vw, y:28, width:50vw, height:100vh-28-48 }`
+- **Top snap**: drag to y < 20px → calls `onMaximize` (toggle)
+- **Preview**: `rgba(0,212,255,0.1)` fixed overlay with cyan border, rendered as React fragment sibling to `<AnimatePresence>` (avoids transform inheritance from `motion.div`)
+- **Animation**: CSS transition `250ms cubic-bezier(0.16,1,0.3,1)` on left/top/width/height (transition is disabled during drag, re-enabled on mouseup → smooth snap)
+- **`savedPreSnap`**: tracks last cursor position NOT near any edge, so restore always targets a sensible previous position (never a clamped-to-zero coordinate)
+- **Un-snap via double-click**: restores `preSnap` state; if window is maximized (top-snap), calls `onMaximize` first then sets position/size
+- **Un-snap via drag**: detects `preSnap !== null` on mousedown, restores original size with cursor position proportional to title bar width, clears preSnap
+
 ## Adding a new window
 
 1. Add `WindowId` to `types/windows.ts`
