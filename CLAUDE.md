@@ -26,7 +26,8 @@ npm run build   # production build
   NotificationSystem.tsx — context + hook + stack UI; NotificationProvider, useNotifications, default export
   Spotlight.tsx          — Cmd/Ctrl+K search overlay; apps, skills, projects, quick actions
   BootScreen.tsx     — 4s boot: dragon SVG, progress bar, system messages
-  Desktop.tsx        — #000 bg + 3 aurora CSS blobs (green/blue/cyan) + film grain, no desktop icons
+  Desktop.tsx        — #000 bg + ParticleNetwork canvas (hero) + 3 aurora CSS blobs at reduced opacity, no desktop icons
+  ParticleNetwork.tsx — canvas RAF animation: 45 nodes, velocity bounce, mouse proximity lighting, connection lines, data pulses
   Menubar.tsx        — fixed top 28px: IzanOS logo left, lang switcher (CAS·CAT·ENG) + wifi+battery+clock right, blur bg
   Taskbar.tsx        — floating dock (8 icons, all apps), centered bottom-18px
   Window.tsx         — draggable, resizable, glassmorphism shell (TASKBAR_H = 110)
@@ -167,7 +168,10 @@ Implemented in `Window.tsx`. All snap state is local (`useState`) — no changes
 
 ## Design system
 
-- Background: `#000` + aurora blobs (green `rgba(0,255,102,0.32)`, blue `rgba(0,102,255,0.28)`, cyan `rgba(0,255,255,0.18)`) with `filter:blur(120px)` + `mix-blend-mode:screen`
+- Background: `#000` + ParticleNetwork canvas (hero, z-index 0) + aurora blobs (z-index 1) at reduced opacity as ambient glow
+- ParticleNetwork: 45 nodes, velocity ±0.4, mouse-proximity lighting (120px radius), connections within 150px, RAF loop, theme read from `data-theme` DOM attr each frame. No React state in loop — all refs
+- Aurora blobs (dark): green `rgba(0,255,102,0.06)`, blue `rgba(0,102,255,0.05)`, cyan `rgba(0,255,255,0.04)` — reduced from 0.12/0.10/0.08 since network is hero
+- Aurora blobs (light): mint `rgba(0,201,122,0.04)`, lavender `rgba(124,58,237,0.03)`, sky `rgba(0,102,255,0.02)`
 - Aurora keyframes in `app/globals.css`: `aurora-drift-1` (20s), `aurora-drift-2` (25s), `aurora-pulse-3` (15s)
 - Dock glass: `rgba(255,255,255,0.08)` + `backdrop-filter:blur(40px) saturate(180%)`, border `rgba(255,255,255,0.12)`
 - Window glass: `rgba(10,15,30,0.92)` + `backdrop-filter: blur(20px) saturate(180%)`
