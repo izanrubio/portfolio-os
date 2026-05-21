@@ -1,10 +1,13 @@
 'use client';
 
 import { useState } from 'react';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export default function SpotlightTrigger() {
   const [hovered, setHovered] = useState(false);
   const [showTip, setShowTip] = useState(false);
+  const { theme } = useTheme();
+  const dark = theme === 'dark';
 
   const open = () => {
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true, bubbles: true }));
@@ -80,10 +83,12 @@ export default function SpotlightTrigger() {
         style={{
           width: '60px',
           height: '60px',
-          background: hovered ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.08)',
+          background: dark
+            ? (hovered ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.08)')
+            : (hovered ? 'rgba(0,0,0,0.18)'        : 'rgba(0,0,0,0.12)'),
           backdropFilter: 'blur(40px) saturate(180%)',
           WebkitBackdropFilter: 'blur(40px) saturate(180%)',
-          border: '1px solid rgba(255,255,255,0.12)',
+          border: dark ? '1px solid rgba(255,255,255,0.12)' : '1px solid rgba(0,0,0,0.2)',
           borderRadius: '16px',
           cursor: 'pointer',
           display: 'flex',
@@ -93,13 +98,20 @@ export default function SpotlightTrigger() {
           filter: hovered ? 'brightness(1.15)' : 'brightness(1)',
           transition: 'background 0.15s ease, transform 0.15s ease, filter 0.15s ease',
           padding: 0,
-          boxShadow: '0 8px 20px -6px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.1)',
+          boxShadow: dark
+            ? '0 8px 20px -6px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.1)'
+            : '0 2px 8px rgba(0,0,0,0.12)',
         }}
       >
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
           {[4, 10, 16].flatMap(cy =>
             [4, 10, 16].map(cx => (
-              <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r="1.5" fill="rgba(255,255,255,0.85)" />
+              <circle
+                key={`${cx}-${cy}`}
+                cx={cx} cy={cy} r="1.5"
+                fill={dark ? 'rgba(255,255,255,0.85)' : '#1a1a2e'}
+                fillOpacity={dark ? 1 : 0.8}
+              />
             ))
           )}
         </svg>
