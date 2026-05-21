@@ -175,15 +175,16 @@ Type 'help' for available commands.
 ──────────────────────────────────────────`,
   commands: {
     help: `AVAILABLE COMMANDS
-  help          Show this help
-  whoami        About Izan
-  ls            List files
-  ls projects   List projects
-  skills        Show tech stack
-  ping izan     Test connection
-  sudo hire-me  Make the right call
-  cat <slug>    Read project details
-  clear         Clear terminal`,
+  help            Show this help
+  whoami          About Izan
+  ls              List files
+  ls projects     List projects
+  skills          Show tech stack
+  ping izan       Test connection
+  sudo hire-me    Make the right call
+  cat <slug>      Read project details
+  theme --switch  Toggle light/dark mode
+  clear           Clear terminal`,
 
     whoami: `izanos@IzanOS — Izan Rubio Cerezo
 ──────────────────────────────────────

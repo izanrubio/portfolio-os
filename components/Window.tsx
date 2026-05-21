@@ -99,6 +99,7 @@ export default function Window({
       };
 
   const borderRadius = win.isMaximized || isMobile ? '0px' : '10px';
+  const isTerminal = win.id === 'terminal';
 
   return (
     <AnimatePresence>
@@ -117,22 +118,20 @@ export default function Window({
           onMouseDown={() => onFocus(win.id)}
         >
           <div
-            className="flex flex-col flex-1 overflow-hidden"
+            className={`win-chrome flex flex-col flex-1 overflow-hidden${isTerminal ? ' w-term' : ''}`}
             style={{
               borderRadius,
-              border: '1px solid rgba(0, 212, 255, 0.2)',
+              border: '1px solid',
               boxShadow: '0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,212,255,0.08)',
-              background: 'rgba(10, 15, 30, 0.92)',
               backdropFilter: 'blur(20px) saturate(180%)',
             }}
           >
             {/* Title bar */}
             <div
-              className="flex items-center px-3 shrink-0 select-none"
+              className="win-titlebar flex items-center px-3 shrink-0 select-none"
               style={{
                 height: '36px',
-                background: 'rgba(8, 12, 24, 0.95)',
-                borderBottom: '1px solid rgba(0, 212, 255, 0.1)',
+                borderBottom: '1px solid',
                 borderRadius: win.isMaximized || isMobile ? '0' : '9px 9px 0 0',
                 cursor: win.isMaximized || isMobile ? 'default' : 'grab',
               }}
@@ -165,11 +164,10 @@ export default function Window({
 
               {/* Title */}
               <span
-                className="flex-1 text-center truncate px-4"
+                className="win-title-text flex-1 text-center truncate px-4"
                 style={{
                   fontFamily: 'var(--font-jetbrains), monospace',
                   fontSize: '12px',
-                  color: '#8892a4',
                 }}
               >
                 {win.title}

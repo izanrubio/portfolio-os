@@ -13,6 +13,7 @@ import SpotlightTrigger from '@/components/SpotlightTrigger';
 import { notifications } from '@/data/content';
 import { t } from '@/data/translations';
 import { LanguageProvider, useLanguage } from '@/contexts/LanguageContext';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 import { WindowId } from '@/types/windows';
 
 type AppState = 'booting' | 'locked' | 'desktop';
@@ -33,12 +34,14 @@ const WINDOW_NOTIF_KEY: Partial<Record<WindowId, string>> = {
 
 export default function Home() {
   return (
-    <LanguageProvider>
-      <NotificationProvider>
-        <HomeContent />
-        <NotificationSystem />
-      </NotificationProvider>
-    </LanguageProvider>
+    <ThemeProvider>
+      <LanguageProvider>
+        <NotificationProvider>
+          <HomeContent />
+          <NotificationSystem />
+        </NotificationProvider>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }
 

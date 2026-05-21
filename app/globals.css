@@ -1,10 +1,6 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #060810;
-  --bg-2: #0a0e1c;
-  --glass: rgba(10,15,30,0.92);
-  --titlebar: rgba(8,12,24,0.95);
   --cyan: #00d4ff;
   --cyan-soft: rgba(0,212,255,0.12);
   --cyan-glow: rgba(0,212,255,0.35);
@@ -16,14 +12,79 @@
   --pink: #ec4899;
   --red: #ff4757;
   --yellow: #ffd32a;
-  --text: #f0f4ff;
-  --text-2: #aab3c3;
-  --text-3: #8892a4;
-  --text-4: #4a5568;
-  --hairline: rgba(0,212,255,0.12);
-  --hairline-2: rgba(255,255,255,0.06);
   --inter: 'Inter', system-ui, sans-serif;
   --mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* ── Theme: dark (default) ── */
+html[data-theme="dark"],
+html:not([data-theme]) {
+  --bg: #000000;
+  --text: #f0f4ff;
+  --text-2: rgba(255,255,255,0.7);
+  --text-3: rgba(255,255,255,0.5);
+  --text-4: rgba(255,255,255,0.35);
+  --menubar-bg: rgba(0,0,0,0.5);
+  --menubar-bd: rgba(255,255,255,0.06);
+  --menubar-text: #ffffff;
+  --menubar-text-semi: rgba(255,255,255,0.7);
+  --menubar-text-muted: rgba(255,255,255,0.4);
+  --menubar-text-faint: rgba(255,255,255,0.2);
+  --dock-bg: rgba(255,255,255,0.08);
+  --dock-bd: rgba(255,255,255,0.12);
+  --tip-bg: rgba(0,0,0,0.8);
+  --tip-text: #ffffff;
+  --tip-bd: rgba(255,255,255,0.1);
+  --open-dot: #ffffff;
+  --win-body: rgba(8,8,12,0.92);
+  --win-bd: rgba(255,255,255,0.1);
+  --titlebar-bg: rgba(0,0,0,0.6);
+  --titlebar-bd: rgba(255,255,255,0.06);
+  --title-text: rgba(255,255,255,0.7);
+  --field-bg: rgba(0,0,0,0.35);
+  --hairline: rgba(0,212,255,0.12);
+  --hairline-2: rgba(255,255,255,0.06);
+  --b1-color: rgba(0,255,102,0.32);
+  --b2-color: rgba(0,102,255,0.28);
+  --b3-color: rgba(0,255,255,0.18);
+  --aurora-blend: screen;
+  --grain-opacity: 0.07;
+  --grain-blend: overlay;
+}
+
+/* ── Theme: light ── */
+html[data-theme="light"] {
+  --bg: #f0f4ff;
+  --text: #0f172a;
+  --text-2: #475569;
+  --text-3: #64748b;
+  --text-4: #94a3b8;
+  --menubar-bg: rgba(255,255,255,0.7);
+  --menubar-bd: rgba(0,0,0,0.08);
+  --menubar-text: #1a1a2e;
+  --menubar-text-semi: rgba(26,26,46,0.7);
+  --menubar-text-muted: rgba(26,26,46,0.4);
+  --menubar-text-faint: rgba(26,26,46,0.2);
+  --dock-bg: rgba(255,255,255,0.5);
+  --dock-bd: rgba(0,0,0,0.1);
+  --tip-bg: rgba(255,255,255,0.95);
+  --tip-text: #1a1a2e;
+  --tip-bd: rgba(0,0,0,0.08);
+  --open-dot: #1a1a2e;
+  --win-body: rgba(255,255,255,0.92);
+  --win-bd: rgba(0,0,0,0.1);
+  --titlebar-bg: rgba(255,255,255,0.85);
+  --titlebar-bd: rgba(0,0,0,0.08);
+  --title-text: #4a5568;
+  --field-bg: #ffffff;
+  --hairline: rgba(0,0,0,0.08);
+  --hairline-2: rgba(0,0,0,0.06);
+  --b1-color: rgba(0,201,122,0.12);
+  --b2-color: rgba(124,58,237,0.08);
+  --b3-color: rgba(0,102,255,0.06);
+  --aurora-blend: multiply;
+  --grain-opacity: 0.02;
+  --grain-blend: multiply;
 }
 
 *, *::before, *::after {
@@ -34,9 +95,10 @@ html, body {
   height: 100%;
   width: 100%;
   overflow: hidden;
-  background: #060810;
+  background: var(--bg);
   margin: 0;
   padding: 0;
+  transition: background-color 400ms ease;
 }
 
 /* Scrollbars */
@@ -84,6 +146,103 @@ html, body {
   to   { width: 0%; }
 }
 
+/* ── Theme toggle animation ── */
+@keyframes toggle-pop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+.theme-toggle-pop {
+  animation: toggle-pop 300ms ease;
+}
+
+/* ── Sun / Moon crossfade ── */
+.theme-toggle .moon,
+.theme-toggle .sun {
+  position: absolute;
+  transition: opacity 0.25s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+html[data-theme="dark"]  .theme-toggle .moon { opacity: 1; transform: scale(1) rotate(0deg); }
+html[data-theme="dark"]  .theme-toggle .sun  { opacity: 0; transform: scale(0.6) rotate(-90deg); }
+html[data-theme="light"] .theme-toggle .sun  { opacity: 1; transform: scale(1) rotate(0deg); }
+html[data-theme="light"] .theme-toggle .moon { opacity: 0; transform: scale(0.6) rotate(90deg); }
+html:not([data-theme])   .theme-toggle .moon { opacity: 1; transform: scale(1) rotate(0deg); }
+html:not([data-theme])   .theme-toggle .sun  { opacity: 0; transform: scale(0.6) rotate(-90deg); }
+
+/* ── Desktop background ── */
+.desktop-bg {
+  background: var(--bg);
+  transition: background-color 400ms ease;
+}
+
+/* ── Aurora blob theme classes ── */
+.aurora-blob-1 {
+  background: radial-gradient(circle, var(--b1-color), transparent 65%);
+  mix-blend-mode: var(--aurora-blend);
+}
+.aurora-blob-2 {
+  background: radial-gradient(circle, var(--b2-color), transparent 65%);
+  mix-blend-mode: var(--aurora-blend);
+}
+.aurora-blob-3 {
+  background: radial-gradient(circle, var(--b3-color), transparent 65%);
+  mix-blend-mode: var(--aurora-blend);
+}
+.aurora-grain {
+  opacity: var(--grain-opacity);
+  mix-blend-mode: var(--grain-blend);
+  transition: opacity 400ms ease;
+}
+
+/* ── Menubar theme ── */
+.menubar-bar {
+  background: var(--menubar-bg) !important;
+  border-bottom: 1px solid var(--menubar-bd) !important;
+  color: var(--menubar-text);
+  transition: background-color 400ms ease, border-color 400ms ease, color 400ms ease;
+}
+
+/* ── Dock theme ── */
+.dock-pill {
+  background: var(--dock-bg) !important;
+  border-color: var(--dock-bd) !important;
+  transition: background-color 400ms ease, border-color 400ms ease;
+}
+
+/* ── Window chrome theme ── */
+.win-chrome {
+  background: var(--win-body);
+  border-color: var(--win-bd);
+  transition: background-color 400ms ease, border-color 400ms ease;
+}
+.win-titlebar {
+  background: var(--titlebar-bg);
+  border-bottom-color: var(--titlebar-bd);
+  transition: background-color 400ms ease, border-color 400ms ease;
+}
+.win-title-text {
+  color: var(--title-text);
+  transition: color 400ms ease;
+}
+
+/* ── Light mode window shadow ── */
+html[data-theme="light"] .win-chrome {
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.06) !important;
+}
+
+/* ── Terminal always dark ── */
+.w-term.win-chrome {
+  background: rgba(13,15,22,0.95) !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+.w-term .win-titlebar {
+  background: rgba(0,0,0,0.6) !important;
+  border-bottom-color: rgba(255,255,255,0.06) !important;
+}
+.w-term .win-title-text {
+  color: rgba(255,255,255,0.7) !important;
+}
+
 /* Remove default focus outlines — replaced with custom */
 button:focus-visible {
   outline: 1px solid rgba(0, 212, 255, 0.5);
@@ -100,15 +259,7 @@ button:focus-visible {
    Performance mode
    Applied via .perf-mode on <body> (JS-toggled), or
    automatically when the OS reports prefers-reduced-motion.
-
-   What it does:
-     • Kills all backdrop-filter blur (main GPU cost)
-     • Replaces glass backgrounds with opaque solid equivalents
-     • Hides aurora blobs (filter:blur(120px) is expensive)
-     • Pauses decorative CSS animations / transitions
    ───────────────────────────────────────────────────────── */
-
-/* ── Kill every backdrop-filter in the tree ── */
 .perf-mode *,
 .perf-mode *::before,
 .perf-mode *::after {
@@ -116,18 +267,15 @@ button:focus-visible {
   -webkit-backdrop-filter: none !important;
 }
 
-/* ── Dock pill: 8 % white → opaque dark glass ── */
 .perf-mode .dock-pill {
   background: rgba(10, 12, 20, 0.95) !important;
   border-color: rgba(255, 255, 255, 0.14) !important;
 }
 
-/* ── Menubar: 50 % black → nearly opaque ── */
 .perf-mode .menubar-bar {
   background: rgba(0, 0, 0, 0.92) !important;
 }
 
-/* ── Aurora blobs: hide to save filter:blur(120px) cost ── */
 .perf-mode .aurora-blob {
   opacity: 0 !important;
   animation: none !important;
@@ -135,16 +283,11 @@ button:focus-visible {
   will-change: auto !important;
 }
 
-/* ── Pause all remaining decorative animations ── */
 .perf-mode *:not([class*="framer"]) {
   animation-play-state: paused !important;
   transition-duration: 0.1ms !important;
 }
 
-/* ─────────────────────────────────────────────────────────
-   Auto-apply when the OS signals reduced-motion preference.
-   Mirrors every rule above without needing JS.
-   ───────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

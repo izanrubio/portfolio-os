@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, KeyboardEvent } from 'react';
 import { terminal, notifications } from '@/data/content';
 import { useNotifications } from '@/components/NotificationSystem';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { t } from '@/data/translations';
 
 interface TerminalLine {
@@ -43,8 +44,9 @@ function Prompt({ path = '~' }: { path?: string }) {
 const INTRUSION_CMDS = new Set(['nmap localhost', 'exploit']);
 
 export default function TerminalWindow() {
-  const { notify } = useNotifications();
-  const { lang }   = useLanguage();
+  const { notify }           = useNotifications();
+  const { lang }             = useLanguage();
+  const { theme, toggleTheme } = useTheme();
   const [lines, setLines] = useState<TerminalLine[]>([
     { id: lineIdCounter++, type: 'output', content: terminal.welcomeMessage },
   ]);
@@ -79,6 +81,15 @@ export default function TerminalWindow() {
     setHistoryIdx(-1);
 
     if (INTRUSION_CMDS.has(cmd)) notify({ type: notifications.intrusionDetected.type, app: notifications.intrusionDetected.app, title: t('notif.intrusionDetected.title', lang), body: t('notif.intrusionDetected.body', lang) });
+
+    if (cmd === 'theme --switch') {
+      const toLight = theme === 'dark';
+      toggleTheme();
+      typeOutput(toLight
+        ? '→ Engaging Aurora Light mode...\n→ Aurora blobs re-tinted: mint · lavender · sky\n→ Window chrome: light glass\n→ Terminal: staying dark, as tradition demands'
+        : '→ Engaging Aurora Dark mode...\n→ Aurora blobs: green · blue · cyan\n→ Window chrome: dark glass\n→ System: aurora re-calibrated');
+      return;
+    }
 
     if (cmd === 'clear') {
       setLines([{ id: lineIdCounter++, type: 'output', content: terminal.welcomeMessage }]);

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useLanguage, type Lang } from '@/contexts/LanguageContext';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const MONO  = 'var(--font-jetbrains), monospace';
 const INTER = 'var(--font-inter), Inter, sans-serif';
@@ -22,7 +23,7 @@ function LanguageSwitcher() {
             {i > 0 && (
               <span style={{
                 fontFamily: MONO, fontSize: '11px',
-                color: 'rgba(255,255,255,0.2)',
+                color: 'var(--menubar-text-faint)',
                 margin: '0 5px',
               }}>·</span>
             )}
@@ -35,10 +36,10 @@ function LanguageSwitcher() {
                 fontSize: '11px',
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
-                color: active ? 'rgba(255,255,255,1)' : isHov ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.4)',
+                color: active ? 'var(--menubar-text)' : isHov ? 'var(--menubar-text-semi)' : 'var(--menubar-text-muted)',
                 cursor: active ? 'default' : 'pointer',
                 padding: active ? '2px 6px' : '2px 0',
-                border: active ? '1px solid rgba(255,255,255,0.3)' : '1px solid transparent',
+                border: active ? '1px solid var(--menubar-text-muted)' : '1px solid transparent',
                 borderRadius: '4px',
                 transition: 'color 0.12s ease',
                 userSelect: 'none',
@@ -50,6 +51,52 @@ function LanguageSwitcher() {
         );
       })}
     </div>
+  );
+}
+
+function ThemeToggle() {
+  const { theme, toggleTheme } = useTheme();
+  const [popping, setPopping] = useState(false);
+
+  const handleClick = () => {
+    setPopping(true);
+    toggleTheme();
+    setTimeout(() => setPopping(false), 300);
+  };
+
+  return (
+    <button
+      onClick={handleClick}
+      className={`theme-toggle${popping ? ' theme-toggle-pop' : ''}`}
+      style={{
+        position: 'relative',
+        width: '20px', height: '20px',
+        background: 'none', border: 'none',
+        cursor: 'pointer',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        color: 'var(--menubar-text)',
+        padding: 0,
+        marginRight: '12px',
+        opacity: 0.85,
+        flexShrink: 0,
+      }}
+      aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+    >
+      <svg className="moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+      <svg className="sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="5"/>
+        <line x1="12" y1="1" x2="12" y2="3"/>
+        <line x1="12" y1="21" x2="12" y2="23"/>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+        <line x1="1" y1="12" x2="3" y2="12"/>
+        <line x1="21" y1="12" x2="23" y2="12"/>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+      </svg>
+    </button>
   );
 }
 
@@ -75,10 +122,8 @@ export default function Menubar() {
       className="menubar-bar"
       style={{
         position: 'fixed', top: 0, left: 0, right: 0, height: '28px',
-        background: 'rgba(0,0,0,0.5)',
         backdropFilter: 'blur(20px) saturate(180%)',
         WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
         display: 'flex', alignItems: 'center', padding: '0 16px',
         zIndex: 100,
         userSelect: 'none',
@@ -98,14 +143,15 @@ export default function Menubar() {
             stroke="url(#mb-grad)" strokeWidth="2" strokeLinejoin="round" fill="none"/>
           <circle cx="16" cy="16" r="3.2" fill="url(#mb-grad)"/>
         </svg>
-        <span style={{ fontFamily: INTER, fontWeight: 700, fontSize: '13px', color: '#fff' }}>
+        <span style={{ fontFamily: INTER, fontWeight: 700, fontSize: '13px', color: 'var(--menubar-text)' }}>
           IzanOS
         </span>
       </div>
 
-      {/* Right: lang switcher + wifi + battery + clock */}
-      <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '14px', fontSize: '13px', fontWeight: 500, color: '#fff' }}>
+      {/* Right: lang switcher + theme toggle + wifi + battery + clock */}
+      <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '14px', fontSize: '13px', fontWeight: 500, color: 'var(--menubar-text)' }}>
         <LanguageSwitcher />
+        <ThemeToggle />
 
         {/* Wifi */}
         <span style={{ opacity: 0.85, display: 'flex', alignItems: 'center' }} aria-hidden="true">
