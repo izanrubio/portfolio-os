@@ -27,7 +27,7 @@ npm run build   # production build
   Spotlight.tsx          — Cmd/Ctrl+K search overlay; apps, skills, projects, quick actions
   BootScreen.tsx     — 4s boot: dragon SVG, progress bar, system messages
   Desktop.tsx        — #000 bg + 3 aurora CSS blobs (green/blue/cyan) + film grain, no desktop icons
-  Menubar.tsx        — fixed top 28px: IzanOS logo left, wifi+battery+clock right, blur bg
+  Menubar.tsx        — fixed top 28px: IzanOS logo left, lang switcher (CAS·CAT·ENG) + wifi+battery+clock right, blur bg
   Taskbar.tsx        — floating dock (8 icons, all apps), centered bottom-18px
   Window.tsx         — draggable, resizable, glassmorphism shell (TASKBAR_H = 110)
   WindowManager.tsx  — useWindowManager hook + 8-window renderer
@@ -50,8 +50,11 @@ npm run build   # production build
     TerminalWindow.tsx  — Kali-style prompt ┌──(izanos㉿IzanOS)-[~] with interactive history
     GameWindow.tsx      — Firewall Breaker breakout game; canvas + useRef game loop, 3 levels, RAF cleanup
     PortfolioSite.tsx   — internal website rendered inside BrowserWindow
+/contexts
+  LanguageContext.tsx — Lang type ('CAS'|'CAT'|'ENG'), LanguageProvider, useLanguage(); persists to localStorage key 'izanos-lang'; default 'CAS'
 /data
   content.ts         — ALL content: personal, projects, skills, filesystem, terminal, browser
+  translations.ts    — All UI strings in 3 languages + t(key, lang) helper + tRoles(lang) for the WhoamiWindow typing animation
 /types
   windows.ts         — WindowId, WindowState (with browserUrl), FileNode, DesktopIcon
 /public
@@ -59,6 +62,14 @@ npm run build   # production build
     foto-portafolio.png  — profile photo (grayscale in whoami)
   cv.pdf                 — CV download (referenced in files.exe)
 ```
+
+## i18n / Language switcher
+
+- Languages: **CAS** (Castellano, default), **CAT** (Català), **ENG** (English)
+- Provider: `LanguageProvider` wraps entire app in `page.tsx` (outside NotificationProvider). `useLanguage()` → `{ lang, setLang }`
+- All UI strings: `t(key, lang)` from `data/translations.ts`. Roles array: `tRoles(lang)`
+- Switcher: inline in `Menubar.tsx`, right group, left of wifi icon. Active lang = bordered pill; inactive = 40% opacity + hover 70%
+- Adding a new translatable string: add key+value for all 3 langs in `data/translations.ts`; call `t('your.key', lang)` in the component after importing `useLanguage` + `t`
 
 ## Editing content
 
@@ -108,8 +119,8 @@ All content in `/data/content.ts`. No hardcoded strings elsewhere.
 - Enter: `x:110%→0 + opacity 0→1`, 400ms spring. Exit: `x:0→110% + opacity 1→0`, 300ms ease-in
 - Auto-dismiss: 5s; progress bar at bottom of each card
 - Triggers: welcome 3s after desktop, per-window on first open (projects/contact/terminal), idle 60s, intrusion on `nmap localhost`/`exploit` in terminal
-- Dev-only test button (renders in `next dev`, stripped from production build)
-- All copy in `data/content.ts` under `notifications`
+- Notification text sourced via `t('notif.X.title/body', lang)` at call site — lang-aware at fire time via `langRef`
+- All copy in `data/translations.ts` under `notif.*` keys
 
 ## App state flow
 
