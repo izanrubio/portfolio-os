@@ -3,15 +3,18 @@
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { personal } from '@/data/content';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { t, tRoles } from '@/data/translations';
 
 const MONO  = 'var(--font-jetbrains), monospace';
 const INTER = 'var(--font-inter), Inter, sans-serif';
 
 export default function WhoamiWindow() {
+  const { lang } = useLanguage();
   const [typed, setTyped] = useState('');
 
   useEffect(() => {
-    const roles = personal.roles;
+    const roles = tRoles(lang);
     let r = 0, c = 0, dir: 1 | -1 = 1;
     let timer: ReturnType<typeof setTimeout>;
 
@@ -30,7 +33,7 @@ export default function WhoamiWindow() {
 
     timer = setTimeout(step, 400);
     return () => clearTimeout(timer);
-  }, []);
+  }, [lang]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="h-full flex overflow-hidden" style={{ background: '#0b0d16' }}>
@@ -138,7 +141,7 @@ export default function WhoamiWindow() {
             maxWidth: '360px',
           }}
         >
-          {personal.bio}
+          {t('whoami.bio', lang)}
         </p>
 
         {/* Social pills */}
@@ -204,7 +207,7 @@ export default function WhoamiWindow() {
               animation: 'status-pulse 2.2s ease-in-out infinite',
             }}
           />
-          <span>Status · <b style={{ color: '#f0f4ff' }}>Available for hire</b></span>
+          <span>{t('whoami.statusLabel', lang)} · <b style={{ color: '#f0f4ff' }}>{t('whoami.status', lang)}</b></span>
         </div>
       </div>
 

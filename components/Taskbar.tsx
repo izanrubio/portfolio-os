@@ -2,6 +2,8 @@
 
 import { useState, useRef } from 'react';
 import { WindowState, WindowId } from '@/types/windows';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { t } from '@/data/translations';
 import ProjectsIcon from './icons/ProjectsIcon';
 import AboutIcon    from './icons/AboutIcon';
 import SkillsIcon   from './icons/SkillsIcon';
@@ -16,19 +18,19 @@ const RANGE     = 130;
 
 interface DockItem {
   id: WindowId;
-  label: string;
+  labelKey: string;
   Icon: () => React.ReactElement;
 }
 
 const DOCK_ITEMS: DockItem[] = [
-  { id: 'projects', label: 'Projects', Icon: ProjectsIcon },
-  { id: 'whoami',   label: 'About',    Icon: AboutIcon    },
-  { id: 'skills',   label: 'Skills',   Icon: SkillsIcon   },
-  { id: 'contact',  label: 'Contact',  Icon: ContactIcon  },
-  { id: 'browser',  label: 'Browser',  Icon: BrowserIcon  },
-  { id: 'files',    label: 'Files',    Icon: FilesIcon    },
-  { id: 'terminal', label: 'Terminal', Icon: TerminalIcon },
-  { id: 'game',     label: 'Game',     Icon: GameIcon     },
+  { id: 'projects', labelKey: 'dock.projects', Icon: ProjectsIcon },
+  { id: 'whoami',   labelKey: 'dock.about',    Icon: AboutIcon    },
+  { id: 'skills',   labelKey: 'dock.skills',   Icon: SkillsIcon   },
+  { id: 'contact',  labelKey: 'dock.contact',  Icon: ContactIcon  },
+  { id: 'browser',  labelKey: 'dock.browser',  Icon: BrowserIcon  },
+  { id: 'files',    labelKey: 'dock.files',    Icon: FilesIcon    },
+  { id: 'terminal', labelKey: 'dock.terminal', Icon: TerminalIcon },
+  { id: 'game',     labelKey: 'dock.game',     Icon: GameIcon     },
 ];
 
 const SEPARATOR_BEFORE = 4; // vertical rule before browser/files/terminal
@@ -41,6 +43,7 @@ interface TaskbarProps {
 }
 
 export default function Taskbar({ windows, onWindowFocus, onWindowToggle, onOpenWindow }: TaskbarProps) {
+  const { lang } = useLanguage();
   const [mouseX, setMouseX]         = useState<number | null>(null);
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const [pressedIdx, setPressedIdx] = useState<number | null>(null);
@@ -159,7 +162,7 @@ export default function Taskbar({ windows, onWindowFocus, onWindowToggle, onOpen
                     zIndex: 9999,
                   }}
                 >
-                  {item.label}
+                  {t(item.labelKey, lang)}
                   <div
                     style={{
                       position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)',

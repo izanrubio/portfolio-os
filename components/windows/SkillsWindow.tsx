@@ -1,6 +1,8 @@
 'use client';
 
 import { skills, ProficiencyLevel } from '@/data/content';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { t } from '@/data/translations';
 
 const MONO  = 'var(--font-jetbrains), monospace';
 const INTER = 'var(--font-inter), Inter, sans-serif';
@@ -51,7 +53,7 @@ const CATEGORY_ICONS: Record<string, React.ReactElement> = {
   ),
 };
 
-function ProfBadge({ level }: { level: ProficiencyLevel }) {
+function ProfBadge({ level, lang }: { level: ProficiencyLevel; lang: string }) {
   const color = PROF_COLOR[level];
   const fills = PROF_FILL[level];
   return (
@@ -71,12 +73,15 @@ function ProfBadge({ level }: { level: ProficiencyLevel }) {
           />
         ))}
       </span>
-      <span style={{ fontFamily: MONO, fontSize: '11px', fontWeight: 600 }}>{level}</span>
+      <span style={{ fontFamily: MONO, fontSize: '11px', fontWeight: 600 }}>
+        {t(`skills.proficiency.${level}`, lang as Parameters<typeof t>[1])}
+      </span>
     </div>
   );
 }
 
 export default function SkillsWindow() {
+  const { lang } = useLanguage();
   const totalTech = skills.reduce((sum, cat) => sum + cat.items.length, 0);
 
   return (
@@ -91,7 +96,7 @@ export default function SkillsWindow() {
       >
         <span style={{ fontFamily: MONO, fontSize: '11px', color: '#00d4ff', letterSpacing: '0.15em' }}>~/skills</span>
         <span style={{ fontFamily: MONO, fontSize: '11px', color: '#4a5568' }}>
-          {skills.length} categories · {totalTech} technologies
+          {skills.length} {t('skills.categories', lang)} · {totalTech} {t('skills.technologies', lang)}
         </span>
       </div>
 
@@ -124,14 +129,14 @@ export default function SkillsWindow() {
                 </div>
                 <div>
                   <div style={{ fontFamily: INTER, fontSize: '14px', fontWeight: 600, color: '#f0f4ff' }}>
-                    {cat.label}
+                    {t(`skills.cat.${cat.key}`, lang)}
                   </div>
                   <div style={{ fontFamily: MONO, fontSize: '10px', color: '#4a5568' }}>
-                    {cat.items.length} technologies
+                    {cat.items.length} {t('skills.technologies', lang)}
                   </div>
                 </div>
               </div>
-              <ProfBadge level={cat.proficiency} />
+              <ProfBadge level={cat.proficiency} lang={lang} />
             </div>
 
             {/* Skill pills */}

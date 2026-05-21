@@ -1,9 +1,57 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useLanguage, type Lang } from '@/contexts/LanguageContext';
 
 const MONO  = 'var(--font-jetbrains), monospace';
 const INTER = 'var(--font-inter), Inter, sans-serif';
+
+const LANGS: Lang[] = ['CAS', 'CAT', 'ENG'];
+
+function LanguageSwitcher() {
+  const { lang, setLang } = useLanguage();
+  const [hovered, setHovered] = useState<Lang | null>(null);
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '0px', marginRight: '16px' }}>
+      {LANGS.map((l, i) => {
+        const active = l === lang;
+        const isHov  = hovered === l && !active;
+        return (
+          <div key={l} style={{ display: 'flex', alignItems: 'center' }}>
+            {i > 0 && (
+              <span style={{
+                fontFamily: MONO, fontSize: '11px',
+                color: 'rgba(255,255,255,0.2)',
+                margin: '0 5px',
+              }}>·</span>
+            )}
+            <span
+              onClick={() => setLang(l)}
+              onMouseEnter={() => { if (!active) setHovered(l); }}
+              onMouseLeave={() => setHovered(null)}
+              style={{
+                fontFamily: MONO,
+                fontSize: '11px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.04em',
+                color: active ? 'rgba(255,255,255,1)' : isHov ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.4)',
+                cursor: active ? 'default' : 'pointer',
+                padding: active ? '2px 6px' : '2px 0',
+                border: active ? '1px solid rgba(255,255,255,0.3)' : '1px solid transparent',
+                borderRadius: '4px',
+                transition: 'color 0.12s ease',
+                userSelect: 'none',
+              }}
+            >
+              {l}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 export default function Menubar() {
   const [clock, setClock] = useState('');
@@ -55,8 +103,10 @@ export default function Menubar() {
         </span>
       </div>
 
-      {/* Right: wifi + battery + clock */}
+      {/* Right: lang switcher + wifi + battery + clock */}
       <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '14px', fontSize: '13px', fontWeight: 500, color: '#fff' }}>
+        <LanguageSwitcher />
+
         {/* Wifi */}
         <span style={{ opacity: 0.85, display: 'flex', alignItems: 'center' }} aria-hidden="true">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

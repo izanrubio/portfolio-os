@@ -11,55 +11,66 @@ import NotificationSystem, { NotificationProvider, useNotifications } from '@/co
 import Spotlight from '@/components/Spotlight';
 import SpotlightTrigger from '@/components/SpotlightTrigger';
 import { notifications } from '@/data/content';
+import { t } from '@/data/translations';
+import { LanguageProvider, useLanguage } from '@/contexts/LanguageContext';
 import { WindowId } from '@/types/windows';
 
 type AppState = 'booting' | 'locked' | 'desktop';
 
-const WINDOW_NOTIFS: Partial<Record<WindowId, typeof notifications[keyof typeof notifications]>> = {
-  projects: notifications.projectsOpened,
-  contact:  notifications.contactOpened,
-  terminal: notifications.terminalOpened,
+type NotifMeta = { type: typeof notifications[keyof typeof notifications]['type']; app: string };
+
+const WINDOW_NOTIF_META: Partial<Record<WindowId, NotifMeta>> = {
+  projects: { type: notifications.projectsOpened.type, app: notifications.projectsOpened.app },
+  contact:  { type: notifications.contactOpened.type,  app: notifications.contactOpened.app  },
+  terminal: { type: notifications.terminalOpened.type, app: notifications.terminalOpened.app },
+};
+
+const WINDOW_NOTIF_KEY: Partial<Record<WindowId, string>> = {
+  projects: 'projectsOpened',
+  contact:  'contactOpened',
+  terminal: 'terminalOpened',
 };
 
 export default function Home() {
   return (
-    <NotificationProvider>
-      <HomeContent />
-      <NotificationSystem />
-    </NotificationProvider>
+    <LanguageProvider>
+      <NotificationProvider>
+        <HomeContent />
+        <NotificationSystem />
+      </NotificationProvider>
+    </LanguageProvider>
   );
 }
 
 function HomeContent() {
   const { notify } = useNotifications();
+  const { lang }   = useLanguage();
+  const langRef    = useRef(lang);
+  langRef.current  = lang;
+
   const [appState, setAppState] = useState<AppState>('booting');
 
   const {
-    windows,
-    openWindow,
-    closeWindow,
-    minimizeWindow,
-    maximizeWindow,
-    focusWindow,
-    moveWindow,
-    resizeWindow,
-    toggleWindow,
-    navigateBrowser,
+    windows, openWindow, closeWindow, minimizeWindow, maximizeWindow,
+    focusWindow, moveWindow, resizeWindow, toggleWindow, navigateBrowser,
   } = useWindowManager();
 
-  const idleTimerRef      = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const idleNotifFiredRef = useRef(false);
+  const idleTimerRef       = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const idleNotifFiredRef  = useRef(false);
   const notifiedWindowsRef = useRef<Set<WindowId>>(new Set());
 
-  // Welcome + idle timers on desktop entry
   useEffect(() => {
     if (appState !== 'desktop') return;
-    const welcome = setTimeout(() => notify(notifications.welcome), 3000);
+    const welcome = setTimeout(() => {
+      const l = langRef.current;
+      notify({ type: notifications.welcome.type, app: notifications.welcome.app, title: t('notif.welcome.title', l), body: t('notif.welcome.body', l) });
+    }, 3000);
 
     if (!idleNotifFiredRef.current) {
       idleTimerRef.current = setTimeout(() => {
         idleNotifFiredRef.current = true;
-        notify(notifications.idleHire);
+        const l = langRef.current;
+        notify({ type: notifications.idleHire.type, app: notifications.idleHire.app, title: t('notif.idleHire.title', l), body: t('notif.idleHire.body', l) });
       }, 60_000);
     }
 
@@ -69,22 +80,24 @@ function HomeContent() {
     };
   }, [appState]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Window-open notifications
   useEffect(() => {
     if (appState !== 'desktop') return;
     windows.forEach(w => {
       if (!w.isOpen || notifiedWindowsRef.current.has(w.id)) return;
       notifiedWindowsRef.current.add(w.id);
 
-      // Opening any window cancels the idle notification
       if (idleTimerRef.current) {
         clearTimeout(idleTimerRef.current);
         idleTimerRef.current = null;
         idleNotifFiredRef.current = true;
       }
 
-      const n = WINDOW_NOTIFS[w.id];
-      if (n) notify(n);
+      const meta = WINDOW_NOTIF_META[w.id];
+      const key  = WINDOW_NOTIF_KEY[w.id];
+      if (meta && key) {
+        const l = langRef.current;
+        notify({ type: meta.type, app: meta.app, title: t(`notif.${key}.title`, l), body: t(`notif.${key}.body`, l) });
+      }
     });
   }, [windows, appState]); // eslint-disable-line react-hooks/exhaustive-deps
 

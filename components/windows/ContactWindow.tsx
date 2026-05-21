@@ -1,15 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { personal } from '@/data/content';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { t } from '@/data/translations';
 
 const MONO  = 'var(--font-jetbrains), monospace';
 const INTER = 'var(--font-inter), Inter, sans-serif';
 
-const CONTACT_ITEMS = [
+const CONTACT_ITEMS_BASE = [
   {
-    key: 'email',
-    label: 'Email',
+    key: 'email' as const,
+    labelKey: 'contact.label.email',
     value: personal.email,
     href: `mailto:${personal.email}`,
     icon: (
@@ -21,7 +23,7 @@ const CONTACT_ITEMS = [
   },
   {
     key: 'github',
-    label: 'GitHub',
+    labelKey: 'contact.label.github',
     value: 'github.com/izanrubio',
     href: personal.github,
     icon: (
@@ -32,7 +34,7 @@ const CONTACT_ITEMS = [
   },
   {
     key: 'linkedin',
-    label: 'LinkedIn',
+    labelKey: 'contact.label.linkedin',
     value: 'linkedin.com/in/izanrubio',
     href: personal.linkedin,
     icon: (
@@ -43,7 +45,7 @@ const CONTACT_ITEMS = [
   },
   {
     key: 'location',
-    label: 'Location',
+    labelKey: 'contact.label.location',
     value: personal.location,
     href: undefined,
     icon: (
@@ -69,8 +71,14 @@ const inputStyle: React.CSSProperties = {
 };
 
 export default function ContactWindow() {
+  const { lang } = useLanguage();
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
   const [sent, setSent] = useState(false);
+
+  const contactItems = useMemo(
+    () => CONTACT_ITEMS_BASE.map(item => ({ ...item, label: t(item.labelKey, lang) })),
+    [lang]
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,15 +105,14 @@ export default function ContactWindow() {
           ~/contact
         </div>
         <h2 style={{ fontFamily: INTER, fontSize: '22px', fontWeight: 700, color: '#f0f4ff', marginBottom: '10px' }}>
-          Let&apos;s talk.
+          {t('contact.heading', lang)}
         </h2>
         <p style={{ fontFamily: INTER, fontSize: '12.5px', color: '#8892a4', lineHeight: 1.65, marginBottom: '22px' }}>
-          Got an idea, a job, or a vulnerability disclosure?
-          I read every message — usually reply within 24h.
+          {t('contact.subheading', lang)}
         </p>
 
         <div className="flex flex-col gap-1" style={{ marginBottom: '22px' }}>
-          {CONTACT_ITEMS.map(item => {
+          {contactItems.map(item => {
             const inner = (
               <div className="flex items-start gap-3">
                 <div
@@ -200,7 +207,7 @@ export default function ContactWindow() {
         style={{ padding: '26px 24px', gap: '0' }}
       >
         <div style={{ fontFamily: MONO, fontSize: '10px', color: '#4a5568', letterSpacing: '0.15em', marginBottom: '18px' }}>
-          SEND A MESSAGE
+          {t('contact.sendHeader', lang)}
         </div>
 
         {sent && (
@@ -212,26 +219,26 @@ export default function ContactWindow() {
               fontFamily: MONO, fontSize: '12px',
             }}
           >
-            Message sent — I&apos;ll get back to you soon.
+            {t('contact.form.sent', lang)}
           </div>
         )}
 
         {[
-          { id: 'c-name',    type: 'text',  label: 'Name',    placeholder: 'Your name',           key: 'name' as const    },
-          { id: 'c-email',   type: 'email', label: 'Email',   placeholder: 'you@somewhere.com',   key: 'email' as const   },
-          { id: 'c-subject', type: 'text',  label: 'Subject', placeholder: 'What is this about?', key: 'subject' as const },
+          { id: 'c-name',    type: 'text',  labelKey: 'contact.form.name',    placeholderKey: 'contact.form.namePlaceholder',    key: 'name' as const    },
+          { id: 'c-email',   type: 'email', labelKey: 'contact.form.email',   placeholderKey: 'contact.form.emailPlaceholder',   key: 'email' as const   },
+          { id: 'c-subject', type: 'text',  labelKey: 'contact.form.subject', placeholderKey: 'contact.form.subjectPlaceholder', key: 'subject' as const },
         ].map(field => (
           <div key={field.id} style={{ marginBottom: '12px' }}>
             <label
               htmlFor={field.id}
               style={{ display: 'block', fontFamily: MONO, fontSize: '11px', color: '#4a5568', letterSpacing: '0.1em', marginBottom: '6px' }}
             >
-              {field.label}
+              {t(field.labelKey, lang)}
             </label>
             <input
               id={field.id}
               type={field.type}
-              placeholder={field.placeholder}
+              placeholder={t(field.placeholderKey, lang)}
               value={form[field.key]}
               onChange={e => setForm(f => ({ ...f, [field.key]: e.target.value }))}
               required
@@ -248,11 +255,11 @@ export default function ContactWindow() {
             htmlFor="c-msg"
             style={{ display: 'block', fontFamily: MONO, fontSize: '11px', color: '#4a5568', letterSpacing: '0.1em', marginBottom: '6px' }}
           >
-            Message
+            {t('contact.form.message', lang)}
           </label>
           <textarea
             id="c-msg"
-            placeholder="Tell me what you have in mind…"
+            placeholder={t('contact.form.msgPlaceholder', lang)}
             value={form.message}
             onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
             required
@@ -281,7 +288,7 @@ export default function ContactWindow() {
           onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; }}
           onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
         >
-          Send message <span>→</span>
+          {t('contact.form.send', lang)} <span>→</span>
         </button>
       </form>
     </div>

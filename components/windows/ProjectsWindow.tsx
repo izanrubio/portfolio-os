@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { projects } from '@/data/content';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { t } from '@/data/translations';
 
 const MONO  = 'var(--font-jetbrains), monospace';
 const INTER = 'var(--font-inter), Inter, sans-serif';
@@ -16,6 +18,7 @@ const STACK_COLOR: Record<string, string> = {
 };
 
 export default function ProjectsWindow() {
+  const { lang } = useLanguage();
   const [activeIdx, setActiveIdx] = useState(0);
   const proj = projects[activeIdx];
 
@@ -116,7 +119,7 @@ export default function ProjectsWindow() {
             marginBottom: '20px',
           }}
         >
-          {proj.longDescription}
+          {t(`proj.${proj.slug}.longDescription`, lang)}
         </p>
 
         <div className="flex flex-wrap gap-1.5" style={{ marginBottom: '22px' }}>
@@ -157,7 +160,7 @@ export default function ProjectsWindow() {
               onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; }}
               onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
             >
-              Open demo <span>→</span>
+              {t('projects.openDemo', lang)} <span>→</span>
             </a>
           )}
           {proj.repo && (
@@ -176,7 +179,7 @@ export default function ProjectsWindow() {
               onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(0,212,255,0.6)'; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,212,255,0.25)'; }}
             >
-              View code <span>↗</span>
+              {t('projects.viewCode', lang)} <span>↗</span>
             </a>
           )}
         </div>
@@ -193,7 +196,7 @@ export default function ProjectsWindow() {
         >
           {[
             {
-              lbl: 'Status',
+              lbl: t('projects.meta.status', lang),
               val: (
                 <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#00ff88', boxShadow: '0 0 6px #00ff88', display: 'inline-block', flexShrink: 0 }} />
@@ -201,8 +204,8 @@ export default function ProjectsWindow() {
                 </span>
               ),
             },
-            { lbl: 'Launched', val: <span>{proj.launched}</span> },
-            { lbl: 'Repository', val: <span>{proj.repoShort}</span> },
+            { lbl: t('projects.meta.launched',   lang), val: <span>{proj.launched}</span>  },
+            { lbl: t('projects.meta.repository', lang), val: <span>{proj.repoShort}</span> },
           ].map(({ lbl, val }) => (
             <div
               key={lbl}

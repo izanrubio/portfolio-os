@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect, KeyboardEvent } from 'react';
 import { terminal, notifications } from '@/data/content';
 import { useNotifications } from '@/components/NotificationSystem';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { t } from '@/data/translations';
 
 interface TerminalLine {
   id: number;
@@ -42,6 +44,7 @@ const INTRUSION_CMDS = new Set(['nmap localhost', 'exploit']);
 
 export default function TerminalWindow() {
   const { notify } = useNotifications();
+  const { lang }   = useLanguage();
   const [lines, setLines] = useState<TerminalLine[]>([
     { id: lineIdCounter++, type: 'output', content: terminal.welcomeMessage },
   ]);
@@ -75,7 +78,7 @@ export default function TerminalWindow() {
     setHistory(prev => [raw, ...prev]);
     setHistoryIdx(-1);
 
-    if (INTRUSION_CMDS.has(cmd)) notify(notifications.intrusionDetected);
+    if (INTRUSION_CMDS.has(cmd)) notify({ type: notifications.intrusionDetected.type, app: notifications.intrusionDetected.app, title: t('notif.intrusionDetected.title', lang), body: t('notif.intrusionDetected.body', lang) });
 
     if (cmd === 'clear') {
       setLines([{ id: lineIdCounter++, type: 'output', content: terminal.welcomeMessage }]);

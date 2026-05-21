@@ -3,7 +3,9 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { WindowId } from '@/types/windows';
-import { skills, projects, spotlight as spotlightContent } from '@/data/content';
+import { skills, projects } from '@/data/content';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { t } from '@/data/translations';
 
 const INTER = 'var(--font-inter), Inter, sans-serif';
 const MONO  = 'var(--font-jetbrains), monospace';
@@ -14,6 +16,30 @@ type ActionRow  = { kind: 'action';  id: string;   name: string; cta: string };
 type SkillRow   = { kind: 'skill';   name: string; category: string };
 type ProjectRow = { kind: 'project'; id: string;   name: string; sub: string };
 type Row = AppRow | ActionRow | SkillRow | ProjectRow;
+
+/* ── App id → translation key ── */
+const APP_LABEL_KEY: Record<string, string> = {
+  projects: 'dock.projects',
+  whoami:   'dock.about',
+  skills:   'dock.skills',
+  contact:  'dock.contact',
+  browser:  'dock.browser',
+  files:    'dock.files',
+  terminal: 'dock.terminal',
+  game:     'dock.game',
+};
+
+const ACTION_LABEL_KEY: Record<string, string> = {
+  cv:     'spotlight.action.cv',
+  email:  'spotlight.action.email',
+  github: 'spotlight.action.github',
+};
+
+const ACTION_CTA_KEY: Record<string, string> = {
+  cv:     'spotlight.cta.download',
+  email:  'spotlight.cta.open',
+  github: 'spotlight.cta.open',
+};
 
 /* ── Icon meta ── */
 type IconMeta = { gradient: string; icon: React.ReactNode };
@@ -85,22 +111,25 @@ function highlight(text: string, query: string): React.ReactNode {
   );
 }
 
-function getSectionLabel(rows: Row[], i: number): string | null {
+function getSectionLabel(
+  rows: Row[], i: number,
+  labels: { apps: string; actions: string; results: string },
+): string | null {
   const row = rows[i];
   const prev = rows[i - 1];
   const isSearch = (k: string) => k === 'skill' || k === 'project';
 
   if (!prev) {
-    if (row.kind === 'app')    return 'Applications';
-    if (row.kind === 'action') return 'Quick Actions';
-    if (isSearch(row.kind))    return 'Search Results';
+    if (row.kind === 'app')    return labels.apps;
+    if (row.kind === 'action') return labels.actions;
+    if (isSearch(row.kind))    return labels.results;
     return null;
   }
-  if (row.kind === prev.kind)                        return null;
-  if (isSearch(row.kind) && isSearch(prev.kind))     return null;
-  if (row.kind === 'app')    return 'Applications';
-  if (row.kind === 'action') return 'Quick Actions';
-  if (isSearch(row.kind))    return 'Search Results';
+  if (row.kind === prev.kind)                    return null;
+  if (isSearch(row.kind) && isSearch(prev.kind)) return null;
+  if (row.kind === 'app')    return labels.apps;
+  if (row.kind === 'action') return labels.actions;
+  if (isSearch(row.kind))    return labels.results;
   return null;
 }
 
@@ -115,9 +144,9 @@ function downloadCV() {
 
 /* ── Row sub-component ── */
 function RowItem({
-  row, idx, active, query, onCommit, onHover,
+  row, idx, active, query, lang, onCommit, onHover,
 }: {
-  row: Row; idx: number; active: boolean; query: string;
+  row: Row; idx: number; active: boolean; query: string; lang: string;
   onCommit: () => void; onHover: () => void;
 }) {
   let meta: IconMeta;
@@ -128,23 +157,23 @@ function RowItem({
   if (row.kind === 'app') {
     meta = APP_ICON[row.id] ?? FALLBACK_ICON;
     name = row.name;
-    sub  = `${row.id}.exe · Application`;
-    cta  = 'Open';
+    sub  = `${row.id}.exe · ${t('spotlight.row.application', lang as Parameters<typeof t>[1])}`;
+    cta  = t('spotlight.cta.open', lang as Parameters<typeof t>[1]);
   } else if (row.kind === 'action') {
     meta = ACTION_ICON[row.id] ?? FALLBACK_ICON;
     name = row.name;
-    sub  = 'Quick action';
+    sub  = t('spotlight.row.quickAction', lang as Parameters<typeof t>[1]);
     cta  = row.cta;
   } else if (row.kind === 'skill') {
     meta = APP_ICON.skills;
     name = row.name;
-    sub  = `in skills.exe`;
-    cta  = 'Open';
+    sub  = `${t('spotlight.row.inSkills', lang as Parameters<typeof t>[1])}.exe`;
+    cta  = t('spotlight.cta.open', lang as Parameters<typeof t>[1]);
   } else {
     meta = APP_ICON.projects;
     name = row.name;
     sub  = row.sub;
-    cta  = 'Open';
+    cta  = t('spotlight.cta.open', lang as Parameters<typeof t>[1]);
   }
 
   return (
@@ -160,7 +189,6 @@ function RowItem({
         transition: 'background .12s ease',
       }}
     >
-      {/* Icon */}
       <div style={{
         width: '32px', height: '32px', borderRadius: '8px', flexShrink: 0,
         background: meta.gradient,
@@ -173,7 +201,6 @@ function RowItem({
         </svg>
       </div>
 
-      {/* Text */}
       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
         <div style={{
           fontFamily: INTER, fontSize: '15px', fontWeight: 500, color: '#fff',
@@ -193,7 +220,6 @@ function RowItem({
         </div>
       </div>
 
-      {/* CTA */}
       <div style={{
         flexShrink: 0, fontFamily: MONO, fontSize: '11px',
         color: active ? '#00d4ff' : 'rgba(255,255,255,0.3)',
@@ -229,6 +255,8 @@ interface SpotlightProps {
 }
 
 export default function Spotlight({ onOpenWindow, onNavigate }: SpotlightProps) {
+  const { lang } = useLanguage();
+
   const [isOpen,    setIsOpen]    = useState(false);
   const [query,     setQuery]     = useState('');
   const [activeIdx, setActiveIdx] = useState(0);
@@ -236,21 +264,23 @@ export default function Spotlight({ onOpenWindow, onNavigate }: SpotlightProps) 
   const inputRef   = useRef<HTMLInputElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
 
-  /* Pre-compute flat skill list */
   const allSkills = useMemo(
     () => skills.flatMap(cat => cat.items.map(item => ({ name: item, category: cat.label }))),
     []
   );
 
-  /* Flat selectable rows */
   const rows = useMemo((): Row[] => {
     const q = query.trim().toLowerCase();
 
-    const appRows: AppRow[] = spotlightContent.apps.map(a => ({
-      kind: 'app', id: a.id as WindowId, name: a.name,
+    const appRows: AppRow[] = ['projects','whoami','skills','contact','browser','files','terminal'].map(id => ({
+      kind: 'app', id: id as WindowId,
+      name: t(APP_LABEL_KEY[id] ?? `dock.${id}`, lang),
     }));
-    const actionRows: ActionRow[] = spotlightContent.actions.map(a => ({
-      kind: 'action', id: a.id, name: a.name, cta: a.cta,
+
+    const actionRows: ActionRow[] = (['cv','email','github'] as const).map(id => ({
+      kind: 'action', id,
+      name: t(ACTION_LABEL_KEY[id], lang),
+      cta:  t(ACTION_CTA_KEY[id], lang),
     }));
 
     if (!q) return [...appRows, ...actionRows];
@@ -261,12 +291,10 @@ export default function Spotlight({ onOpenWindow, onNavigate }: SpotlightProps) 
     const matchProjects: ProjectRow[] = projects.filter(p => p.name.toLowerCase().includes(q)).map(p => ({ kind: 'project' as const, id: p.slug, name: p.name, sub: p.description }));
 
     return [...matchApps, ...matchActions, ...matchSkills, ...matchProjects];
-  }, [query, allSkills]);
+  }, [query, allSkills, lang]);
 
-  /* Reset active idx when query or rows change */
   useEffect(() => setActiveIdx(0), [query]);
 
-  /* Focus input on open, clear on close */
   useEffect(() => {
     if (isOpen) {
       setQuery('');
@@ -275,17 +303,15 @@ export default function Spotlight({ onOpenWindow, onNavigate }: SpotlightProps) 
     }
   }, [isOpen]);
 
-  /* Scroll active row into view */
   useEffect(() => {
     resultsRef.current
       ?.querySelector(`[data-sp-idx="${activeIdx}"]`)
       ?.scrollIntoView({ block: 'nearest' });
   }, [activeIdx]);
 
-  /* Stable refs for keyboard handler (no stale closure) */
-  const isOpenRef   = useRef(isOpen);
+  const isOpenRef    = useRef(isOpen);
   const activeIdxRef = useRef(activeIdx);
-  const rowsRef     = useRef(rows);
+  const rowsRef      = useRef(rows);
   isOpenRef.current    = isOpen;
   activeIdxRef.current = activeIdx;
   rowsRef.current      = rows;
@@ -312,7 +338,6 @@ export default function Spotlight({ onOpenWindow, onNavigate }: SpotlightProps) 
   const handleCommitRef = useRef(handleCommit);
   handleCommitRef.current = handleCommit;
 
-  /* Keyboard handler — registered once */
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -328,17 +353,11 @@ export default function Spotlight({ onOpenWindow, onNavigate }: SpotlightProps) 
           break;
         case 'ArrowDown':
           e.preventDefault();
-          setActiveIdx(prev =>
-            rowsRef.current.length ? (prev + 1) % rowsRef.current.length : 0
-          );
+          setActiveIdx(prev => rowsRef.current.length ? (prev + 1) % rowsRef.current.length : 0);
           break;
         case 'ArrowUp':
           e.preventDefault();
-          setActiveIdx(prev =>
-            rowsRef.current.length
-              ? (prev - 1 + rowsRef.current.length) % rowsRef.current.length
-              : 0
-          );
+          setActiveIdx(prev => rowsRef.current.length ? (prev - 1 + rowsRef.current.length) % rowsRef.current.length : 0);
           break;
         case 'Enter':
           e.preventDefault();
@@ -349,6 +368,12 @@ export default function Spotlight({ onOpenWindow, onNavigate }: SpotlightProps) 
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const sectionLabels = {
+    apps:    t('spotlight.section.apps',    lang),
+    actions: t('spotlight.section.actions', lang),
+    results: t('spotlight.section.results', lang),
+  };
 
   return (
     <AnimatePresence>
@@ -384,7 +409,7 @@ export default function Spotlight({ onOpenWindow, onNavigate }: SpotlightProps) 
               overflow: 'hidden', maxHeight: '70vh',
             }}
           >
-            {/* Input row */}
+            {/* Input */}
             <div style={{
               height: '56px', flexShrink: 0, padding: '0 20px',
               display: 'flex', alignItems: 'center', gap: '12px',
@@ -397,7 +422,7 @@ export default function Spotlight({ onOpenWindow, onNavigate }: SpotlightProps) 
               <input
                 ref={inputRef}
                 type="text"
-                placeholder="Search IzanOS..."
+                placeholder={t('spotlight.placeholder', lang)}
                 value={query}
                 onChange={e => setQuery(e.target.value)}
                 autoComplete="off"
@@ -428,12 +453,12 @@ export default function Spotlight({ onOpenWindow, onNavigate }: SpotlightProps) 
                   fontFamily: INTER, fontSize: '14px',
                   color: 'rgba(255,255,255,0.3)',
                 }}>
-                  No results for{' '}
+                  {t('spotlight.noResults.pre', lang)}{' '}
                   <span style={{ color: 'rgba(255,255,255,0.55)' }}>"{query.trim()}"</span>
                 </div>
               ) : (
                 rows.map((row, i) => {
-                  const label = getSectionLabel(rows, i);
+                  const label = getSectionLabel(rows, i, sectionLabels);
                   const key = row.kind === 'app' ? row.id : row.kind === 'action' ? row.id : row.kind === 'skill' ? `skill-${row.name}` : `proj-${row.id}`;
                   return (
                     <div key={key}>
@@ -452,6 +477,7 @@ export default function Spotlight({ onOpenWindow, onNavigate }: SpotlightProps) 
                         idx={i}
                         active={i === activeIdx}
                         query={query.trim()}
+                        lang={lang}
                         onCommit={() => handleCommit(i)}
                         onHover={() => setActiveIdx(i)}
                       />
@@ -468,9 +494,9 @@ export default function Spotlight({ onOpenWindow, onNavigate }: SpotlightProps) 
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                <HintGroup keys={['↑', '↓']} label="navigate" />
-                <HintGroup keys={['↵']} label="open" />
-                <HintGroup keys={['ESC']} label="close" />
+                <HintGroup keys={['↑', '↓']} label={t('spotlight.hint.navigate', lang)} />
+                <HintGroup keys={['↵']}       label={t('spotlight.hint.open',     lang)} />
+                <HintGroup keys={['ESC']}      label={t('spotlight.hint.close',    lang)} />
               </div>
               <div style={{
                 display: 'inline-flex', alignItems: 'center', gap: '7px',
