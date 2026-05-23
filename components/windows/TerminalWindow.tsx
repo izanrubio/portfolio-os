@@ -20,7 +20,7 @@ let lineIdCounter = 0;
 const MONO = 'var(--font-jetbrains), monospace';
 
 /* Prompt component — Kali-style two lines */
-function Prompt({ path = '~' }: { path?: string }) {
+function Prompt({ path = '~', children }: { path?: string; children?: React.ReactNode }) {
   return (
     <>
       <div>
@@ -32,10 +32,11 @@ function Prompt({ path = '~' }: { path?: string }) {
         <span style={{ color: '#5b9eff' }}>{path}</span>
         <span style={{ color: '#8892a4' }}>]</span>
       </div>
-      <div>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
         <span style={{ color: '#8892a4' }}>└─</span>
         <span style={{ color: '#00d4ff', fontWeight: 700 }}>$</span>
-        <span style={{ color: '#f0f4ff' }}>{' '}</span>
+        <span style={{ color: '#f0f4ff' }}>&nbsp;</span>
+        {children}
       </div>
     </>
   );
@@ -156,8 +157,9 @@ export default function TerminalWindow() {
           <div key={line.id} className="whitespace-pre-wrap break-words">
             {line.type === 'input' && (
               <div style={{ marginTop: '10px' }}>
-                <Prompt path="~" />
-                <span style={{ color: '#f0f4ff' }}>{line.content}</span>
+                <Prompt path="~">
+                  <span style={{ color: '#f0f4ff' }}>{line.content}</span>
+                </Prompt>
               </div>
             )}
             {line.type === 'output' && (
@@ -183,27 +185,28 @@ export default function TerminalWindow() {
 
         {/* Active input prompt */}
         <div style={{ marginTop: '10px' }}>
-          <Prompt path="~" />
-          <span className="relative inline-flex" style={{ flex: 1 }}>
-            <input
-              ref={inputRef}
-              type="text"
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              style={{
-                position: 'absolute', inset: 0, width: '100%',
-                background: 'transparent', outline: 'none', border: 'none',
-                color: '#f0f4ff', fontFamily: MONO, fontSize: '13px',
-                caretColor: '#00d4ff',
-              }}
-              autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="off"
-              spellCheck={false}
-            />
-            <span style={{ visibility: 'hidden', whiteSpace: 'pre' }}>{input || ' '}</span>
-          </span>
+          <Prompt path="~">
+            <span className="relative inline-flex" style={{ flex: 1 }}>
+              <input
+                ref={inputRef}
+                type="text"
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                style={{
+                  position: 'absolute', inset: 0, width: '100%',
+                  background: 'transparent', outline: 'none', border: 'none',
+                  color: '#f0f4ff', fontFamily: MONO, fontSize: '13px',
+                  caretColor: '#00d4ff',
+                }}
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck={false}
+              />
+              <span style={{ visibility: 'hidden', whiteSpace: 'pre' }}>{input || ' '}</span>
+            </span>
+          </Prompt>
         </div>
 
         <div ref={bottomRef} />
