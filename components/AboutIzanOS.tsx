@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useTheme } from '@/contexts/ThemeContext';
 
 interface AboutIzanOSProps {
@@ -49,35 +49,23 @@ export default function AboutIzanOS({ onClose }: AboutIzanOSProps) {
   ];
 
   return (
-    <AnimatePresence>
-      {/* Backdrop */}
-      <motion.div
-        key="about-backdrop"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.2 }}
-        style={{
-          position: 'fixed', inset: 0, zIndex: 9997,
-          background: 'rgba(0,0,0,0.5)',
-          backdropFilter: 'blur(4px)',
-          WebkitBackdropFilter: 'blur(4px)',
-        }}
-        onClick={onClose}
-      />
-
+    <div
+      style={{
+        position: 'fixed', inset: 0, zIndex: 9998,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: 'rgba(0,0,0,0.5)',
+        backdropFilter: 'blur(4px)',
+        WebkitBackdropFilter: 'blur(4px)',
+      }}
+      onClick={onClose}
+    >
       {/* Modal */}
       <motion.div
-        key="about-modal"
         initial={{ opacity: 0, scale: 0.94, y: 12 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.94, y: 12 }}
         transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
         style={{
-          position: 'fixed',
-          top: '50%', left: '50%',
-          transform: 'translate(-50%, -50%)',
-          zIndex: 9998,
           width: '400px',
           background: dark ? 'rgba(15,15,25,0.96)' : 'rgba(255,255,255,0.96)',
           border: dark ? '1px solid rgba(255,255,255,0.12)' : '1px solid rgba(0,0,0,0.1)',
@@ -198,6 +186,6 @@ export default function AboutIzanOS({ onClose }: AboutIzanOSProps) {
           </div>
         </div>
       </motion.div>
-    </AnimatePresence>
+    </div>
   );
 }

@@ -76,19 +76,17 @@ export default function WallpaperPicker({ current, onSelect, onClose }: Wallpape
   const dark = theme === 'dark';
 
   return (
-    <>
-      {/* Backdrop */}
-      <div
-        style={{
-          position: 'fixed', inset: 0, zIndex: 650,
-          background: 'rgba(0,0,0,0.5)',
-          backdropFilter: 'blur(4px)',
-          WebkitBackdropFilter: 'blur(4px)',
-        }}
-        onClick={onClose}
-        onContextMenu={e => { e.preventDefault(); e.stopPropagation(); onClose(); }}
-      />
-
+    <div
+      style={{
+        position: 'fixed', inset: 0, zIndex: 9998,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: 'rgba(0,0,0,0.5)',
+        backdropFilter: 'blur(4px)',
+        WebkitBackdropFilter: 'blur(4px)',
+      }}
+      onClick={onClose}
+      onContextMenu={e => { e.preventDefault(); e.stopPropagation(); onClose(); }}
+    >
       {/* Panel */}
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: -8 }}
@@ -96,11 +94,6 @@ export default function WallpaperPicker({ current, onSelect, onClose }: Wallpape
         exit={{ opacity: 0, scale: 0.95, y: -8 }}
         transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
         style={{
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          zIndex: 660,
           width: '320px',
           background: dark ? 'rgba(15,15,25,0.96)' : 'rgba(255,255,255,0.96)',
           border: dark ? '1px solid rgba(255,255,255,0.12)' : '1px solid rgba(0,0,0,0.1)',
@@ -198,6 +191,6 @@ export default function WallpaperPicker({ current, onSelect, onClose }: Wallpape
           ))}
         </div>
       </motion.div>
-    </>
+    </div>
   );
 }
