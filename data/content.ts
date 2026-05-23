@@ -78,11 +78,13 @@ export interface SkillCategory {
 }
 
 export const skills: SkillCategory[] = [
-  { key: 'languages', label: 'Languages', proficiency: 'Expert',    items: ['TypeScript', 'JavaScript', 'PHP', 'Python', 'Bash', 'SQL'] },
-  { key: 'frontend',  label: 'Frontend',  proficiency: 'Expert',    items: ['React', 'Next.js', 'Tailwind CSS', 'Framer Motion', 'Vue 3', 'Three.js'] },
-  { key: 'backend',   label: 'Backend',   proficiency: 'Advanced',  items: ['Node.js', 'Laravel', 'Express', 'PostgreSQL', 'Redis', 'GraphQL'] },
-  { key: 'security',  label: 'Security',  proficiency: 'Advanced',  items: ['Nmap', 'Burp Suite', 'Wireshark', 'Metasploit', 'OWASP Top 10'] },
-  { key: 'devops',    label: 'DevOps',    proficiency: 'Proficient', items: ['Docker', 'Vercel', 'GitHub Actions', 'Nginx', 'Linux servers'] },
+  { key: 'languages', label: 'Languages', proficiency: 'Expert',    items: ['Python', 'JavaScript', 'TypeScript', 'PHP', 'Java', 'SQL'] },
+  { key: 'frontend',  label: 'Frontend',  proficiency: 'Expert',    items: ['HTML', 'CSS', 'React', 'Next.js', 'Vue', 'Angular', 'Astro', 'Tailwind CSS', 'SASS/SCSS', 'jQuery'] },
+  { key: 'backend',   label: 'Backend',   proficiency: 'Advanced',  items: ['Node.js', 'Laravel', 'Django', 'Flask', 'FastAPI', 'NestJS'] },
+  { key: 'databases', label: 'Databases', proficiency: 'Advanced',  items: ['MySQL', 'PostgreSQL', 'MongoDB', 'SQLite', 'Redis', 'Firebase', 'Supabase', 'Prisma'] },
+  { key: 'devops',    label: 'DevOps',    proficiency: 'Proficient', items: ['Git', 'Docker', 'Linux', 'Nginx', 'Apache', 'AWS', 'Azure', 'Vercel', 'CI/CD', 'GitHub Actions'] },
+  { key: 'security',  label: 'Security',  proficiency: 'Advanced',  items: ['Kali Linux', 'Burp Suite', 'Nmap', 'Wireshark', 'Metasploit', 'OWASP', 'Pentesting'] },
+  { key: 'other',     label: 'Other',     proficiency: 'Proficient', items: ['Figma', 'GraphQL'] },
 ];
 
 export const filesystem: FileNode = {
@@ -205,11 +207,13 @@ drwxr-xr-x  izan  laraveles    → Laravel · MySQL · Alpine
 drwxr-xr-x  izan  goldenbids   → React · Laravel · Redis
 drwxr-xr-x  izan  rooming      → Next.js · Prisma · Stripe`,
 
-    skills: `LANGUAGES    TypeScript · JavaScript · PHP · Python · Bash · SQL
-FRONTEND     React · Next.js · Tailwind CSS · Framer Motion · Vue 3
-BACKEND      Node.js · Laravel · Express · PostgreSQL · Redis · GraphQL
-SECURITY     Nmap · Burp Suite · Wireshark · Metasploit · OWASP Top 10
-DEVOPS       Docker · Vercel · GitHub Actions · Nginx · Linux servers`,
+    skills: `LANGUAGES    Python · JavaScript · TypeScript · PHP · Java · SQL
+FRONTEND     HTML · CSS · React · Next.js · Vue · Angular · Astro · Tailwind CSS · SASS/SCSS · jQuery
+BACKEND      Node.js · Laravel · Django · Flask · FastAPI · NestJS
+DATABASES    MySQL · PostgreSQL · MongoDB · SQLite · Redis · Firebase · Supabase · Prisma
+DEVOPS       Git · Docker · Linux · Nginx · Apache · AWS · Azure · Vercel · CI/CD · GitHub Actions
+SECURITY     Kali Linux · Burp Suite · Nmap · Wireshark · Metasploit · OWASP · Pentesting
+OTHER        Figma · GraphQL`,
 
     'ping izan': `PING izan (10.0.1.337) 56 bytes of data.
 64 bytes from izan: icmp_seq=0 ttl=64 time=0.420ms
