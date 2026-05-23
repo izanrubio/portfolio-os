@@ -93,6 +93,8 @@ const translations: Record<Lang, Record<string, string>> = {
     'proj.goldenbids.longDescription': 'Plataforma de subastas en producción con pujas concurrentes a escala. Actualizaciones en directo via WebSocket con UI optimista. Detección de fraude mediante análisis de comportamiento. Flujo de resolución de disputas con panel de administración.',
     'proj.rooming.description':     'Plataforma inteligente de reserva de salas y gestión de espacios de coworking con sincronización de calendario y control de acceso.',
     'proj.rooming.longDescription': 'Solución de gestión de espacios de coworking. Calendario de reservas drag-and-drop, sincronización con Google Calendar, integración de control RFID y gestión de suscripciones Stripe. Arquitectura multi-tenant.',
+    'proj.ciberchurros.description':     'Plataforma de ciberseguridad con ejecución local. Herramientas de red reales (nmap, ping, traceroute, dig) lanzadas desde el navegador pero ejecutadas en la máquina del usuario vía agente Python + TLS.',
+    'proj.ciberchurros.longDescription': 'Plataforma web de ciberseguridad con arquitectura de agente local. El usuario ejecuta herramientas de red reales (nmap, ping, traceroute, dig) desde el navegador, pero la ejecución ocurre 100% en su propia máquina mediante un agente Python con conexión TLS cifrada. Backend en Laravel con RBAC, whitelist estricta de comandos y output en tiempo real vía HTTP polling. Incluye base de conocimiento técnico sobre vulnerabilidades, OWASP Top 10 y CVEs.',
   },
 
   CAT: {
@@ -187,6 +189,8 @@ const translations: Record<Lang, Record<string, string>> = {
     'proj.goldenbids.longDescription': "Plataforma de subhastes en producció amb pujades concurrents a escala. Actualitzacions en directe via WebSocket amb UI optimista. Detecció de frau mitjançant anàlisi de comportament. Flux de resolució de disputes amb tauler d'administració.",
     'proj.rooming.description':     "Plataforma intel·ligent de reserva de sales i gestió d'espais de coworking amb sincronització de calendari i control d'accés.",
     'proj.rooming.longDescription': "Solució de gestió d'espais de coworking. Calendari de reserves drag-and-drop, sincronització amb Google Calendar, integració de control RFID i gestió de subscripcions Stripe. Arquitectura multi-tenant.",
+    'proj.ciberchurros.description':     "Plataforma de ciberseguretat amb execució local. Eines de xarxa reals (nmap, ping, traceroute, dig) llançades des del navegador però executades a la màquina de l'usuari via agent Python + TLS.",
+    'proj.ciberchurros.longDescription': "Plataforma web de ciberseguretat amb arquitectura d'agent local. L'usuari executa eines de xarxa reals (nmap, ping, traceroute, dig) des del navegador, però l'execució té lloc 100% a la seva pròpia màquina mitjançant un agent Python amb connexió TLS xifrada. Backend en Laravel amb RBAC, whitelist estricta de comandes i output en temps real via HTTP polling. Inclou base de coneixement tècnic sobre vulnerabilitats, OWASP Top 10 i CVEs.",
   },
 
   ENG: {
@@ -281,6 +285,8 @@ const translations: Record<Lang, Record<string, string>> = {
     'proj.goldenbids.longDescription': 'Production auction platform handling concurrent bidding at scale. WebSocket-based live bid updates with optimistic UI. Fraud detection via behavioral analysis. Dispute resolution workflow with admin dashboard.',
     'proj.rooming.description':     'Smart room booking and coworking space management platform with calendar sync and access control.',
     'proj.rooming.longDescription': 'End-to-end space management solution for coworking operators. Drag-and-drop booking calendar, Google Calendar sync, RFID access control integration, and Stripe subscription management. Multi-tenant architecture.',
+    'proj.ciberchurros.description':     'Cybersecurity platform with local execution. Real network tools (nmap, ping, traceroute, dig) launched from the browser but executed on the user\'s machine via a Python agent + TLS.',
+    'proj.ciberchurros.longDescription': 'Web cybersecurity platform with local-agent architecture. Users run real network tools (nmap, ping, traceroute, dig) from the browser, but execution happens 100% on their own machine via a Python agent over an encrypted TLS connection. Laravel backend with authentication, RBAC, strict command whitelisting, and real-time output via HTTP polling. Includes a technical knowledge base covering vulnerabilities, OWASP Top 10, and CVEs.',
   },
 };
 

@@ -66,6 +66,19 @@ export const projects = [
     launched: 'Q4 · 2024',
     status: 'In production',
   },
+  {
+    slug: 'ciberchurros',
+    name: 'CiberChurros',
+    category: 'CYBERSECURITY · PLATFORM',
+    description: 'Plataforma de ciberseguridad con ejecución local. Herramientas de red reales lanzadas desde el navegador pero ejecutadas en la máquina del usuario vía agente Python + TLS.',
+    longDescription: 'Plataforma web de ciberseguridad con arquitectura de agente local. El usuario ejecuta herramientas de red reales (nmap, ping, traceroute, dig) desde el navegador, pero la ejecución ocurre 100% en su propia máquina mediante un agente Python con conexión TLS cifrada. Backend en Laravel con sistema de autenticación, RBAC, whitelist estricta de comandos y output en tiempo real vía HTTP polling. Incluye base de conocimiento técnico sobre vulnerabilidades, OWASP Top 10 y CVEs.',
+    stack: ['Laravel', 'PHP', 'Python', 'TLS', 'HTTP Polling', 'RBAC', 'OWASP'],
+    demo: 'https://ciberchurros.com',
+    repo: null,
+    repoShort: null,
+    launched: 'Q2 · 2025',
+    status: 'In production',
+  },
 ];
 
 export type ProficiencyLevel = 'Expert' | 'Advanced' | 'Proficient';
