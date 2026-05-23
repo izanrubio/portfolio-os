@@ -32,6 +32,7 @@ export const projects = [
     description: 'Web oficial del Club Stas Tarat, asociación cultural de juegos de mesa, rol y wargames de Terrassa con casi 40 años de historia. Ludoteca digital, calendario de actividades y gestión de socios.',
     longDescription: 'Desarrollo de la web oficial para el Club Stas Tarat, una de las asociaciones culturales de juegos más veteranas de Cataluña. La plataforma incluye ludoteca digital con catálogo de 500+ juegos, calendario interactivo de actividades semanales, sistema de autenticación para socios y secciones para cada modalidad: Jocs de Taula, Rol, Wargames, Blood Bowl, Légamo Kids y Videojocs Retro. Proyecto desarrollado en colaboración con Edgar Quirante y Juan Flores.',
     stack: ['Laravel', 'PHP', 'MySQL', 'Tailwind CSS', 'JavaScript'],
+    terminalStack: ['Laravel', 'PHP', 'MySQL'],
     demo: 'https://stastarat.com',
     repo: null,
     repoShort: null,
@@ -45,6 +46,7 @@ export const projects = [
     description: 'Plataforma de aprendizaje técnico sobre Laravel en español. Blog con 100+ artículos, roadmap interactivo, curso gratuito con 29 lecciones y bot de contenido con IA que genera y publica artículos automáticamente.',
     longDescription: 'Plataforma de aprendizaje técnico sobre Laravel en español, construida desde cero con Astro y Tailwind CSS. Incluye blog técnico con 100+ artículos, roadmap interactivo con 5 niveles de aprendizaje, curso gratuito con 5 módulos y 29 lecciones con sistema de quiz y bloqueo progresivo. Bot de contenido propio en Node.js que scrapea fuentes oficiales de Laravel, genera artículos en español con la API de Claude y los publica automáticamente vía GitHub API. Panel de administración para revisar y publicar borradores. Posición #1 en Google para "blog de laravel en español" al mes de lanzamiento, 116+ páginas indexadas y 3.000+ impresiones mensuales.',
     stack: ['Astro', 'Tailwind CSS', 'Vercel', 'Node.js', 'Express', 'SQLite', 'Claude API', 'GitHub API'],
+    terminalStack: ['Astro', 'Tailwind', 'Node.js'],
     demo: 'https://laraveles.es',
     repo: null,
     repoShort: null,
@@ -64,6 +66,7 @@ export const projects = [
     description: 'SaaS de gestión financiera para barberías. Registro de ventas por barbero, control de gastos, liquidaciones semanales automáticas con distribución proporcional de costes y gestión de múltiples locales.',
     longDescription: 'BarberCompte es una aplicación SaaS de gestión financiera especializada para barberías. Permite a los dueños registrar ventas por barbero, controlar gastos operativos, generar liquidaciones semanales automáticas con distribución proporcional de costes y gestionar múltiples locales bajo un mismo plan. Los clientes se suscriben mensualmente a través de Stripe. Incluye panel de administración con Filament 3, generación de PDFs de liquidaciones con DomPDF y emails transaccionales via Resend.',
     stack: ['Laravel', 'PHP', 'MySQL', 'Tailwind CSS', 'Stripe', 'Filament', 'Railway', 'DomPDF'],
+    terminalStack: ['Laravel', 'MySQL', 'Stripe'],
     demo: null,
     repo: null,
     repoShort: null,
@@ -77,6 +80,7 @@ export const projects = [
     description: 'Alternativa española a DocuSign. SaaS para autónomos y pymes que permite enviar contratos, recoger firmas electrónicas con validez legal eIDAS y gestionar documentación desde una sola plataforma. — Actualmente en desarrollo.',
     longDescription: 'DocFlow es una alternativa española a DocuSign desarrollada íntegramente desde cero. Permite a autónomos y pymes enviar contratos y recoger firmas electrónicas con validez legal según el reglamento eIDAS de la UE. PDFs sellados con firmas incrustadas, certificado de auditoría y hash SHA-256. Plantillas inteligentes con detección automática de variables, sistema de equipos con roles (Propietario, Admin, Editor, Viewer), flujo de firma con orden garantizado y recordatorios automáticos. Monetización con Stripe, API pública REST con API keys y rate limiting, arquitectura multi-tenant con colas asíncronas via Laravel Horizon y panel de superadmin con métricas globales.',
     stack: ['Laravel', 'PHP', 'React', 'MySQL', 'Redis', 'Docker', 'MinIO', 'Stripe'],
+    terminalStack: ['Laravel', 'React', 'Stripe'],
     demo: null,
     repo: null,
     repoShort: null,
@@ -97,6 +101,7 @@ export const projects = [
     description: 'Plataforma de ciberseguridad con ejecución local. Herramientas de red reales lanzadas desde el navegador pero ejecutadas en la máquina del usuario vía agente Python + TLS.',
     longDescription: 'Plataforma web de ciberseguridad con arquitectura de agente local. El usuario ejecuta herramientas de red reales (nmap, ping, traceroute, dig) desde el navegador, pero la ejecución ocurre 100% en su propia máquina mediante un agente Python con conexión TLS cifrada. Backend en Laravel con sistema de autenticación, RBAC, whitelist estricta de comandos y output en tiempo real vía HTTP polling. Incluye base de conocimiento técnico sobre vulnerabilidades, OWASP Top 10 y CVEs.',
     stack: ['Laravel', 'PHP', 'Python', 'TLS', 'HTTP Polling', 'RBAC', 'OWASP'],
+    terminalStack: ['Laravel', 'Python', 'TLS'],
     demo: 'https://ciberchurros.com',
     repo: null,
     repoShort: null,
@@ -207,18 +212,20 @@ Type 'help' for available commands.
   ls              List files
   ls projects     List projects
   skills          Show tech stack
-  ping izan       Test connection
+  ping izan       Contact info
   sudo hire-me    Make the right call
   cat <slug>      Read project details
   theme --switch  Toggle light/dark mode
   clear           Clear terminal`,
 
-    whoami: `izanos@IzanOS — Izan Rubio Cerezo
+    whoami: `izanos@IzanOS — ${personal.name}
 ──────────────────────────────────────
-Role    Full Stack Developer & Cybersecurity Specialist
-Email   izanrubiocerezo@gmail.com
+Role    ${personal.role}
+Loc     ${personal.location}
+Bio     Formado en DAW y Ciberseguridad en el Institut Nicolau Copèrnic.
+Email   ${personal.contact.email}
 GitHub  github.com/izanrubio
-Status  Available — open to work`,
+Status  ${personal.statusText.toLowerCase().replace(/ /g, '_')}`,
 
     ls: `total 4
 drwxr-xr-x  Documents/
@@ -226,28 +233,22 @@ drwxr-xr-x  Pictures/
 drwxr-xr-x  Downloads/
 drwxr-xr-x  Trash/`,
 
-    'ls projects': `total 4
-drwxr-xr-x  izan  stastarat    → Next.js · Postgres · Stripe
-drwxr-xr-x  izan  laraveles    → Laravel · MySQL · Alpine
-drwxr-xr-x  izan  goldenbids   → React · Laravel · Redis
-drwxr-xr-x  izan  rooming      → Next.js · Prisma · Stripe`,
+    'ls projects': `total ${projects.length}\n${projects.map(p => {
+      const slug = p.slug.padEnd(14);
+      const stack = (p.terminalStack ?? p.stack.slice(0, 3)).join(' · ');
+      const dev = p.status === 'in-development' ? ' [EN DESARROLLO]' : '';
+      return `drwxr-xr-x  izan  ${slug}→ ${stack}${dev}`;
+    }).join('\n')}`,
 
-    skills: `LANGUAGES    Python · JavaScript · TypeScript · PHP · Java · SQL
-FRONTEND     HTML · CSS · React · Next.js · Vue · Angular · Astro · Tailwind CSS · SASS/SCSS · jQuery
-BACKEND      Node.js · Laravel · Django · Flask · FastAPI · NestJS
-DATABASES    MySQL · PostgreSQL · MongoDB · SQLite · Redis · Firebase · Supabase · Prisma
-DEVOPS       Git · Docker · Linux · Nginx · Apache · AWS · Azure · Vercel · CI/CD · GitHub Actions
-SECURITY     Kali Linux · Burp Suite · Nmap · Wireshark · Metasploit · OWASP · Pentesting
-OTHER        Figma · GraphQL`,
+    skills: skills.map(cat => `${cat.label.toUpperCase().padEnd(12)} ${cat.items.join(' · ')}`).join('\n'),
 
-    'ping izan': `PING izan (10.0.1.337) 56 bytes of data.
-64 bytes from izan: icmp_seq=0 ttl=64 time=0.420ms
-64 bytes from izan: icmp_seq=1 ttl=64 time=1.337ms
-64 bytes from izan: icmp_seq=2 ttl=64 time=0.337ms
-
---- izan ping statistics ---
-3 packets sent, 3 received, 0% loss
-rtt min/avg/max = 0.337/0.698/1.337ms`,
+    'ping izan': `PING izan — contact info
+────────────────────────────────────
+Email:     ${personal.contact.email}
+GitHub:    github.com/izanrubio
+LinkedIn:  linkedin.com/in/izan-rubio-cerezo
+Phone:     ${personal.contact.phone}
+Location:  ${personal.location}`,
 
     'sudo hire-me': `[sudo] password for visitor: ••••••••••
 Verifying credentials...
@@ -255,7 +256,10 @@ Verifying credentials...
 ✓ Portfolio reviewed
 ✓ Background check passed
 
-HIRE GRANTED — contact: izanrubiocerezo@gmail.com`,
+Acceso concedido.
+Izan está disponible para nuevos proyectos.
+Contacto: ${personal.contact.email}
+Descarga el CV: /cv.pdf`,
   },
   easterEggs: {
     'nmap localhost': `Starting Nmap 7.94 ( https://nmap.org )
@@ -268,7 +272,7 @@ PORT      STATE     SERVICE
 1337/tcp  filtered  leet
 
 All ports filtered by IzanOS firewall.
-Nice try. Try email instead → izanrubiocerezo@gmail.com`,
+Nice try. Try email instead → ${personal.contact.email}`,
 
     exploit: `[*] Initializing exploit module...
 [*] Target: localhost
@@ -279,7 +283,7 @@ Nice try. Try email instead → izanrubiocerezo@gmail.com`,
 [-] Social engineering rejected (no one home)
 [!] EXPLOIT FAILED
 
-Suggestion: email works better → izanrubiocerezo@gmail.com`,
+Suggestion: email works better → ${personal.contact.email}`,
 
     'sudo rm -rf /': `[sudo] password for visitor: ••••••••
 rm: cannot remove '/': Operation not permitted
@@ -288,43 +292,17 @@ rm: cannot remove '/home/izanos': It's my house, you can't delete me.
 
 Nice try.`,
   },
-  projectDetails: {
-    stastarat: `StasTarat.es — Analytics Platform
-──────────────────────────────────
-Stack   Next.js · Node.js · PostgreSQL · WebSockets
-Demo    https://stastatat.es
-Repo    github.com/izanrubio/stastarat
-
-Real-time stats platform for online communities.
-WebSocket streaming, role-based access, Stripe billing.`,
-
-    laraveles: `Laraveles.es — Laravel Community Hub
-──────────────────────────────────────
-Stack   Laravel · PHP · MySQL · Alpine.js · Tailwind
-Demo    https://laraveles.es
-Repo    github.com/izanrubio/laraveles
-
-Spanish-language knowledge base for Laravel devs.
-75+ articles, 29 lessons, 12K monthly readers.`,
-
-    goldenbids: `GoldenBids — Auction Platform
-──────────────────────────────
-Stack   React · Laravel · Redis · WebSockets · MySQL
-Demo    https://goldenbids.izanrubio.dev
-Repo    github.com/izanrubio/goldenbids
-
-Real-time concurrent bidding at scale.
-Fraud detection, dispute resolution, admin dashboard.`,
-
-    rooming: `Rooming — Coworking Booking System
-────────────────────────────────────
-Stack   Next.js · TypeScript · Prisma · PostgreSQL · Stripe
-Demo    https://rooming.izanrubio.dev
-Repo    github.com/izanrubio/rooming
-
-Space management for coworking operators.
-Calendar sync, RFID access, multi-tenant architecture.`,
-  },
+  projectDetails: Object.fromEntries(
+    projects.map(p => {
+      const sep = '─'.repeat(38);
+      const demo = p.demo ? `Demo    ${p.demo}\n` : '';
+      const repo = p.repo ? `Repo    ${p.repo}\n` : '';
+      return [
+        p.slug,
+        `${p.name} — ${p.category}\n${sep}\nStack   ${p.stack.join(' · ')}\n${demo}${repo}\n${p.description}`,
+      ];
+    })
+  ) as Record<string, string>,
 };
 
 export const browser = {

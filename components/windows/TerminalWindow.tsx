@@ -104,7 +104,7 @@ export default function TerminalWindow() {
 
     if (cmd.startsWith('cat ')) {
       const slug = cmd.slice(4).trim();
-      const detail = terminal.projectDetails[slug as keyof typeof terminal.projectDetails];
+      const detail = terminal.projectDetails[slug];
       if (detail) { typeOutput(detail); return; }
       typeOutput(`cat: ${cmd.slice(4)}: No such file or directory`, 'error');
       return;
