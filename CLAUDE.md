@@ -26,8 +26,11 @@ npm run build   # production build
   NotificationSystem.tsx — context + hook + stack UI; NotificationProvider, useNotifications, default export
   Spotlight.tsx          — Cmd/Ctrl+K search overlay; apps, skills, projects, quick actions
   BootScreen.tsx     — 4s boot: dragon SVG, progress bar, system messages
-  Desktop.tsx        — #000 bg + ParticleNetwork canvas (hero) + 3 aurora CSS blobs at reduced opacity, no desktop icons
-  ParticleNetwork.tsx — canvas RAF animation: 45 nodes, velocity bounce, mouse proximity lighting, connection lines, data pulses
+  Desktop.tsx        — #000 bg + ParticleNetwork canvas (hero) + 3 aurora CSS blobs at reduced opacity, no desktop icons; manages wallpaper state + context menu
+  ParticleNetwork.tsx — canvas RAF animation: 45 nodes, velocity bounce, mouse proximity lighting, connection lines, data pulses; reads data-wallpaper for node colors; listens for particle-reset custom event
+  ContextMenu.tsx    — right-click desktop menu: 9 items, separators, smart edge-avoidance positioning, Framer Motion entrance
+  WallpaperPicker.tsx — floating modal 320px, 2×3 grid of 6 wallpapers; exports WALLPAPERS constant + WallpaperId type used by Desktop
+  AboutIzanOS.tsx    — centered glassmorphism modal: dragon logo, version, uptime counter, status dot
   Menubar.tsx        — fixed top 28px: IzanOS logo left, lang switcher (CAS·CAT·ENG) + wifi+battery+clock right, blur bg
   Taskbar.tsx        — floating dock (8 icons, all apps), centered bottom-18px
   Window.tsx         — draggable, resizable, glassmorphism shell (TASKBAR_H = 110)
@@ -169,8 +172,8 @@ Implemented in `Window.tsx`. All snap state is local (`useState`) — no changes
 ## Design system
 
 - Background: `#000` + ParticleNetwork canvas (hero, z-index 0) + aurora blobs (z-index 1) at reduced opacity as ambient glow
-- ParticleNetwork: 45 nodes, velocity ±0.4, mouse-proximity lighting (120px radius), connections within 150px, RAF loop, theme read from `data-theme` DOM attr each frame. No React state in loop — all refs
-- Aurora blobs (dark): green `rgba(0,255,102,0.06)`, blue `rgba(0,102,255,0.05)`, cyan `rgba(0,255,255,0.04)` — reduced from 0.12/0.10/0.08 since network is hero
+- ParticleNetwork: 45 nodes, velocity ±0.4, mouse-proximity lighting (120px radius), connections within 150px, RAF loop, reads `data-theme` + `data-wallpaper` DOM attrs each frame. No React state in loop — all refs. Custom event `particle-reset` triggers fade-out → re-randomize → fade-in
+- Aurora blobs (dark): blob colors come from active wallpaper (`WALLPAPERS[id].blobs`) — default aurora: green `rgba(0,255,102,0.06)`, blue `rgba(0,102,255,0.05)`, cyan `rgba(0,255,255,0.04)`
 - Aurora blobs (light): mint `rgba(0,201,122,0.04)`, lavender `rgba(124,58,237,0.03)`, sky `rgba(0,102,255,0.02)`
 - Aurora keyframes in `app/globals.css`: `aurora-drift-1` (20s), `aurora-drift-2` (25s), `aurora-pulse-3` (15s)
 - Dock glass: `rgba(255,255,255,0.08)` + `backdrop-filter:blur(40px) saturate(180%)`, border `rgba(255,255,255,0.12)`
@@ -178,6 +181,24 @@ Implemented in `Window.tsx`. All snap state is local (`useState`) — no changes
 - Window border: `1px solid rgba(0,212,255,0.2)`
 - Title bar: `rgba(8,12,24,0.95)`, traffic lights: `#ff4757` / `#ffd32a` / `#00ff88`
 - Text: primary `#f0f4ff`, secondary `#8892a4`, muted `#4a5568`
+
+## Context menu
+
+- Trigger: right-click on desktop background. Window/Taskbar/Menubar all call `e.stopPropagation()` on `onContextMenu` to block it
+- Component: `ContextMenu.tsx` — receives `{ x, y }` cursor position, renders at smart-adjusted position (flips left/up if near edges), `AnimatePresence` in Desktop.tsx
+- Items: Change Wallpaper → opens `WallpaperPicker`; New Terminal → `openWindow('terminal')`; Search → dispatches `Cmd+K` keydown event; About Me → `openWindow('whoami')`; Open Files → `openWindow('files')`; Switch Theme → `toggleTheme()`; About IzanOS → opens `AboutIzanOS` modal; Refresh Desktop → dispatches `particle-reset` event
+- Copy: all labels in `data/content.ts` under `contextMenu` key
+
+## Wallpaper system
+
+- 6 wallpapers: `aurora` (default), `sunset`, `ocean`, `cyberpunk`, `midnight`, `forest`
+- Definitions exported from `WallpaperPicker.tsx` as `WALLPAPERS` array + `WallpaperId` type
+- Each entry: `{ id, name, thumbnail (CSS gradient), darkBg, blobs[3], nodeColor (RGB triple) }`
+- Desktop.tsx: manages `wallpaperId` state; on change sets `localStorage` + `document.documentElement.setAttribute('data-wallpaper', id)` + updates inline blob colors
+- ParticleNetwork reads `data-wallpaper` each frame from `WALLPAPER_COLORS` map → applies to node/connection/pulse stroke colors in dark mode
+- Light mode node color is always `'0,100,200'` regardless of wallpaper
+- Picker: `WallpaperPicker.tsx` — 2×3 thumbnail grid, selected = cyan 2px border + checkmark; positioned centered via `position:fixed top:50% left:50%`
+- `AboutIzanOS.tsx` — centered modal with backdrop, dragon SVG (same as BootScreen), live uptime counter via `setInterval`
 
 ## Code conventions
 
