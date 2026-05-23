@@ -1,23 +1,11 @@
 'use client';
 
-import { skills, ProficiencyLevel } from '@/data/content';
+import { skills } from '@/data/content';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { t } from '@/data/translations';
 
 const MONO  = 'var(--font-jetbrains), monospace';
 const INTER = 'var(--font-inter), Inter, sans-serif';
-
-const PROF_COLOR: Record<ProficiencyLevel, string> = {
-  Expert:     '#00d4ff',
-  Advanced:   '#00ff88',
-  Proficient: '#ff9500',
-};
-
-const PROF_FILL: Record<ProficiencyLevel, [number, number, number]> = {
-  Expert:     [1, 1, 1],
-  Advanced:   [1, 1, 0.25],
-  Proficient: [1, 0.25, 0.25],
-};
 
 const CATEGORY_ICONS: Record<string, React.ReactElement> = {
   languages: (
@@ -52,33 +40,6 @@ const CATEGORY_ICONS: Record<string, React.ReactElement> = {
     </svg>
   ),
 };
-
-function ProfBadge({ level, lang }: { level: ProficiencyLevel; lang: string }) {
-  const color = PROF_COLOR[level];
-  const fills = PROF_FILL[level];
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '7px', color }}>
-      <span style={{ display: 'flex', gap: '3px', alignItems: 'flex-end' }}>
-        {fills.map((opacity, i) => (
-          <span
-            key={i}
-            style={{
-              display: 'block',
-              width: '4px',
-              height: `${8 + i * 3}px`,
-              borderRadius: '2px',
-              background: color,
-              opacity,
-            }}
-          />
-        ))}
-      </span>
-      <span style={{ fontFamily: MONO, fontSize: '11px', fontWeight: 600 }}>
-        {t(`skills.proficiency.${level}`, lang as Parameters<typeof t>[1])}
-      </span>
-    </div>
-  );
-}
 
 export default function SkillsWindow() {
   const { lang } = useLanguage();
@@ -136,7 +97,6 @@ export default function SkillsWindow() {
                   </div>
                 </div>
               </div>
-              <ProfBadge level={cat.proficiency} lang={lang} />
             </div>
 
             {/* Skill pills */}
