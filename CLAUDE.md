@@ -31,6 +31,7 @@ npm run build   # production build
   ContextMenu.tsx    — right-click desktop menu: 9 items, separators, smart edge-avoidance positioning, Framer Motion entrance
   WallpaperPicker.tsx — floating modal 320px, 2×3 grid of 6 wallpapers; exports WALLPAPERS constant + WallpaperId type used by Desktop
   AboutIzanOS.tsx    — centered glassmorphism modal: dragon logo, version, uptime counter, status dot
+  Screensaver.tsx    — Glitch Clock screensaver: 2min idle (5s with ?screensaver=1), HH:MM:SS Inter weight 100, RGB split + scan lines + jitter glitch every 3-8s, fade-in/out 1000ms/400ms
   Menubar.tsx        — fixed top 28px: IzanOS logo left, lang switcher (CAS·CAT·ENG) + wifi+battery+clock right, blur bg
   Taskbar.tsx        — floating dock (8 icons, all apps), centered bottom-18px
   Window.tsx         — draggable, resizable, glassmorphism shell (TASKBAR_H = 110)
