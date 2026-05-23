@@ -56,8 +56,6 @@ export default function ParticleNetwork() {
   const frameRef     = useRef(0);
   const tickRef      = useRef(0);
   const connRef      = useRef<[number, number][]>([]);
-  // Fade state for reset animation: alpha goes 1→0→1
-  const fadeRef      = useRef({ alpha: 1, target: 1 });
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -117,18 +115,6 @@ export default function ParticleNetwork() {
     };
     window.addEventListener('mousemove', onMouseMove);
 
-    // Reset event: fade out → re-randomize → fade in
-    const onReset = () => {
-      fadeRef.current = { alpha: 1, target: 0 };
-      setTimeout(() => {
-        nodesRef.current = makeNodes(canvas.width, canvas.height);
-        pulsesRef.current = [];
-        connRef.current = [];
-        fadeRef.current = { alpha: 0, target: 1 };
-      }, 350);
-    };
-    window.addEventListener('particle-reset', onReset);
-
     function draw(now: number) {
       frameRef.current = requestAnimationFrame(draw);
       if (!canvas || !ctx) return;
@@ -144,16 +130,7 @@ export default function ParticleNetwork() {
       const nodeRgb    = dark ? (WALLPAPER_COLORS[wallpaper] ?? '0,212,255') : '0,100,200';
       const shadowColor = dark ? `rgb(${nodeRgb})` : '#0064c8';
 
-      // Lerp fade alpha
-      const fade = fadeRef.current;
-      if (Math.abs(fade.alpha - fade.target) > 0.005) {
-        fade.alpha += (fade.target - fade.alpha) * 0.12;
-      } else {
-        fade.alpha = fade.target;
-      }
-
       ctx.clearRect(0, 0, W, H);
-      ctx.globalAlpha = fade.alpha;
 
       // Move nodes + bounce
       for (const n of nodes) {
@@ -229,7 +206,6 @@ export default function ParticleNetwork() {
         return p.progress < 1;
       });
 
-      ctx.globalAlpha = 1;
     }
 
     frameRef.current = requestAnimationFrame(draw);
@@ -239,7 +215,6 @@ export default function ParticleNetwork() {
       clearTimeout(pulseTimeout);
       window.removeEventListener('resize', resize);
       window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('particle-reset', onReset);
     };
   }, []);
 

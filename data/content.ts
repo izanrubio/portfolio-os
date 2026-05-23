@@ -378,5 +378,5 @@ export const contextMenu = {
   switchThemeLight:  'Switch to Light Mode',
   switchThemeDark:   'Switch to Dark Mode',
   aboutOS:           'About IzanOS',
-  refreshDesktop:    'Refresh Desktop',
+  viewGitHub:        'View GitHub',
 };

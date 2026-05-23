@@ -14,9 +14,10 @@ const LS_KEY = 'izanos-wallpaper';
 interface DesktopProps {
   children: React.ReactNode;
   onOpenWindow?: (id: WindowId) => void;
+  onNavigate?: (url: string) => void;
 }
 
-export default function Desktop({ children, onOpenWindow }: DesktopProps) {
+export default function Desktop({ children, onOpenWindow, onNavigate }: DesktopProps) {
   const { theme } = useTheme();
   const dark = theme === 'dark';
 
@@ -98,9 +99,9 @@ export default function Desktop({ children, onOpenWindow }: DesktopProps) {
             y={ctxMenu.y}
             onClose={() => setCtxMenu(null)}
             onOpenWindow={id => { onOpenWindow?.(id); }}
+            onNavigate={url => { onNavigate?.(url); }}
             onOpenWallpaper={() => setShowWallpaper(true)}
             onOpenAbout={() => setShowAbout(true)}
-            onRefreshDesktop={() => {}}
           />
         )}
       </AnimatePresence>

@@ -11,9 +11,9 @@ interface ContextMenuProps {
   y: number;
   onClose: () => void;
   onOpenWindow: (id: WindowId) => void;
+  onNavigate: (url: string) => void;
   onOpenWallpaper: () => void;
   onOpenAbout: () => void;
-  onRefreshDesktop: () => void;
 }
 
 const MENU_W = 220;
@@ -80,7 +80,7 @@ function Item({ label, hint, dark, onClick }: ItemProps) {
 }
 
 export default function ContextMenu({
-  x, y, onClose, onOpenWindow, onOpenWallpaper, onOpenAbout, onRefreshDesktop,
+  x, y, onClose, onOpenWindow, onNavigate, onOpenWallpaper, onOpenAbout,
 }: ContextMenuProps) {
   const { theme, toggleTheme } = useTheme();
   const dark = theme === 'dark';
@@ -155,10 +155,10 @@ export default function ContextMenu({
 
       <Separator dark={dark} />
 
-      <Item label={cm.refreshDesktop} dark={dark} onClick={() => {
+      <Item label={cm.viewGitHub} dark={dark} onClick={() => {
         onClose();
-        window.dispatchEvent(new CustomEvent('particle-reset'));
-        onRefreshDesktop();
+        onOpenWindow('browser');
+        onNavigate('https://github.com/izanrubio');
       }} />
     </motion.div>
   );
