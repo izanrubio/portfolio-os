@@ -73,6 +73,11 @@ export default function ProjectsWindow() {
               <span style={{ fontFamily: INTER, fontSize: '13px', color: active ? '#f0f4ff' : '#8892a4', fontWeight: active ? 500 : 400 }}>
                 {p.name}
               </span>
+              {p.status === 'in-development' && (
+                <span style={{ fontFamily: MONO, fontSize: '9px', color: '#ff9500', border: '1px solid rgba(255,149,0,0.4)', borderRadius: '4px', padding: '2px 6px', flexShrink: 0 }}>
+                  {t('projects.inDev', lang)}
+                </span>
+              )}
             </button>
           );
         })}
@@ -87,18 +92,25 @@ export default function ProjectsWindow() {
           <span style={{ color: '#00d4ff' }}>{proj.category}</span>
         </div>
 
-        <h2
-          style={{
-            fontFamily: INTER,
-            fontSize: '26px',
-            fontWeight: 700,
-            color: '#f0f4ff',
-            lineHeight: 1.15,
-            marginBottom: '12px',
-          }}
-        >
-          {proj.name}<span style={{ color: '#00d4ff' }}>.</span>
-        </h2>
+        <div className="flex items-center gap-3" style={{ marginBottom: '12px' }}>
+          <h2
+            style={{
+              fontFamily: INTER,
+              fontSize: '26px',
+              fontWeight: 700,
+              color: '#f0f4ff',
+              lineHeight: 1.15,
+              margin: 0,
+            }}
+          >
+            {proj.name}<span style={{ color: '#00d4ff' }}>.</span>
+          </h2>
+          {proj.status === 'in-development' && (
+            <span style={{ fontFamily: MONO, fontSize: '9px', color: '#ff9500', border: '1px solid rgba(255,149,0,0.4)', borderRadius: '4px', padding: '2px 6px', flexShrink: 0, alignSelf: 'center' }}>
+              {t('projects.inDev', lang)}
+            </span>
+          )}
+        </div>
 
         <div
           style={{

@@ -84,6 +84,7 @@ const translations: Record<Lang, Record<string, string>> = {
     'skills.cat.devops':    'DevOps',
     'skills.technologies':  'tecnologías',
     'skills.categories':    'categorías',
+    'projects.inDev':       'EN DESARROLLO',
     // Project descriptions
     'proj.stastarat.description':     'Web oficial del Club Stas Tarat, asociación cultural de juegos de mesa, rol y wargames de Terrassa con casi 40 años de historia. Ludoteca digital, calendario de actividades y gestión de socios.',
     'proj.stastarat.longDescription': 'Desarrollo de la web oficial para el Club Stas Tarat, una de las asociaciones culturales de juegos más veteranas de Cataluña. La plataforma incluye ludoteca digital con catálogo de 500+ juegos, calendario interactivo de actividades semanales, sistema de autenticación para socios y secciones para cada modalidad: Jocs de Taula, Rol, Wargames, Blood Bowl, Légamo Kids y Videojocs Retro. Proyecto desarrollado en colaboración con Edgar Quirante y Juan Flores.',
@@ -93,7 +94,7 @@ const translations: Record<Lang, Record<string, string>> = {
     'proj.goldenbids.longDescription': 'Plataforma de subastas en producción con pujas concurrentes a escala. Actualizaciones en directo via WebSocket con UI optimista. Detección de fraude mediante análisis de comportamiento. Flujo de resolución de disputas con panel de administración.',
     'proj.rooming.description':     'Plataforma inteligente de reserva de salas y gestión de espacios de coworking con sincronización de calendario y control de acceso.',
     'proj.rooming.longDescription': 'Solución de gestión de espacios de coworking. Calendario de reservas drag-and-drop, sincronización con Google Calendar, integración de control RFID y gestión de suscripciones Stripe. Arquitectura multi-tenant.',
-    'proj.docflow.description':     'Alternativa española a DocuSign. SaaS para autónomos y pymes que permite enviar contratos, recoger firmas electrónicas con validez legal eIDAS y gestionar documentación desde una sola plataforma.',
+    'proj.docflow.description':     'Alternativa española a DocuSign. SaaS para autónomos y pymes que permite enviar contratos, recoger firmas electrónicas con validez legal eIDAS y gestionar documentación desde una sola plataforma. — Actualmente en desarrollo.',
     'proj.docflow.longDescription': 'DocFlow es una alternativa española a DocuSign desarrollada íntegramente desde cero. Permite a autónomos y pymes enviar contratos y recoger firmas electrónicas con validez legal según el reglamento eIDAS de la UE. PDFs sellados con firmas incrustadas, certificado de auditoría y hash SHA-256. Plantillas inteligentes con detección automática de variables, sistema de equipos con roles, flujo de firma con orden garantizado y recordatorios automáticos. Monetización con Stripe, API pública REST con rate limiting, arquitectura multi-tenant con Laravel Horizon y panel de superadmin con métricas globales.',
     'proj.ciberchurros.description':     'Plataforma de ciberseguridad con ejecución local. Herramientas de red reales (nmap, ping, traceroute, dig) lanzadas desde el navegador pero ejecutadas en la máquina del usuario vía agente Python + TLS.',
     'proj.ciberchurros.longDescription': 'Plataforma web de ciberseguridad con arquitectura de agente local. El usuario ejecuta herramientas de red reales (nmap, ping, traceroute, dig) desde el navegador, pero la ejecución ocurre 100% en su propia máquina mediante un agente Python con conexión TLS cifrada. Backend en Laravel con RBAC, whitelist estricta de comandos y output en tiempo real vía HTTP polling. Incluye base de conocimiento técnico sobre vulnerabilidades, OWASP Top 10 y CVEs.',
@@ -182,6 +183,7 @@ const translations: Record<Lang, Record<string, string>> = {
     'skills.cat.devops':    'DevOps',
     'skills.technologies':  'tecnologies',
     'skills.categories':    'categories',
+    'projects.inDev':       'EN DESENVOLUPAMENT',
     // Project descriptions
     'proj.stastarat.description':     "Web oficial del Club Stas Tarat, associació cultural de jocs de taula, rol i wargames de Terrassa amb gairebé 40 anys d'història. Ludoteca digital, calendari d'activitats i gestió de socis.",
     'proj.stastarat.longDescription': "Desenvolupament de la web oficial per al Club Stas Tarat, una de les associacions culturals de jocs més veteranes de Catalunya. La plataforma inclou ludoteca digital amb catàleg de 500+ jocs, calendari interactiu d'activitats setmanals, sistema d'autenticació per a socis i seccions per a cada modalitat: Jocs de Taula, Rol, Wargames, Blood Bowl, Légamo Kids i Videojocs Retro. Projecte desenvolupat en col·laboració amb Edgar Quirante i Juan Flores.",
@@ -280,6 +282,7 @@ const translations: Record<Lang, Record<string, string>> = {
     'skills.cat.devops':    'DevOps',
     'skills.technologies':  'technologies',
     'skills.categories':    'categories',
+    'projects.inDev':       'IN DEV',
     // Project descriptions
     'proj.stastarat.description':     'Official website for Club Stas Tarat, a cultural association for board games, RPGs and wargames in Terrassa with nearly 40 years of history. Digital library, activity calendar and member management.',
     'proj.stastarat.longDescription': 'Official website for Club Stas Tarat, one of the longest-standing game cultural associations in Catalonia. The platform features a digital library with 500+ games, an interactive weekly activity calendar, member authentication, and dedicated sections for each activity: Jocs de Taula, Rol, Wargames, Blood Bowl, Légamo Kids and Retro Video Games. Developed in collaboration with Edgar Quirante and Juan Flores.',
