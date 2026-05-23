@@ -79,7 +79,12 @@ export default function WallpaperPicker({ current, onSelect, onClose }: Wallpape
     <>
       {/* Backdrop */}
       <div
-        style={{ position: 'fixed', inset: 0, zIndex: 650 }}
+        style={{
+          position: 'fixed', inset: 0, zIndex: 650,
+          background: 'rgba(0,0,0,0.5)',
+          backdropFilter: 'blur(4px)',
+          WebkitBackdropFilter: 'blur(4px)',
+        }}
         onClick={onClose}
         onContextMenu={e => { e.preventDefault(); e.stopPropagation(); onClose(); }}
       />

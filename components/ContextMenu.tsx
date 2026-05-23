@@ -17,7 +17,7 @@ interface ContextMenuProps {
 }
 
 const MENU_W = 220;
-const MENU_H = 340;
+const MENU_H = 320;
 
 function Separator({ dark }: { dark: boolean }) {
   return (
@@ -30,19 +30,13 @@ function Separator({ dark }: { dark: boolean }) {
 }
 
 interface ItemProps {
-  icon: React.ReactNode;
   label: string;
   hint?: string;
   dark: boolean;
   onClick: () => void;
-  danger?: boolean;
 }
 
-function Item({ icon, label, hint, dark, onClick, danger }: ItemProps) {
-  const textColor = danger
-    ? '#ff4757'
-    : dark ? 'rgba(255,255,255,0.85)' : '#1a1a2e';
-
+function Item({ label, hint, dark, onClick }: ItemProps) {
   return (
     <button
       onClick={onClick}
@@ -52,14 +46,13 @@ function Item({ icon, label, hint, dark, onClick, danger }: ItemProps) {
         padding: '0 12px',
         display: 'flex',
         alignItems: 'center',
-        gap: '10px',
         background: 'transparent',
         border: 'none',
         borderRadius: '8px',
         cursor: 'pointer',
         fontFamily: 'var(--font-inter), sans-serif',
         fontSize: '13px',
-        color: textColor,
+        color: dark ? 'rgba(255,255,255,0.85)' : '#1a1a2e',
         textAlign: 'left',
         transition: 'background 0.1s ease',
       }}
@@ -72,9 +65,6 @@ function Item({ icon, label, hint, dark, onClick, danger }: ItemProps) {
         (e.currentTarget as HTMLElement).style.background = 'transparent';
       }}
     >
-      <span style={{ width: '16px', height: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', flexShrink: 0 }}>
-        {icon}
-      </span>
       <span style={{ flex: 1 }}>{label}</span>
       {hint && (
         <span style={{
@@ -96,13 +86,11 @@ export default function ContextMenu({
   const dark = theme === 'dark';
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Smart positioning
   const left = x + MENU_W > (globalThis.innerWidth  ?? 1200) ? x - MENU_W : x;
   const top  = y + MENU_H > (globalThis.innerHeight ?? 800)  ? y - MENU_H : y;
   const originX = left === x ? '0%' : '100%';
   const originY = top  === y ? '0%' : '100%';
 
-  // Close on outside click / Escape
   useEffect(() => {
     const onDown = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) onClose();
@@ -151,59 +139,27 @@ export default function ContextMenu({
       }}
       onContextMenu={e => { e.preventDefault(); e.stopPropagation(); }}
     >
-      <Item
-        icon="🎨" label={cm.changeWallpaper} dark={dark}
-        onClick={() => { onClose(); onOpenWallpaper(); }}
-      />
-      <Item
-        icon={
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <rect x="1" y="1" width="12" height="12" rx="2" stroke={dark ? 'rgba(255,255,255,0.7)' : '#1a1a2e'} strokeWidth="1.2" fill="none"/>
-            <text x="2.5" y="10" style={{ font: 'bold 8px monospace', fill: dark ? '#00ff88' : '#00aa55' }}>{'_'}</text>
-          </svg>
-        }
-        label={cm.newTerminal} dark={dark}
-        onClick={() => { onClose(); onOpenWindow('terminal'); }}
-      />
-      <Item
-        icon="🔍" label={cm.search} hint="⌘K" dark={dark}
-        onClick={openSpotlight}
-      />
+      <Item label={cm.changeWallpaper} dark={dark} onClick={() => { onClose(); onOpenWallpaper(); }} />
+      <Item label={cm.newTerminal}     dark={dark} onClick={() => { onClose(); onOpenWindow('terminal'); }} />
+      <Item label={cm.search} hint="⌘K" dark={dark} onClick={openSpotlight} />
 
       <Separator dark={dark} />
 
-      <Item
-        icon="👤" label={cm.aboutMe} dark={dark}
-        onClick={() => { onClose(); onOpenWindow('whoami'); }}
-      />
-      <Item
-        icon="📁" label={cm.openFiles} dark={dark}
-        onClick={() => { onClose(); onOpenWindow('files'); }}
-      />
+      <Item label={cm.aboutMe}   dark={dark} onClick={() => { onClose(); onOpenWindow('whoami'); }} />
+      <Item label={cm.openFiles} dark={dark} onClick={() => { onClose(); onOpenWindow('files'); }} />
 
       <Separator dark={dark} />
 
-      <Item
-        icon={dark ? '☀️' : '🌙'}
-        label={dark ? cm.switchThemeLight : cm.switchThemeDark}
-        dark={dark}
-        onClick={() => { onClose(); toggleTheme(); }}
-      />
-      <Item
-        icon="ℹ️" label={cm.aboutOS} dark={dark}
-        onClick={() => { onClose(); onOpenAbout(); }}
-      />
+      <Item label={dark ? cm.switchThemeLight : cm.switchThemeDark} dark={dark} onClick={() => { onClose(); toggleTheme(); }} />
+      <Item label={cm.aboutOS} dark={dark} onClick={() => { onClose(); onOpenAbout(); }} />
 
       <Separator dark={dark} />
 
-      <Item
-        icon="🔄" label={cm.refreshDesktop} dark={dark}
-        onClick={() => {
-          onClose();
-          window.dispatchEvent(new CustomEvent('particle-reset'));
-          onRefreshDesktop();
-        }}
-      />
+      <Item label={cm.refreshDesktop} dark={dark} onClick={() => {
+        onClose();
+        window.dispatchEvent(new CustomEvent('particle-reset'));
+        onRefreshDesktop();
+      }} />
     </motion.div>
   );
 }

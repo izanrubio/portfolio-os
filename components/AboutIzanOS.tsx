@@ -58,7 +58,7 @@ export default function AboutIzanOS({ onClose }: AboutIzanOSProps) {
         exit={{ opacity: 0 }}
         transition={{ duration: 0.2 }}
         style={{
-          position: 'fixed', inset: 0, zIndex: 700,
+          position: 'fixed', inset: 0, zIndex: 9997,
           background: 'rgba(0,0,0,0.5)',
           backdropFilter: 'blur(4px)',
           WebkitBackdropFilter: 'blur(4px)',
@@ -77,7 +77,7 @@ export default function AboutIzanOS({ onClose }: AboutIzanOSProps) {
           position: 'fixed',
           top: '50%', left: '50%',
           transform: 'translate(-50%, -50%)',
-          zIndex: 710,
+          zIndex: 9998,
           width: '400px',
           background: dark ? 'rgba(15,15,25,0.96)' : 'rgba(255,255,255,0.96)',
           border: dark ? '1px solid rgba(255,255,255,0.12)' : '1px solid rgba(0,0,0,0.1)',
