@@ -148,7 +148,7 @@ export default function WhoamiWindow() {
         <div className="flex flex-col gap-2" style={{ marginBottom: '24px' }}>
           {[
             {
-              href: personal.github,
+              href: personal.contact.github,
               label: 'github.com/izanrubio',
               icon: (
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -157,11 +157,20 @@ export default function WhoamiWindow() {
               ),
             },
             {
-              href: personal.linkedin,
+              href: personal.contact.linkedin,
               label: 'linkedin.com/in/izanrubio',
               icon: (
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M20.4 20.4h-3.6v-5.6c0-1.3 0-3-1.9-3s-2.2 1.4-2.2 2.9v5.7H9.1V9h3.5v1.6h0a3.8 3.8 0 0 1 3.4-1.9c3.7 0 4.4 2.4 4.4 5.6v6zM5 7.4a2.1 2.1 0 1 1 0-4.2 2.1 2.1 0 0 1 0 4.2zM6.8 20.4H3.2V9h3.6v11.4zM22.2 0H1.8C.8 0 0 .8 0 1.8v20.5c0 1 .8 1.7 1.8 1.7h20.4c1 0 1.8-.8 1.8-1.7V1.8C24 .8 23.2 0 22.2 0z" />
+                </svg>
+              ),
+            },
+            {
+              href: `tel:${personal.contact.phone}`,
+              label: personal.contact.phone,
+              icon: (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.9.7A2 2 0 0 1 22 16.9z"/>
                 </svg>
               ),
             },

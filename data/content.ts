@@ -1,16 +1,27 @@
 import { FileNode } from '@/types/windows';
 
 export const personal = {
-  name: 'Izan Rubio Cerezo',
+  name: 'Izan Rubio',
+  location: 'Terrassa, Barcelona',
+  shortBio: 'Desarrollador Full Stack de Terrassa. Grado Superior en DAW y especialización en Ciberseguridad — todo en el Nicolau Copèrnic. Me encanta construir productos web desde cero y aprender algo nuevo cada día. Si me propongo algo, lo consigo.',
+  longBio: 'Soy Izan Rubio, desarrollador Full Stack de Terrassa, Barcelona. Formado en Desarrollo de Aplicaciones Web y especializado en Ciberseguridad en el Institut Nicolau Copèrnic. Disfruto construyendo todo tipo de proyectos web — desde SaaS hasta plataformas de aprendizaje — y tengo la costumbre de aprender algo nuevo cada día. Cuando me propongo un objetivo, no paro hasta conseguirlo.',
+  photo: '/images/foto-portafolio.png',
+  status: 'open',
+  statusText: 'Disponible para proyectos',
+  contact: {
+    email: 'izanrubiocerezo@gmail.com',
+    phone: '637689946',
+    github: 'https://github.com/izanrubio',
+    linkedin: 'https://linkedin.com/in/izan-rubio-cerezo',
+  },
+  // kept for backward compat with LockScreen + PortfolioSite
   shortName: 'Izan Rubio',
   role: 'Full Stack Developer & Cybersecurity Specialist',
   roles: ['Full Stack Developer', 'Cybersecurity Specialist', 'Problem Solver', 'OS-style designer'],
-  bio: 'Developer focused on building secure, performant web applications. Five years writing TypeScript and PHP, last two pivoting hard into offensive security and OS-style frontend experiments. Currently based in Barcelona.',
-  photo: '/images/foto-portafolio.png',
+  bio: 'Desarrollador Full Stack de Terrassa. Grado Superior en DAW y especialización en Ciberseguridad. Me encanta construir productos web desde cero y aprender algo nuevo cada día.',
   email: 'izanrubiocerezo@gmail.com',
   github: 'https://github.com/izanrubio',
-  linkedin: 'https://linkedin.com/in/izanrubio',
-  location: 'Barcelona, Spain · UTC+1',
+  linkedin: 'https://linkedin.com/in/izan-rubio-cerezo',
 };
 
 export const projects = [

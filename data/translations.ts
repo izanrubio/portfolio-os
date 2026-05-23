@@ -51,6 +51,7 @@ const translations: Record<Lang, Record<string, string>> = {
     'whoami.role.3':      'Diseñador OS-style',
     // Contact
     'contact.label.email':    'Email',
+    'contact.label.phone':    'Teléfono',
     'contact.label.github':   'GitHub',
     'contact.label.linkedin': 'LinkedIn',
     'contact.label.location': 'Ubicación',
@@ -152,6 +153,7 @@ const translations: Record<Lang, Record<string, string>> = {
     'whoami.role.3':      'Dissenyador OS-style',
     // Contact
     'contact.label.email':    'Email',
+    'contact.label.phone':    'Telèfon',
     'contact.label.github':   'GitHub',
     'contact.label.linkedin': 'LinkedIn',
     'contact.label.location': 'Ubicació',
@@ -253,6 +255,7 @@ const translations: Record<Lang, Record<string, string>> = {
     'whoami.role.3':      'OS-style Designer',
     // Contact
     'contact.label.email':    'Email',
+    'contact.label.phone':    'Phone',
     'contact.label.github':   'GitHub',
     'contact.label.linkedin': 'LinkedIn',
     'contact.label.location': 'Location',
