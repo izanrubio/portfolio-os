@@ -10,6 +10,7 @@ import WindowManager, { useWindowManager } from '@/components/WindowManager';
 import NotificationSystem, { NotificationProvider, useNotifications } from '@/components/NotificationSystem';
 import Spotlight from '@/components/Spotlight';
 import SpotlightTrigger from '@/components/SpotlightTrigger';
+import Screensaver from '@/components/Screensaver';
 import { notifications } from '@/data/content';
 import { t } from '@/data/translations';
 import { LanguageProvider, useLanguage } from '@/contexts/LanguageContext';
@@ -140,6 +141,7 @@ function HomeContent() {
 
           <Spotlight onOpenWindow={openWindow} onNavigate={navigateBrowser} />
           <SpotlightTrigger />
+          <Screensaver />
         </>
       )}
     </>
