@@ -141,7 +141,7 @@ export default function WhoamiWindow() {
             maxWidth: '360px',
           }}
         >
-          {t('whoami.bio', lang)}
+          {personal.shortBio}
         </p>
 
         {/* Social pills */}
