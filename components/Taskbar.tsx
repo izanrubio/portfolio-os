@@ -93,6 +93,7 @@ export default function Taskbar({ windows, onWindowFocus, onWindowToggle, onOpen
     <div
       className="fixed z-50"
       style={{ left: '50%', bottom: '18px', transform: 'translateX(-50%)', overflow: 'visible' }}
+      onContextMenu={e => e.stopPropagation()}
     >
       <div
         className="dock-pill"

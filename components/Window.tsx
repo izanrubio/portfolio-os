@@ -207,6 +207,7 @@ export default function Window({
             style={{ ...positionStyle, zIndex: win.zIndex }}
             className="flex flex-col"
             onMouseDown={() => onFocus(win.id)}
+            onContextMenu={e => e.stopPropagation()}
           >
             <div
               className={`win-chrome flex flex-col flex-1 overflow-hidden${isTerminal ? ' w-term' : ''}`}

@@ -11,7 +11,7 @@ interface Node {
 interface Pulse {
   fromX: number; fromY: number;
   toX: number;   toY: number;
-  progress: number; // 0 → 1
+  progress: number;
   startTime: number;
   duration: number;
 }
@@ -23,20 +23,41 @@ const MAX_PULSES   = 3;
 const PULSE_INTERVAL_MIN = 2000;
 const PULSE_INTERVAL_MAX = 3500;
 
+// Node RGB per wallpaper (dark mode only; light mode always uses '0,100,200')
+const WALLPAPER_COLORS: Record<string, string> = {
+  aurora:    '0,212,255',
+  sunset:    '255,120,50',
+  ocean:     '0,210,200',
+  cyberpunk: '200,0,255',
+  midnight:  '68,130,255',
+  forest:    '0,220,100',
+};
+
 function easeInOut(t: number) {
   return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
 }
 
+function makeNodes(W: number, H: number): Node[] {
+  return Array.from({ length: NODE_COUNT }, () => ({
+    x:  Math.random() * W,
+    y:  Math.random() * H,
+    vx: (Math.random() - 0.5) * 0.8,
+    vy: (Math.random() - 0.5) * 0.8,
+    lit: false,
+  }));
+}
+
 export default function ParticleNetwork() {
-  const canvasRef  = useRef<HTMLCanvasElement>(null);
-  const nodesRef   = useRef<Node[]>([]);
-  const pulsesRef  = useRef<Pulse[]>([]);
-  const mouseRef   = useRef({ x: -999, y: -999 });
+  const canvasRef    = useRef<HTMLCanvasElement>(null);
+  const nodesRef     = useRef<Node[]>([]);
+  const pulsesRef    = useRef<Pulse[]>([]);
+  const mouseRef     = useRef({ x: -999, y: -999 });
   const prevMouseRef = useRef({ x: -999, y: -999 });
-  const frameRef   = useRef(0);
-  const tickRef    = useRef(0);
-  // Cached connection pairs, recalculated every 2 frames
-  const connRef    = useRef<[number, number][]>([]);
+  const frameRef     = useRef(0);
+  const tickRef      = useRef(0);
+  const connRef      = useRef<[number, number][]>([]);
+  // Fade state for reset animation: alpha goes 1→0→1
+  const fadeRef      = useRef({ alpha: 1, target: 1 });
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -51,34 +72,22 @@ export default function ParticleNetwork() {
     resize();
     window.addEventListener('resize', resize);
 
-    // Init nodes
-    nodesRef.current = Array.from({ length: NODE_COUNT }, () => ({
-      x:  Math.random() * window.innerWidth,
-      y:  Math.random() * window.innerHeight,
-      vx: (Math.random() - 0.5) * 0.8,
-      vy: (Math.random() - 0.5) * 0.8,
-      lit: false,
-    }));
+    nodesRef.current = makeNodes(window.innerWidth, window.innerHeight);
 
     // Pulse scheduler
     let pulseTimeout: ReturnType<typeof setTimeout>;
     function schedulePulse() {
       const delay = PULSE_INTERVAL_MIN + Math.random() * (PULSE_INTERVAL_MAX - PULSE_INTERVAL_MIN);
-      pulseTimeout = setTimeout(() => {
-        spawnPulse();
-        schedulePulse();
-      }, delay);
+      pulseTimeout = setTimeout(() => { spawnPulse(); schedulePulse(); }, delay);
     }
     schedulePulse();
 
     function spawnPulse(count = 1) {
       const nodes  = nodesRef.current;
       const pulses = pulsesRef.current;
-      if (pulses.length >= MAX_PULSES + count) return;
       for (let i = 0; i < count; i++) {
         if (pulses.length >= MAX_PULSES) break;
         const from = Math.floor(Math.random() * nodes.length);
-        // pick a connected neighbour
         const neighbours: number[] = [];
         for (let j = 0; j < nodes.length; j++) {
           if (j === from) continue;
@@ -104,10 +113,21 @@ export default function ParticleNetwork() {
       mouseRef.current = { x: e.clientX, y: e.clientY };
       const dx = e.clientX - prevMouseRef.current.x;
       const dy = e.clientY - prevMouseRef.current.y;
-      const delta = Math.sqrt(dx * dx + dy * dy);
-      if (delta > 30) spawnPulse(2 + Math.floor(Math.random()));
+      if (Math.sqrt(dx * dx + dy * dy) > 30) spawnPulse(2 + Math.floor(Math.random()));
     };
     window.addEventListener('mousemove', onMouseMove);
+
+    // Reset event: fade out → re-randomize → fade in
+    const onReset = () => {
+      fadeRef.current = { alpha: 1, target: 0 };
+      setTimeout(() => {
+        nodesRef.current = makeNodes(canvas.width, canvas.height);
+        pulsesRef.current = [];
+        connRef.current = [];
+        fadeRef.current = { alpha: 0, target: 1 };
+      }, 350);
+    };
+    window.addEventListener('particle-reset', onReset);
 
     function draw(now: number) {
       frameRef.current = requestAnimationFrame(draw);
@@ -119,21 +139,33 @@ export default function ParticleNetwork() {
       const mouse  = mouseRef.current;
       const tick   = ++tickRef.current;
 
-      const dark = document.documentElement.getAttribute('data-theme') !== 'light';
+      const dark       = document.documentElement.getAttribute('data-theme') !== 'light';
+      const wallpaper  = document.documentElement.getAttribute('data-wallpaper') ?? 'aurora';
+      const nodeRgb    = dark ? (WALLPAPER_COLORS[wallpaper] ?? '0,212,255') : '0,100,200';
+      const shadowColor = dark ? `rgb(${nodeRgb})` : '#0064c8';
+
+      // Lerp fade alpha
+      const fade = fadeRef.current;
+      if (Math.abs(fade.alpha - fade.target) > 0.005) {
+        fade.alpha += (fade.target - fade.alpha) * 0.12;
+      } else {
+        fade.alpha = fade.target;
+      }
 
       ctx.clearRect(0, 0, W, H);
+      ctx.globalAlpha = fade.alpha;
 
       // Move nodes + bounce
       for (const n of nodes) {
         n.x += n.vx;
         n.y += n.vy;
-        if (n.x < 0)  { n.x = 0;  n.vx = Math.abs(n.vx); }
-        if (n.x > W)  { n.x = W;  n.vx = -Math.abs(n.vx); }
-        if (n.y < 0)  { n.y = 0;  n.vy = Math.abs(n.vy); }
-        if (n.y > H)  { n.y = H;  n.vy = -Math.abs(n.vy); }
+        if (n.x < 0) { n.x = 0; n.vx =  Math.abs(n.vx); }
+        if (n.x > W) { n.x = W; n.vx = -Math.abs(n.vx); }
+        if (n.y < 0) { n.y = 0; n.vy =  Math.abs(n.vy); }
+        if (n.y > H) { n.y = H; n.vy = -Math.abs(n.vy); }
         const mdx = n.x - mouse.x;
         const mdy = n.y - mouse.y;
-        n.lit = Math.sqrt(mdx * mdx + mdy * mdy) < MOUSE_RADIUS;
+        n.lit = mdx * mdx + mdy * mdy < MOUSE_RADIUS * MOUSE_RADIUS;
       }
 
       // Recalculate connections every 2 frames
@@ -158,9 +190,7 @@ export default function ParticleNetwork() {
         const alpha = dark
           ? (bothLit ? 0.35 : anyLit ? 0.18 : 0.06)
           : (bothLit ? 0.25 : anyLit ? 0.12 : 0.05);
-        ctx.strokeStyle = dark
-          ? `rgba(0,212,255,${alpha})`
-          : `rgba(0,100,200,${alpha})`;
+        ctx.strokeStyle = `rgba(${nodeRgb},${alpha})`;
         ctx.lineWidth = bothLit ? 1 : 0.5;
         ctx.beginPath();
         ctx.moveTo(a.x, a.y);
@@ -170,15 +200,13 @@ export default function ParticleNetwork() {
 
       // Draw nodes
       for (const n of nodes) {
-        const r   = n.lit ? 6 : 3;
-        const glow = n.lit ? 15 : 0;
-        ctx.shadowBlur  = glow;
-        ctx.shadowColor = dark ? '#00d4ff' : '#0064c8';
-        ctx.fillStyle   = dark
-          ? (n.lit ? 'rgba(0,212,255,0.9)' : 'rgba(0,212,255,0.35)')
-          : (n.lit ? 'rgba(0,100,200,0.85)' : 'rgba(0,100,200,0.30)');
+        ctx.shadowBlur  = n.lit ? 15 : 0;
+        ctx.shadowColor = shadowColor;
+        ctx.fillStyle   = n.lit
+          ? `rgba(${nodeRgb},0.9)`
+          : `rgba(${nodeRgb},0.35)`;
         ctx.beginPath();
-        ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+        ctx.arc(n.x, n.y, n.lit ? 6 : 3, 0, Math.PI * 2);
         ctx.fill();
       }
       ctx.shadowBlur = 0;
@@ -191,8 +219,8 @@ export default function ParticleNetwork() {
         const py = p.fromY + (p.toY - p.fromY) * t;
 
         ctx.shadowBlur  = 10;
-        ctx.shadowColor = dark ? '#ffffff' : '#0064c8';
-        ctx.fillStyle   = dark ? 'rgba(255,255,255,0.9)' : 'rgba(0,80,200,0.85)';
+        ctx.shadowColor = dark ? '#ffffff' : shadowColor;
+        ctx.fillStyle   = dark ? 'rgba(255,255,255,0.9)' : `rgba(${nodeRgb},0.85)`;
         ctx.beginPath();
         ctx.arc(px, py, 2.5, 0, Math.PI * 2);
         ctx.fill();
@@ -200,6 +228,8 @@ export default function ParticleNetwork() {
 
         return p.progress < 1;
       });
+
+      ctx.globalAlpha = 1;
     }
 
     frameRef.current = requestAnimationFrame(draw);
@@ -209,6 +239,7 @@ export default function ParticleNetwork() {
       clearTimeout(pulseTimeout);
       window.removeEventListener('resize', resize);
       window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('particle-reset', onReset);
     };
   }, []);
 
@@ -217,10 +248,8 @@ export default function ParticleNetwork() {
       ref={canvasRef}
       style={{
         position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
+        top: 0, left: 0,
+        width: '100vw', height: '100vh',
         zIndex: 0,
         pointerEvents: 'none',
       }}

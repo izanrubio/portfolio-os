@@ -368,3 +368,15 @@ export const notifications = {
     body:  'Nice try. Access denied. I see you.',
   },
 };
+
+export const contextMenu = {
+  changeWallpaper:   'Change Wallpaper',
+  newTerminal:       'New Terminal',
+  search:            'Search IzanOS...',
+  aboutMe:           'About Me',
+  openFiles:         'Open Files',
+  switchThemeLight:  'Switch to Light Mode',
+  switchThemeDark:   'Switch to Dark Mode',
+  aboutOS:           'About IzanOS',
+  refreshDesktop:    'Refresh Desktop',
+};

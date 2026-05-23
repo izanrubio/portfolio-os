@@ -118,7 +118,7 @@ function HomeContent() {
         <>
           <Menubar />
 
-          <Desktop>
+          <Desktop onOpenWindow={openWindow}>
             <WindowManager
               windows={windows}
               closeWindow={closeWindow}

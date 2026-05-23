@@ -120,6 +120,7 @@ export default function Menubar() {
   return (
     <div
       className="menubar-bar"
+      onContextMenu={e => e.stopPropagation()}
       style={{
         position: 'fixed', top: 0, left: 0, right: 0, height: '28px',
         backdropFilter: 'blur(20px) saturate(180%)',
