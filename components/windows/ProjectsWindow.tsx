@@ -316,21 +316,12 @@ export default function ProjectsWindow() {
                 position: 'relative',
                 zIndex: 2,
                 margin: 0,
-                color: '#fff',
+                color: '#ffffff',
+                textShadow: `0 0 40px ${hexToRgba(accent, 0.45)}`,
+                transition: 'text-shadow 0.35s ease',
               }}
             >
-              <span
-                style={{
-                  display: 'inline',
-                  background: `linear-gradient(135deg, #ffffff 0%, ${accent} 100%)`,
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                  transition: 'background 0.35s ease',
-                }}
-              >
-                {proj.name}
-              </span>
+              {proj.name}
             </h1>
           </div>
 
