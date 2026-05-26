@@ -132,71 +132,38 @@ export const skills: SkillCategory[] = [
 export const filesystem: FileNode = {
   name: 'Home',
   type: 'folder',
-  icon: '🏠',
   children: [
     {
       name: 'Documents',
       type: 'folder',
-      icon: '📄',
       children: [
         {
           name: 'Projects',
           type: 'folder',
-          icon: '📁',
           children: [
-            {
-              name: 'StasTarat.es',
-              type: 'file',
-              icon: '🌐',
-              action: { type: 'browser', payload: 'https://stastarat.com' },
-            },
-            {
-              name: 'Laraveles.es',
-              type: 'file',
-              icon: '🌐',
-              action: { type: 'browser', payload: 'https://laraveles.es' },
-            },
+            { name: 'CiberChurros.url',   type: 'url',    url: 'https://ciberchurros.com' },
+            { name: 'Laraveles.url',      type: 'url',    url: 'https://laraveles.es' },
+            { name: 'StasTarat.url',      type: 'url',    url: 'https://stastarat.com' },
+            { name: 'DocFlow.readme',     type: 'readme', status: 'wip' },
+            { name: 'BarberCompte.readme',type: 'readme', status: 'wip' },
           ],
         },
-        {
-          name: 'IzanRubio_CV.pdf',
-          type: 'file',
-          icon: '📄',
-          action: { type: 'download', payload: '/cv.pdf' },
-        },
+        { name: 'IzanRubio_CV.pdf', type: 'pdf', path: '/cv.pdf' },
       ],
     },
     {
       name: 'Pictures',
       type: 'folder',
-      icon: '🖼️',
       children: [
-        {
-          name: 'foto-portafolio.png',
-          type: 'file',
-          icon: '🖼️',
-          action: { type: 'preview', payload: '/images/foto-portafolio.png' },
-        },
+        { name: 'foto-portafolio.png', type: 'png', path: '/images/foto-portafolio.png' },
       ],
     },
     {
       name: 'Downloads',
       type: 'folder',
-      icon: '⬇️',
       children: [
-        {
-          name: 'IzanRubio_CV.pdf',
-          type: 'file',
-          icon: '📄',
-          action: { type: 'download', payload: '/cv.pdf' },
-        },
+        { name: 'IzanRubio_CV.pdf', type: 'pdf', path: '/cv.pdf' },
       ],
-    },
-    {
-      name: 'Trash',
-      type: 'folder',
-      icon: '🗑️',
-      children: [],
     },
   ],
 };

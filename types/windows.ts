@@ -15,9 +15,12 @@ export interface WindowState {
 
 export interface FileNode {
   name: string;
-  type: 'file' | 'folder';
+  type: 'file' | 'folder' | 'url' | 'pdf' | 'png' | 'readme';
   icon?: string;
   children?: FileNode[];
+  url?: string;      // for type='url'
+  path?: string;     // for type='pdf' | 'png'
+  status?: string;   // for type='readme'
   action?: {
     type: 'download' | 'browser' | 'preview';
     payload?: string;
