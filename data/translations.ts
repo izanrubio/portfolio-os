@@ -68,6 +68,7 @@ const translations: Record<Lang, Record<string, string>> = {
     'contact.sendHeader': 'ENVIAR MENSAJE',
     'contact.form.send':               'Enviar mensaje',
     'contact.form.sent':               'Mensaje enviado — te responderé pronto.',
+    'contact.responseTime':            'Tiempo de respuesta típico: < 24h',
     // Projects
     'projects.openDemo':       'Ver demo',
     'projects.viewCode':       'Ver código',
@@ -170,6 +171,7 @@ const translations: Record<Lang, Record<string, string>> = {
     'contact.sendHeader': 'ENVIAR MISSATGE',
     'contact.form.send':               'Enviar missatge',
     'contact.form.sent':               "Missatge enviat — et respondré aviat.",
+    'contact.responseTime':            'Temps de resposta típic: < 24h',
     // Projects
     'projects.openDemo':        'Veure demo',
     'projects.viewCode':        'Veure codi',
@@ -272,6 +274,7 @@ const translations: Record<Lang, Record<string, string>> = {
     'contact.sendHeader': 'SEND A MESSAGE',
     'contact.form.send':               'Send message',
     'contact.form.sent':               "Message sent — I'll get back to you soon.",
+    'contact.responseTime':            'Typical response time: < 24h',
     // Projects
     'projects.openDemo':        'Open demo',
     'projects.viewCode':        'View code',

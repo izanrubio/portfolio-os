@@ -1,66 +1,72 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useCallback } from 'react';
 import { personal } from '@/data/content';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { t } from '@/data/translations';
 
-const MONO  = 'var(--font-jetbrains), monospace';
-const INTER = 'var(--font-inter), Inter, sans-serif';
+const MONO   = 'var(--font-jetbrains), monospace';
+const INTER  = 'var(--font-inter), Inter, sans-serif';
+const ACCENT = '#00d4ff';
+const GREEN  = '#00ff88';
 
-const CONTACT_ITEMS_BASE = [
+const SENT_BTN: Record<string, string> = { CAS: '✓ ¡Enviado!', CAT: '✓ Enviat!', ENG: '✓ Message sent!' };
+
+type FormKey = 'name' | 'email' | 'subject' | 'message';
+
+const CONTACT_ITEMS = [
   {
-    key: 'email' as const,
-    labelKey: 'contact.label.email',
+    key: 'email',
+    label: 'Email',
     value: personal.contact.email,
     href: `mailto:${personal.contact.email}`,
     icon: (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
         <rect x="3" y="5" width="18" height="14" rx="2"/>
         <polyline points="3 7 12 13 21 7"/>
       </svg>
     ),
   },
   {
-    key: 'phone',
-    labelKey: 'contact.label.phone',
-    value: personal.contact.phone,
-    href: `tel:${personal.contact.phone}`,
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.9.7A2 2 0 0 1 22 16.9z"/>
-      </svg>
-    ),
-  },
-  {
     key: 'github',
-    labelKey: 'contact.label.github',
-    value: 'github.com/izanrubio',
+    label: 'GitHub',
+    value: personal.contact.github.replace('https://', ''),
     href: personal.contact.github,
     icon: (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+      <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: '16px', height: '16px' }}>
         <path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.2-.8.1-.8.1-.8 1.3.1 2 1.3 2 1.3 1.2 2 3 1.4 3.8 1.1.1-.9.4-1.4.8-1.8-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.3 1.3-3.2-.1-.3-.6-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.7.3 2.9.1 3.2.8.9 1.3 2 1.3 3.2 0 4.6-2.8 5.6-5.5 6 .4.4.8 1 .8 2.2v3.2c0 .3.2.7.8.6A12 12 0 0 0 12 .5z"/>
       </svg>
     ),
   },
   {
     key: 'linkedin',
-    labelKey: 'contact.label.linkedin',
-    value: 'linkedin.com/in/izanrubio',
+    label: 'LinkedIn',
+    value: personal.contact.linkedin.replace('https://', ''),
     href: personal.contact.linkedin,
     icon: (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+      <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: '16px', height: '16px' }}>
         <path d="M20.4 20.4h-3.6v-5.6c0-1.3 0-3-1.9-3s-2.2 1.4-2.2 2.9v5.7H9.1V9h3.5v1.6h0a3.8 3.8 0 0 1 3.4-1.9c3.7 0 4.4 2.4 4.4 5.6v6zM5 7.4a2.1 2.1 0 1 1 0-4.2 2.1 2.1 0 0 1 0 4.2zM6.8 20.4H3.2V9h3.6v11.4zM22.2 0H1.8C.8 0 0 .8 0 1.8v20.5c0 1 .8 1.7 1.8 1.7h20.4c1 0 1.8-.8 1.8-1.7V1.8C24 .8 23.2 0 22.2 0z"/>
       </svg>
     ),
   },
   {
-    key: 'location',
-    labelKey: 'contact.label.location',
-    value: personal.location,
-    href: undefined,
+    key: 'phone',
+    label: 'Phone',
+    value: personal.contact.phone.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3'),
+    href: `tel:+34${personal.contact.phone}`,
     icon: (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
+        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+      </svg>
+    ),
+  },
+  {
+    key: 'location',
+    label: 'Location',
+    value: personal.location,
+    href: undefined as string | undefined,
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px' }}>
         <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/>
         <circle cx="12" cy="10" r="3"/>
       </svg>
@@ -68,241 +74,301 @@ const CONTACT_ITEMS_BASE = [
   },
 ];
 
-const inputStyle: React.CSSProperties = {
-  width: '100%',
-  background: 'rgba(0,0,0,0.3)',
-  border: '1px solid rgba(0,212,255,0.12)',
-  borderRadius: '6px',
-  padding: '9px 13px',
-  color: '#f0f4ff',
-  fontFamily: INTER,
-  fontSize: '13px',
-  outline: 'none',
-  transition: 'border-color 0.15s',
-};
+function fieldInputStyle(hasError: boolean): React.CSSProperties {
+  return {
+    display: 'block', width: '100%',
+    padding: '12px 16px', borderRadius: '8px',
+    background: 'rgba(255,255,255,0.04)',
+    border: `1px solid ${hasError ? 'rgba(255,71,87,0.6)' : 'rgba(255,255,255,0.08)'}`,
+    color: '#fff', fontFamily: INTER, fontSize: '14px', fontWeight: 500,
+    outline: 'none',
+    transition: 'border-color .2s ease, box-shadow .2s ease, background .2s ease',
+    animation: hasError ? 'contactShake 0.35s ease' : 'none',
+  };
+}
 
 export default function ContactWindow() {
   const { lang } = useLanguage();
-  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
-  const [sent, setSent] = useState(false);
+  const [form, setForm]     = useState<Record<FormKey, string>>({ name: '', email: '', subject: '', message: '' });
+  const [sent, setSent]     = useState(false);
+  const [errors, setErrors] = useState<Set<FormKey>>(new Set());
+  const [btnHovered, setBtnHovered] = useState(false);
 
-  const contactItems = useMemo(
-    () => CONTACT_ITEMS_BASE.map(item => ({ ...item, label: t(item.labelKey, lang) })),
-    [lang]
-  );
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
+    if (sent) return;
+
+    const empty = (Object.keys(form) as FormKey[]).filter(k => !form[k].trim());
+    if (empty.length > 0) {
+      setErrors(new Set(empty));
+      setTimeout(() => setErrors(new Set()), 400);
+      return;
+    }
+
     setSent(true);
     setForm({ name: '', email: '', subject: '', message: '' });
-    setTimeout(() => setSent(false), 4000);
+    setTimeout(() => setSent(false), 2000);
+  }, [form, sent]);
+
+  const handleFocus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    e.currentTarget.style.borderColor = ACCENT;
+    e.currentTarget.style.background  = 'rgba(255,255,255,0.05)';
+    e.currentTarget.style.boxShadow   = '0 0 0 3px rgba(0,212,255,0.10)';
+  };
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>, hasError: boolean) => {
+    e.currentTarget.style.borderColor = hasError ? 'rgba(255,71,87,0.6)' : 'rgba(255,255,255,0.08)';
+    e.currentTarget.style.background  = 'rgba(255,255,255,0.04)';
+    e.currentTarget.style.boxShadow   = 'none';
   };
 
   return (
-    <div className="h-full flex overflow-hidden" style={{ background: '#0b0d16' }}>
-      {/* Left */}
-      <div
-        className="flex flex-col shrink-0 overflow-y-auto"
-        style={{
-          width: '240px',
-          padding: '26px 24px',
-          background: 'rgba(6,8,16,0.5)',
-          borderRight: '1px solid rgba(0,212,255,0.08)',
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-      >
-        <div style={{ fontFamily: MONO, fontSize: '11px', color: '#4a5568', letterSpacing: '0.15em', marginBottom: '10px' }}>
-          ~/contact
-        </div>
-        <h2 style={{ fontFamily: INTER, fontSize: '22px', fontWeight: 700, color: '#f0f4ff', marginBottom: '10px' }}>
-          {t('contact.heading', lang)}
-        </h2>
-        <p style={{ fontFamily: INTER, fontSize: '12.5px', color: '#8892a4', lineHeight: 1.65, marginBottom: '22px' }}>
-          {t('contact.subheading', lang)}
-        </p>
+    <div
+      className="h-full flex overflow-hidden"
+      style={{
+        background: 'rgba(8,8,12,0.92)',
+        boxShadow: 'inset 0 0 0 1px rgba(0,212,255,0.10)',
+      }}
+    >
+      {/* ── LEFT COLUMN ── */}
+      <div style={{
+        width: '340px', flexShrink: 0,
+        background: 'rgba(0,0,0,0.30)',
+        borderRight: '1px solid rgba(255,255,255,0.06)',
+        padding: '40px 32px',
+        position: 'relative',
+        display: 'flex', flexDirection: 'column',
+        overflow: 'hidden',
+      }}>
+        {/* Decorative "GET IN TOUCH" rotated */}
+        <div aria-hidden style={{
+          position: 'absolute', top: '50%', right: '-180px',
+          transform: 'translateY(-50%) rotate(-90deg)',
+          transformOrigin: 'center',
+          fontFamily: INTER, fontWeight: 900, fontSize: '86px', lineHeight: 1,
+          color: 'rgba(255,255,255,0.025)', letterSpacing: '-0.04em',
+          whiteSpace: 'nowrap', pointerEvents: 'none', zIndex: 0, userSelect: 'none',
+        }}>GET IN TOUCH</div>
 
-        <div className="flex flex-col gap-1" style={{ marginBottom: '22px' }}>
-          {contactItems.map(item => {
-            const inner = (
-              <div className="flex items-start gap-3">
-                <div
-                  style={{
-                    width: '30px', height: '30px',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    background: 'rgba(0,212,255,0.06)',
-                    border: '1px solid rgba(0,212,255,0.12)',
-                    borderRadius: '7px',
-                    color: '#00d4ff',
-                    flexShrink: 0,
-                    marginTop: '1px',
-                  }}
+        {/* Content above decoration */}
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', height: '100%' }}>
+          {/* ~/CONTACT path */}
+          <div style={{
+            fontFamily: MONO, fontSize: '10px', color: ACCENT,
+            letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 600,
+            display: 'flex', alignItems: 'center', gap: '8px',
+          }}>
+            <span style={{
+              display: 'inline-block', width: '6px', height: '6px',
+              border: `1.5px solid ${ACCENT}`, borderRight: 'none', borderTop: 'none',
+              transform: 'rotate(-45deg)', flexShrink: 0,
+            }} />
+            ~/CONTACT
+          </div>
+
+          {/* Title */}
+          <h1 style={{
+            marginTop: '12px', fontFamily: INTER, fontWeight: 800,
+            fontSize: 'clamp(2rem, 4vw, 3rem)', lineHeight: 1,
+            letterSpacing: '-0.03em', color: '#fff',
+          }}>
+            {t('contact.heading', lang).replace('.', '')}<span style={{ color: ACCENT }}>.</span>
+          </h1>
+
+          {/* Subtitle */}
+          <p style={{
+            marginTop: '16px', fontFamily: INTER, fontSize: '14px',
+            lineHeight: 1.8, color: '#9ba3af', maxWidth: '280px',
+          }}>
+            {t('contact.subheading', lang)}
+          </p>
+
+          {/* Contact items */}
+          <div style={{ marginTop: '32px', display: 'flex', flexDirection: 'column' }}>
+            {CONTACT_ITEMS.map((item, idx) => {
+              const isLast = idx === CONTACT_ITEMS.length - 1;
+              const inner = (
+                <div style={{ display: 'grid', gridTemplateColumns: '22px 1fr', gap: '14px', alignItems: 'center', padding: '14px 0', borderBottom: isLast ? 'none' : '1px solid rgba(255,255,255,0.05)' }}>
+                  <span style={{ color: ACCENT, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {item.icon}
+                  </span>
+                  <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+                    <div style={{ fontFamily: MONO, fontSize: '9px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '3px', fontWeight: 600 }}>
+                      {item.label}
+                    </div>
+                    <div className="contact-item-val" style={{ fontFamily: INTER, fontSize: '14px', color: '#fff', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', transition: 'color .2s ease' }}>
+                      {item.value}
+                    </div>
+                  </div>
+                </div>
+              );
+
+              return item.href ? (
+                <a
+                  key={item.key}
+                  href={item.href}
+                  target={item.href.startsWith('mailto') || item.href.startsWith('tel') ? undefined : '_blank'}
+                  rel="noopener noreferrer"
+                  className="contact-item-link"
+                  style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
                 >
-                  {item.icon}
-                </div>
-                <div>
-                  <div style={{ fontFamily: MONO, fontSize: '10px', color: '#4a5568', letterSpacing: '0.1em', marginBottom: '2px' }}>
-                    {item.label}
-                  </div>
-                  <div style={{ fontFamily: MONO, fontSize: '12px', color: '#aab3c3', wordBreak: 'break-all' }}>
-                    {item.value}
-                  </div>
-                </div>
-              </div>
-            );
-            return item.href ? (
-              <a
-                key={item.key}
-                href={item.href}
-                target={item.href.startsWith('mailto') ? undefined : '_blank'}
-                rel="noopener noreferrer"
-                style={{ textDecoration: 'none', padding: '8px 0', display: 'block', transition: 'opacity 0.15s' }}
-                onMouseEnter={e => { e.currentTarget.style.opacity = '0.75'; }}
-                onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
-              >
-                {inner}
-              </a>
-            ) : (
-              <div key={item.key} style={{ padding: '8px 0' }}>{inner}</div>
-            );
-          })}
-        </div>
+                  {inner}
+                </a>
+              ) : (
+                <div key={item.key}>{inner}</div>
+              );
+            })}
+          </div>
 
-        {/* Social icons */}
-        <div className="flex gap-2" style={{ marginBottom: '20px' }}>
-          {[
-            { href: personal.contact.github, label: 'GitHub', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.2-.8.1-.8.1-.8 1.3.1 2 1.3 2 1.3 1.2 2 3 1.4 3.8 1.1.1-.9.4-1.4.8-1.8-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.3 1.3-3.2-.1-.3-.6-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.7.3 2.9.1 3.2.8.9 1.3 2 1.3 3.2 0 4.6-2.8 5.6-5.5 6 .4.4.8 1 .8 2.2v3.2c0 .3.2.7.8.6A12 12 0 0 0 12 .5z"/></svg> },
-            { href: personal.contact.linkedin, label: 'LinkedIn', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20.4 20.4h-3.6v-5.6c0-1.3 0-3-1.9-3s-2.2 1.4-2.2 2.9v5.7H9.1V9h3.5v1.6h0a3.8 3.8 0 0 1 3.4-1.9c3.7 0 4.4 2.4 4.4 5.6v6zM5 7.4a2.1 2.1 0 1 1 0-4.2 2.1 2.1 0 0 1 0 4.2zM6.8 20.4H3.2V9h3.6v11.4z"/></svg> },
-            { href: `mailto:${personal.contact.email}`, label: 'Email', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="5" width="18" height="14" rx="2"/><polyline points="3 7 12 13 21 7"/></svg> },
-            { href: `tel:${personal.contact.phone}`, label: 'Phone', icon: <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.9.7A2 2 0 0 1 22 16.9z"/></svg> },
-          ].map(s => (
-            <a
-              key={s.label}
-              href={s.href}
-              target={s.href.startsWith('mailto') ? undefined : '_blank'}
-              rel="noopener noreferrer"
-              aria-label={s.label}
-              style={{
-                width: '32px', height: '32px',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: 'rgba(0,212,255,0.06)', border: '1px solid rgba(0,212,255,0.12)',
-                borderRadius: '8px', color: '#8892a4',
-                textDecoration: 'none', transition: 'all 0.15s',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.color = '#00d4ff'; e.currentTarget.style.borderColor = 'rgba(0,212,255,0.35)'; }}
-              onMouseLeave={e => { e.currentTarget.style.color = '#8892a4'; e.currentTarget.style.borderColor = 'rgba(0,212,255,0.12)'; }}
-            >
-              {s.icon}
-            </a>
-          ))}
-        </div>
-
-        {/* Deco text */}
-        <div
-          style={{
-            position: 'absolute', bottom: '16px', left: '12px', right: '12px',
-            fontFamily: INTER, fontWeight: 800, fontSize: '32px',
-            color: 'rgba(0,212,255,0.04)',
-            letterSpacing: '0.05em',
-            pointerEvents: 'none', userSelect: 'none',
-            lineHeight: 1,
-          }}
-        >
-          GET IN<br />TOUCH
+          {/* Bottom: response pill + status */}
+          <div style={{ marginTop: 'auto', paddingTop: '22px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <span style={{
+              alignSelf: 'flex-start',
+              display: 'inline-flex', alignItems: 'center', gap: '6px',
+              padding: '6px 14px', borderRadius: '20px',
+              background: 'rgba(0,255,136,0.08)', border: '1px solid rgba(0,255,136,0.20)',
+              color: GREEN, fontFamily: MONO, fontSize: '10px', fontWeight: 500, letterSpacing: '0.04em',
+            }}>
+              <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: '10px', height: '10px', flexShrink: 0, filter: 'drop-shadow(0 0 4px rgba(0,255,136,0.6))' }}>
+                <path d="M13 2 4 14h7l-1 8 9-12h-7z"/>
+              </svg>
+              {t('contact.responseTime', lang)}
+            </span>
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: '9px',
+              fontFamily: MONO, fontSize: '10px', color: 'rgba(255,255,255,0.85)',
+              fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase',
+            }}>
+              <span style={{
+                width: '8px', height: '8px', borderRadius: '50%',
+                background: GREEN, boxShadow: `0 0 8px ${GREEN}, 0 0 16px ${GREEN}`,
+                animation: 'contactPulseDot 1.6s ease-in-out infinite',
+                flexShrink: 0, display: 'inline-block',
+              }} />
+              {personal.statusText}
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* Right: form */}
-      <form
-        onSubmit={handleSubmit}
-        className="flex-1 flex flex-col overflow-y-auto"
-        style={{ padding: '26px 24px', gap: '0' }}
-      >
-        <div style={{ fontFamily: MONO, fontSize: '10px', color: '#4a5568', letterSpacing: '0.15em', marginBottom: '18px' }}>
-          {t('contact.sendHeader', lang)}
-        </div>
+      {/* ── RIGHT COLUMN ── */}
+      <div style={{
+        flex: 1, minWidth: 0,
+        padding: '40px 36px',
+        background: 'rgba(255,255,255,0.01)',
+        position: 'relative',
+        overflow: 'hidden',
+        display: 'flex', flexDirection: 'column',
+      }}>
+        {/* Top hairline */}
+        <div style={{
+          position: 'absolute', top: 0, left: 0, right: 0, height: '1px',
+          background: 'linear-gradient(90deg, transparent 0%, rgba(0,212,255,0.4) 30%, rgba(0,212,255,0.4) 70%, transparent 100%)',
+          pointerEvents: 'none',
+        }} />
+        {/* Accent blob */}
+        <div style={{
+          position: 'absolute', width: '150px', height: '150px',
+          top: '-40px', right: '-40px',
+          background: `radial-gradient(circle, ${ACCENT}, transparent 60%)`,
+          filter: 'blur(40px)', opacity: 0.05,
+          pointerEvents: 'none', zIndex: 0,
+        }} />
 
-        {sent && (
-          <div
-            style={{
-              marginBottom: '14px', padding: '10px 14px',
-              background: 'rgba(0,255,136,0.06)', border: '1px solid rgba(0,255,136,0.25)',
-              borderRadius: '6px', color: '#00ff88',
-              fontFamily: MONO, fontSize: '12px',
-            }}
-          >
-            {t('contact.form.sent', lang)}
+        {/* Content above blob */}
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', height: '100%' }}>
+          <div style={{
+            fontFamily: MONO, fontSize: '10px', color: 'rgba(255,255,255,0.4)',
+            letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '24px', fontWeight: 600,
+          }}>
+            {t('contact.sendHeader', lang)}
           </div>
-        )}
 
-        {[
-          { id: 'c-name',    type: 'text',  labelKey: 'contact.form.name',    placeholderKey: 'contact.form.namePlaceholder',    key: 'name' as const    },
-          { id: 'c-email',   type: 'email', labelKey: 'contact.form.email',   placeholderKey: 'contact.form.emailPlaceholder',   key: 'email' as const   },
-          { id: 'c-subject', type: 'text',  labelKey: 'contact.form.subject', placeholderKey: 'contact.form.subjectPlaceholder', key: 'subject' as const },
-        ].map(field => (
-          <div key={field.id} style={{ marginBottom: '12px' }}>
-            <label
-              htmlFor={field.id}
-              style={{ display: 'block', fontFamily: MONO, fontSize: '11px', color: '#4a5568', letterSpacing: '0.1em', marginBottom: '6px' }}
+          <form onSubmit={handleSubmit} autoComplete="off" noValidate style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+            {([
+              { id: 'ct-name',    key: 'name'    as FormKey, type: 'text',  labelKey: 'contact.form.name',    phKey: 'contact.form.namePlaceholder' },
+              { id: 'ct-email',   key: 'email'   as FormKey, type: 'email', labelKey: 'contact.form.email',   phKey: 'contact.form.emailPlaceholder' },
+              { id: 'ct-subject', key: 'subject' as FormKey, type: 'text',  labelKey: 'contact.form.subject', phKey: 'contact.form.subjectPlaceholder' },
+            ] as const).map(field => (
+              <div key={field.id} style={{ marginBottom: '18px' }}>
+                <label htmlFor={field.id} style={{ display: 'block', fontFamily: MONO, fontSize: '10px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '8px', fontWeight: 600 }}>
+                  {t(field.labelKey, lang)}
+                </label>
+                <input
+                  id={field.id}
+                  type={field.type}
+                  placeholder={t(field.phKey, lang)}
+                  value={form[field.key]}
+                  onChange={e => setForm(f => ({ ...f, [field.key]: e.target.value }))}
+                  style={fieldInputStyle(errors.has(field.key))}
+                  onFocus={handleFocus}
+                  onBlur={e => handleBlur(e, errors.has(field.key))}
+                />
+              </div>
+            ))}
+
+            <div style={{ marginBottom: '18px' }}>
+              <label htmlFor="ct-msg" style={{ display: 'block', fontFamily: MONO, fontSize: '10px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '8px', fontWeight: 600 }}>
+                {t('contact.form.message', lang)}
+              </label>
+              <textarea
+                id="ct-msg"
+                placeholder={t('contact.form.msgPlaceholder', lang)}
+                value={form.message}
+                onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
+                rows={5}
+                style={{ ...fieldInputStyle(errors.has('message')), resize: 'vertical', minHeight: '88px', lineHeight: 1.55 }}
+                onFocus={handleFocus}
+                onBlur={e => handleBlur(e, errors.has('message'))}
+              />
+            </div>
+
+            <button
+              type="submit"
+              style={{
+                marginTop: '6px', width: '100%', padding: '14px',
+                border: 'none', borderRadius: '8px',
+                background: sent ? GREEN : ACCENT,
+                color: '#000', fontFamily: INTER, fontSize: '14px', fontWeight: 700,
+                letterSpacing: '0.01em', cursor: 'pointer',
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                transition: 'filter .2s ease, transform .2s ease, box-shadow .2s ease, background .35s ease',
+                boxShadow: sent
+                  ? '0 8px 24px rgba(0,255,136,0.30)'
+                  : btnHovered ? '0 8px 24px rgba(0,212,255,0.30)' : 'none',
+                filter: !sent && btnHovered ? 'brightness(1.1)' : 'none',
+                transform: !sent && btnHovered ? 'scale(1.01)' : 'scale(1)',
+                animation: sent ? 'contactSendPop .35s ease' : 'none',
+              }}
+              onMouseEnter={() => setBtnHovered(true)}
+              onMouseLeave={() => setBtnHovered(false)}
             >
-              {t(field.labelKey, lang)}
-            </label>
-            <input
-              id={field.id}
-              type={field.type}
-              placeholder={t(field.placeholderKey, lang)}
-              value={form[field.key]}
-              onChange={e => setForm(f => ({ ...f, [field.key]: e.target.value }))}
-              required
-              autoComplete="off"
-              style={inputStyle}
-              onFocus={e => { e.currentTarget.style.borderColor = 'rgba(0,212,255,0.45)'; }}
-              onBlur={e => { e.currentTarget.style.borderColor = 'rgba(0,212,255,0.12)'; }}
-            />
-          </div>
-        ))}
-
-        <div style={{ marginBottom: '16px' }}>
-          <label
-            htmlFor="c-msg"
-            style={{ display: 'block', fontFamily: MONO, fontSize: '11px', color: '#4a5568', letterSpacing: '0.1em', marginBottom: '6px' }}
-          >
-            {t('contact.form.message', lang)}
-          </label>
-          <textarea
-            id="c-msg"
-            placeholder={t('contact.form.msgPlaceholder', lang)}
-            value={form.message}
-            onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
-            required
-            rows={5}
-            style={{ ...inputStyle, resize: 'none' }}
-            onFocus={e => { e.currentTarget.style.borderColor = 'rgba(0,212,255,0.45)'; }}
-            onBlur={e => { e.currentTarget.style.borderColor = 'rgba(0,212,255,0.12)'; }}
-          />
+              <span>{sent ? (SENT_BTN[lang] ?? '✓ Sent!') : t('contact.form.send', lang)}</span>
+              {!sent && <span style={{ fontFamily: MONO, transition: 'transform .2s ease', transform: btnHovered ? 'translateX(3px)' : 'none' }}>→</span>}
+            </button>
+          </form>
         </div>
+      </div>
 
-        <button
-          type="submit"
-          style={{
-            padding: '10px 22px',
-            background: '#00d4ff',
-            color: '#060810',
-            fontFamily: INTER,
-            fontWeight: 700,
-            fontSize: '13px',
-            borderRadius: '7px',
-            border: 'none',
-            cursor: 'pointer',
-            transition: 'opacity 0.15s',
-            alignSelf: 'flex-start',
-          }}
-          onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; }}
-          onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
-        >
-          {t('contact.form.send', lang)} <span>→</span>
-        </button>
-      </form>
+      <style>{`
+        @keyframes contactPulseDot {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50%       { opacity: .35; transform: scale(.8); }
+        }
+        @keyframes contactShake {
+          0%, 100% { transform: translateX(0); }
+          25%      { transform: translateX(-4px); }
+          75%      { transform: translateX(4px); }
+        }
+        @keyframes contactSendPop {
+          0%   { transform: scale(1); }
+          50%  { transform: scale(1.03); }
+          100% { transform: scale(1); }
+        }
+        #ct-name::placeholder, #ct-email::placeholder, #ct-subject::placeholder, #ct-msg::placeholder {
+          color: rgba(255,255,255,0.20);
+        }
+        .contact-item-link:hover .contact-item-val { color: #00d4ff; }
+      `}</style>
     </div>
   );
 }
