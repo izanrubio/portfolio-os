@@ -48,7 +48,7 @@ npm run build   # production build
   /windows
     ProjectsWindow.tsx  — sidebar (250px) with per-project accent color + animated content area; hexToRgba helper; fade transition 150ms out / 160ms in; accent blob, large decorative numeral, WIP pulsing badge, project counter bottom-right; ACCENT map: ciberchurros #00ff88, laraveles #00d4ff, stastarat #7c3aed, docflow #ff9500, barbercompte #ff4757
     WhoamiWindow.tsx    — photo with duotone overlays + role typer animation (useEffect)
-    SkillsWindow.tsx    — categorized skill cards with proficiency bars (Expert/Advanced/Proficient)
+    SkillsWindow.tsx    — sidebar (260px) with 7 categories, per-category accent color + SVG icon + tech count + active gradient left-border; right panel: accent blob, 200px decorative bg text, heading (white + accent glow), skills as tags with stagger entrance animation (30ms/tag via --skill-i CSS var + .izanos-skill-tag class); gridKey remount trick restarts animations on category switch; fade transition 150ms out / 200ms in; counter bottom-right; CAT_ACCENT map: languages/devops #00d4ff, frontend #7c3aed, backend #00ff88, databases #ff9500, security #ff4757, other #a855f7
     ContactWindow.tsx   — split layout: contact items left, form right
     BrowserWindow.tsx   — simulated browser: internal portfolio or iframe
     FilesWindow.tsx     — sidebar groups + breadcrumb toolbar + file grid + statusbar
