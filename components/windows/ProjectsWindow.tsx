@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { projects } from '@/data/content';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { t } from '@/data/translations';
@@ -8,227 +8,501 @@ import { t } from '@/data/translations';
 const MONO  = 'var(--font-jetbrains), monospace';
 const INTER = 'var(--font-inter), Inter, sans-serif';
 
-const STACK_COLOR: Record<string, string> = {
-  'Next.js': '#00d4ff', 'React': '#00d4ff', 'Alpine.js': '#00d4ff', 'TypeScript': '#00d4ff',
-  'Node.js': '#7c3aed', 'Laravel': '#7c3aed', 'PHP': '#7c3aed', 'PostgreSQL': '#7c3aed',
-  'Prisma': '#7c3aed', 'MySQL': '#7c3aed', 'Express': '#7c3aed',
-  'WebSockets': '#00ff88', 'Python': '#00ff88',
-  'Stripe': '#ff9500', 'Redis': '#ff9500', 'Docker': '#ff9500',
-  'Tailwind CSS': '#ec4899', 'Framer Motion': '#ec4899',
+const ACCENT: Record<string, string> = {
+  ciberchurros: '#00ff88',
+  laraveles:    '#00d4ff',
+  stastarat:    '#7c3aed',
+  docflow:      '#ff9500',
+  barbercompte: '#ff4757',
 };
+
+function hexToRgba(hex: string, a: number): string {
+  const n = parseInt(hex.replace('#', ''), 16);
+  return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
+}
+
+function TechTag({ tech, accent }: { tech: string; accent: string }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <span
+      style={{
+        fontFamily: MONO,
+        fontSize: '12px',
+        fontWeight: 500,
+        color: accent,
+        background: hexToRgba(accent, hovered ? 0.18 : 0.08),
+        border: `1px solid ${hexToRgba(accent, hovered ? 0.55 : 0.30)}`,
+        padding: '6px 14px',
+        borderRadius: '6px',
+        cursor: 'default',
+        transition: 'all 0.2s ease',
+        boxShadow: hovered ? `0 0 18px ${hexToRgba(accent, 0.30)}` : 'none',
+        transform: hovered ? 'translateY(-1px)' : 'none',
+        display: 'inline-block',
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      {tech}
+    </span>
+  );
+}
 
 export default function ProjectsWindow() {
   const { lang } = useLanguage();
-  const [activeIdx, setActiveIdx] = useState(0);
-  const proj = projects[activeIdx];
+  const [activeIdx,  setActiveIdx]  = useState(0);
+  const [visibleIdx, setVisibleIdx] = useState(0);
+  const [fading,     setFading]     = useState(false);
+  const isAnimating = useRef(false);
+
+  const handleSelect = useCallback((idx: number) => {
+    if (isAnimating.current || idx === activeIdx) return;
+    isAnimating.current = true;
+    setActiveIdx(idx);
+    setFading(true);
+    setTimeout(() => {
+      setVisibleIdx(idx);
+      setFading(false);
+      isAnimating.current = false;
+    }, 160);
+  }, [activeIdx]);
+
+  const proj       = projects[visibleIdx];
+  const accent     = ACCENT[proj.slug] ?? '#00d4ff';
+  const num        = String(visibleIdx + 1).padStart(2, '0');
+  const total      = String(projects.length).padStart(2, '0');
+  const highlights = (proj as unknown as { highlights?: string[] }).highlights ?? [];
 
   return (
-    <div className="h-full flex overflow-hidden" style={{ background: '#0b0d16' }}>
-      {/* Sidebar */}
+    <div
+      className="h-full flex overflow-hidden"
+      style={{
+        background: 'rgba(8,8,12,0.92)',
+        boxShadow: `inset 0 0 0 1px ${hexToRgba(accent, 0.08)}`,
+        transition: 'box-shadow 0.6s cubic-bezier(.4,0,.2,1)',
+      }}
+    >
+      {/* ── SIDEBAR ── */}
       <aside
-        className="flex flex-col shrink-0 overflow-y-auto"
-        style={{ width: '200px', background: 'rgba(6,8,16,0.7)', borderRight: '1px solid rgba(0,212,255,0.1)' }}
+        style={{
+          width: '250px',
+          flexShrink: 0,
+          background: 'rgba(0,0,0,0.3)',
+          borderRight: '1px solid rgba(255,255,255,0.06)',
+          padding: '22px 0 22px',
+          display: 'flex',
+          flexDirection: 'column',
+          overflowY: 'auto',
+        }}
       >
         <div
-          className="flex items-center justify-between"
-          style={{ padding: '18px 16px 12px', borderBottom: '1px solid rgba(0,212,255,0.08)' }}
+          style={{
+            padding: '0 22px 14px',
+            borderBottom: '1px solid rgba(255,255,255,0.04)',
+            marginBottom: '12px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'baseline',
+          }}
         >
-          <span style={{ fontFamily: MONO, fontSize: '11px', color: '#00d4ff', letterSpacing: '0.15em' }}>
-            ~/projects
-          </span>
-          <span
+          <div
             style={{
-              fontFamily: MONO, fontSize: '11px', color: '#4a5568',
-              background: 'rgba(0,212,255,0.06)', border: '1px solid rgba(0,212,255,0.12)',
-              borderRadius: '4px', padding: '1px 6px',
+              fontFamily: MONO,
+              fontSize: '10px',
+              color: 'rgba(255,255,255,0.4)',
+              letterSpacing: '0.22em',
+              textTransform: 'uppercase',
             }}
           >
-            {String(projects.length).padStart(2, '0')}
-          </span>
+            ▸ Projects
+          </div>
+          <div style={{ fontFamily: MONO, fontSize: '10px', color: 'rgba(255,255,255,0.25)' }}>
+            {total}
+          </div>
         </div>
 
         {projects.map((p, idx) => {
-          const active = idx === activeIdx;
+          const isActive = idx === activeIdx;
+          const pAccent  = ACCENT[p.slug] ?? '#00d4ff';
+          const pNum     = String(idx + 1).padStart(2, '0');
           return (
-            <button
+            <div
               key={p.slug}
-              onClick={() => setActiveIdx(idx)}
-              className="w-full text-left flex items-center gap-3"
+              onClick={() => handleSelect(idx)}
               style={{
-                padding: '12px 16px',
-                background: active ? 'rgba(0,212,255,0.06)' : 'transparent',
-                transition: 'all 0.15s ease',
+                position: 'relative',
+                padding: '14px 22px',
                 cursor: 'pointer',
-                borderTop: 'none',
-                borderRight: 'none',
-                borderBottom: 'none',
-                borderLeft: active ? '2px solid #00d4ff' : '2px solid transparent',
+                borderLeft: `3px solid ${isActive ? pAccent : 'transparent'}`,
+                background: isActive
+                  ? `linear-gradient(90deg, ${hexToRgba(pAccent, 0.12)}, transparent 80%)`
+                  : 'transparent',
+                transition: 'border-color 0.25s ease, background 0.25s ease',
+                overflow: 'hidden',
               }}
-              onMouseEnter={e => { if (!active) { e.currentTarget.style.background = 'rgba(0,212,255,0.03)'; } }}
-              onMouseLeave={e => { if (!active) { e.currentTarget.style.background = 'transparent'; } }}
+              onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'rgba(255,255,255,0.025)'; }}
+              onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
             >
-              <span style={{ fontFamily: MONO, fontSize: '10px', color: active ? '#00d4ff' : '#4a5568', minWidth: '20px' }}>
-                {String(idx + 1).padStart(2, '0')}
-              </span>
-              <span style={{ fontFamily: INTER, fontSize: '13px', color: active ? '#f0f4ff' : '#8892a4', fontWeight: active ? 500 : 400 }}>
+              <div
+                style={{
+                  fontFamily: INTER,
+                  fontSize: '16px',
+                  fontWeight: 700,
+                  color: isActive ? pAccent : 'rgba(255,255,255,0.65)',
+                  letterSpacing: '-0.01em',
+                  transition: 'color 0.25s ease',
+                  lineHeight: 1.1,
+                  position: 'relative',
+                  zIndex: 1,
+                }}
+              >
                 {p.name}
-              </span>
-              {p.status === 'in-development' && (
-                <span style={{ fontFamily: MONO, fontSize: '9px', color: '#ff9500', border: '1px solid rgba(255,149,0,0.4)', borderRadius: '4px', padding: '2px 6px', flexShrink: 0 }}>
-                  {t('projects.inDev', lang)}
-                </span>
-              )}
-            </button>
+              </div>
+              <div
+                style={{
+                  marginTop: '5px',
+                  fontFamily: MONO,
+                  fontSize: '9.5px',
+                  color: isActive ? hexToRgba(pAccent, 0.75) : 'rgba(255,255,255,0.3)',
+                  letterSpacing: '0.2em',
+                  textTransform: 'uppercase',
+                  transition: 'color 0.25s ease',
+                  position: 'relative',
+                  zIndex: 1,
+                }}
+              >
+                {p.category}
+              </div>
+              {/* Faded giant background numeral */}
+              <div
+                style={{
+                  position: 'absolute',
+                  right: '18px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  fontFamily: INTER,
+                  fontWeight: 900,
+                  fontSize: '56px',
+                  lineHeight: 1,
+                  color: isActive ? hexToRgba(pAccent, 0.08) : 'rgba(255,255,255,0.025)',
+                  letterSpacing: '-0.05em',
+                  pointerEvents: 'none',
+                  transition: 'color 0.25s ease',
+                  userSelect: 'none',
+                }}
+              >
+                {pNum}
+              </div>
+            </div>
           );
         })}
       </aside>
 
-      {/* Main panel */}
-      <div className="flex-1 flex flex-col overflow-y-auto" style={{ padding: '28px 28px 24px' }}>
-        <div style={{ fontFamily: MONO, fontSize: '10px', color: '#4a5568', letterSpacing: '0.15em', marginBottom: '14px' }}>
-          PROJECT&nbsp;·&nbsp;
-          <b style={{ color: '#8892a4' }}>{String(activeIdx + 1).padStart(2, '0')}</b>
-          &nbsp;·&nbsp;
-          <span style={{ color: '#00d4ff' }}>{proj.category}</span>
-        </div>
-
-        <div className="flex items-center gap-3" style={{ marginBottom: '12px' }}>
-          <h2
-            style={{
-              fontFamily: INTER,
-              fontSize: '26px',
-              fontWeight: 700,
-              color: '#f0f4ff',
-              lineHeight: 1.15,
-              margin: 0,
-            }}
-          >
-            {proj.name}<span style={{ color: '#00d4ff' }}>.</span>
-          </h2>
-          {proj.status === 'in-development' && (
-            <span style={{ fontFamily: MONO, fontSize: '9px', color: '#ff9500', border: '1px solid rgba(255,149,0,0.4)', borderRadius: '4px', padding: '2px 6px', flexShrink: 0, alignSelf: 'center' }}>
-              {t('projects.inDev', lang)}
-            </span>
-          )}
-        </div>
-
+      {/* ── CONTENT ── */}
+      <div
+        style={{
+          flex: 1,
+          minWidth: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Animated accent blob */}
         <div
           style={{
-            height: '2px',
-            width: '42px',
-            background: 'linear-gradient(90deg, #00d4ff, transparent)',
-            marginBottom: '18px',
-            borderRadius: '1px',
+            position: 'absolute',
+            width: '520px',
+            height: '520px',
+            top: '-160px',
+            right: '-160px',
+            background: `radial-gradient(circle, ${accent}, transparent 60%)`,
+            filter: 'blur(80px)',
+            opacity: 0.25,
+            pointerEvents: 'none',
+            zIndex: 0,
+            animation: 'blobDrift 14s ease-in-out infinite',
+            transition: 'background 0.6s cubic-bezier(.4,0,.2,1)',
           }}
         />
 
-        <p
+        {/* Background decorative large numeral */}
+        <div
+          aria-hidden={true}
           style={{
+            position: 'absolute',
+            left: '-10px',
+            top: '-20px',
             fontFamily: INTER,
-            fontSize: '13.5px',
-            color: '#8892a4',
-            lineHeight: 1.75,
-            marginBottom: '20px',
+            fontWeight: 900,
+            fontSize: '380px',
+            lineHeight: 1,
+            color: 'rgba(255,255,255,0.04)',
+            letterSpacing: '-0.05em',
+            pointerEvents: 'none',
+            zIndex: 0,
+            userSelect: 'none',
           }}
         >
-          {t(`proj.${proj.slug}.longDescription`, lang)}
-        </p>
+          {num}
+        </div>
 
-        <div className="flex flex-wrap gap-1.5" style={{ marginBottom: '22px' }}>
-          {proj.stack.map(tech => {
-            const color = STACK_COLOR[tech] ?? '#aab3c3';
-            return (
-              <span
-                key={tech}
+        {/* Detail area — fades on project switch */}
+        <div
+          style={{
+            flex: 1,
+            minHeight: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            opacity: fading ? 0 : 1,
+            transition: fading ? 'opacity 0.15s ease-in' : 'opacity 0.18s ease',
+          }}
+        >
+          {/* Hero */}
+          <div
+            style={{
+              flex: '0 0 45%',
+              padding: '38px 44px 28px',
+              position: 'relative',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              overflow: 'hidden',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                marginBottom: '14px',
+                position: 'relative',
+                zIndex: 1,
+              }}
+            >
+              <div
                 style={{
                   fontFamily: MONO,
-                  fontSize: '11px',
-                  color,
-                  background: `${color}12`,
-                  border: `1px solid ${color}28`,
-                  borderRadius: '5px',
-                  padding: '3px 10px',
+                  fontSize: '10.5px',
+                  color: accent,
+                  letterSpacing: '0.3em',
+                  textTransform: 'uppercase',
+                  fontWeight: 600,
+                  transition: 'color 0.35s ease',
+                  whiteSpace: 'nowrap',
                 }}
               >
-                {tech}
-              </span>
-            );
-          })}
+                {proj.category}
+              </div>
+              <div
+                style={{
+                  flex: 1,
+                  height: '1px',
+                  background: `linear-gradient(90deg, ${hexToRgba(accent, 0.5)}, transparent)`,
+                  transition: 'background 0.35s ease',
+                }}
+              />
+            </div>
+            <h1
+              style={{
+                fontFamily: INTER,
+                fontWeight: 800,
+                fontSize: 'clamp(3rem, 6vw, 5rem)',
+                letterSpacing: '-0.035em',
+                lineHeight: 0.95,
+                background: `linear-gradient(135deg, #ffffff 0%, ${accent} 100%)`,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                position: 'relative',
+                zIndex: 1,
+                margin: 0,
+                transition: 'background 0.35s ease',
+              }}
+            >
+              {proj.name}
+            </h1>
+          </div>
+
+          {/* Divider */}
+          <div
+            style={{
+              height: '1px',
+              margin: '0 44px',
+              background: `linear-gradient(90deg, transparent, ${hexToRgba(accent, 0.6)} 20%, ${hexToRgba(accent, 0.6)} 80%, transparent)`,
+              flexShrink: 0,
+              position: 'relative',
+              zIndex: 1,
+              transition: 'background 0.35s ease',
+            }}
+          />
+
+          {/* Body area */}
+          <div
+            style={{
+              flex: 1,
+              minHeight: 0,
+              padding: '28px 44px 32px',
+              overflowY: 'auto',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '18px',
+              position: 'relative',
+              zIndex: 1,
+            }}
+          >
+            <p
+              style={{
+                fontFamily: INTER,
+                fontSize: '15px',
+                lineHeight: 1.9,
+                color: '#9ba3af',
+                maxWidth: '520px',
+                margin: 0,
+              }}
+            >
+              {t(`proj.${proj.slug}.description`, lang)}
+            </p>
+
+            {highlights.length > 0 && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                {highlights.map((h, i) => (
+                  <span
+                    key={i}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      fontFamily: MONO,
+                      fontSize: '11.5px',
+                      fontWeight: 500,
+                      padding: '6px 12px',
+                      borderRadius: '999px',
+                      color: accent,
+                      background: hexToRgba(accent, 0.10),
+                      border: `1px solid ${hexToRgba(accent, 0.25)}`,
+                      transition: 'all 0.35s ease',
+                    }}
+                  >
+                    <span style={{ fontSize: '12px' }}>▸</span>
+                    <span>{h}</span>
+                  </span>
+                ))}
+              </div>
+            )}
+
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+              {proj.stack.map(tech => (
+                <TechTag key={tech} tech={tech} accent={accent} />
+              ))}
+            </div>
+
+            <div style={{ marginTop: '6px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+              {proj.status === 'in-development' ? (
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    padding: '10px 16px',
+                    borderRadius: '8px',
+                    color: accent,
+                    border: `1px solid ${hexToRgba(accent, 0.5)}`,
+                    background: hexToRgba(accent, 0.04),
+                    fontFamily: MONO,
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    letterSpacing: '0.22em',
+                    textTransform: 'uppercase',
+                    transition: 'all 0.35s ease',
+                  }}
+                >
+                  <span
+                    style={{
+                      width: '8px',
+                      height: '8px',
+                      borderRadius: '50%',
+                      background: accent,
+                      boxShadow: `0 0 8px ${accent}, 0 0 16px ${accent}`,
+                      animation: 'wipPulse 1.5s ease-in-out infinite',
+                      display: 'inline-block',
+                      flexShrink: 0,
+                    }}
+                  />
+                  {t('projects.inDev', lang)}
+                </span>
+              ) : proj.demo ? (
+                <a
+                  href={proj.demo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '9px',
+                    padding: '12px 28px',
+                    borderRadius: '10px',
+                    background: accent,
+                    color: '#001017',
+                    fontFamily: INTER,
+                    fontSize: '13.5px',
+                    fontWeight: 700,
+                    letterSpacing: '0.01em',
+                    cursor: 'pointer',
+                    textDecoration: 'none',
+                    transition: 'filter 0.2s ease, transform 0.2s ease, box-shadow 0.35s ease',
+                    boxShadow: `0 12px 28px -10px ${hexToRgba(accent, 0.5)}`,
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.filter = 'brightness(1.1)';
+                    e.currentTarget.style.transform = 'scale(1.02)';
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.filter = '';
+                    e.currentTarget.style.transform = '';
+                  }}
+                >
+                  {t('projects.openDemo', lang)}
+                  <span style={{ fontFamily: MONO }}>→</span>
+                </a>
+              ) : null}
+            </div>
+          </div>
         </div>
 
-        <div className="flex gap-3" style={{ marginBottom: '28px' }}>
-          {proj.demo && (
-            <a
-              href={proj.demo}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: '6px',
-                fontFamily: INTER, fontSize: '12.5px', fontWeight: 600,
-                color: '#060810', background: '#00d4ff',
-                padding: '8px 18px', borderRadius: '7px',
-                textDecoration: 'none', transition: 'opacity 0.15s',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; }}
-              onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
-            >
-              {t('projects.openDemo', lang)} <span>→</span>
-            </a>
-          )}
-          {proj.repo && (
-            <a
-              href={proj.repo}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: '6px',
-                fontFamily: INTER, fontSize: '12.5px', fontWeight: 600,
-                color: '#f0f4ff', background: 'transparent',
-                border: '1px solid rgba(0,212,255,0.25)',
-                padding: '8px 18px', borderRadius: '7px',
-                textDecoration: 'none', transition: 'border-color 0.15s',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(0,212,255,0.6)'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,212,255,0.25)'; }}
-            >
-              {t('projects.viewCode', lang)} <span>↗</span>
-            </a>
-          )}
-        </div>
-
+        {/* Counter bottom-right */}
         <div
-          className="grid"
           style={{
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '1px',
-            background: 'rgba(0,212,255,0.08)',
-            borderRadius: '10px',
-            overflow: 'hidden',
+            position: 'absolute',
+            bottom: '16px',
+            right: '18px',
+            fontFamily: MONO,
+            fontSize: '11px',
+            color: 'rgba(255,255,255,0.2)',
+            letterSpacing: '0.12em',
+            fontWeight: 500,
+            zIndex: 2,
+            pointerEvents: 'none',
           }}
         >
-          {[
-            {
-              lbl: t('projects.meta.status', lang),
-              val: (
-                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#00ff88', boxShadow: '0 0 6px #00ff88', display: 'inline-block', flexShrink: 0 }} />
-                  {proj.status}
-                </span>
-              ),
-            },
-            { lbl: t('projects.meta.launched',   lang), val: <span>{proj.launched}</span>  },
-            { lbl: t('projects.meta.repository', lang), val: <span>{proj.repoShort}</span> },
-          ].map(({ lbl, val }) => (
-            <div
-              key={lbl}
-              style={{ background: 'rgba(6,8,16,0.8)', padding: '14px 16px' }}
-            >
-              <div style={{ fontFamily: MONO, fontSize: '10px', color: '#4a5568', letterSpacing: '0.1em', marginBottom: '6px' }}>{lbl}</div>
-              <div style={{ fontFamily: MONO, fontSize: '12px', color: '#f0f4ff' }}>{val}</div>
-            </div>
-          ))}
+          <b style={{ color: accent, fontWeight: 600, transition: 'color 0.35s ease' }}>{num}</b>
+          {' / '}
+          {total}
         </div>
       </div>
+
+      <style>{`
+        @keyframes blobDrift {
+          0%, 100% { transform: translate(0,0) scale(1); }
+          33%       { transform: translate(-40px,30px) scale(1.1); }
+          66%       { transform: translate(20px,-20px) scale(0.95); }
+        }
+        @keyframes wipPulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50%       { opacity: .3; transform: scale(.8); }
+        }
+      `}</style>
     </div>
   );
 }

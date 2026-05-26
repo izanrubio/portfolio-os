@@ -46,7 +46,7 @@ npm run build   # production build
     GameIcon.tsx     — 60×60, red gradient #ff4757→#ff6b35 + game controller SVG
     TerminalIcon.tsx — 60×60, dark gradient + green >_ SVG
   /windows
-    ProjectsWindow.tsx  — sidebar (200px) + detail panel, useState project selector
+    ProjectsWindow.tsx  — sidebar (250px) with per-project accent color + animated content area; hexToRgba helper; fade transition 150ms out / 160ms in; accent blob, large decorative numeral, WIP pulsing badge, project counter bottom-right; ACCENT map: ciberchurros #00ff88, laraveles #00d4ff, stastarat #7c3aed, docflow #ff9500, barbercompte #ff4757
     WhoamiWindow.tsx    — photo with duotone overlays + role typer animation (useEffect)
     SkillsWindow.tsx    — categorized skill cards with proficiency bars (Expert/Advanced/Proficient)
     ContactWindow.tsx   — split layout: contact items left, form right
