@@ -255,6 +255,8 @@ export default function ProjectsWindow() {
             minHeight: 0,
             display: 'flex',
             flexDirection: 'column',
+            position: 'relative',
+            zIndex: 1,
             opacity: fading ? 0 : 1,
             transition: fading ? 'opacity 0.15s ease-in' : 'opacity 0.18s ease',
           }}
@@ -311,17 +313,24 @@ export default function ProjectsWindow() {
                 fontSize: 'clamp(3rem, 6vw, 5rem)',
                 letterSpacing: '-0.035em',
                 lineHeight: 0.95,
-                background: `linear-gradient(135deg, #ffffff 0%, ${accent} 100%)`,
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
                 position: 'relative',
-                zIndex: 1,
+                zIndex: 2,
                 margin: 0,
-                transition: 'background 0.35s ease',
+                color: '#fff',
               }}
             >
-              {proj.name}
+              <span
+                style={{
+                  display: 'inline',
+                  background: `linear-gradient(135deg, #ffffff 0%, ${accent} 100%)`,
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                  transition: 'background 0.35s ease',
+                }}
+              >
+                {proj.name}
+              </span>
             </h1>
           </div>
 
