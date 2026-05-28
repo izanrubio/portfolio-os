@@ -22,17 +22,17 @@ npm run build   # production build
   page.tsx           — boot → desktop orchestration
   globals.css        — CSS theme vars (dark/light), aurora blob classes, reset, scrollbars
 /components
-  LockScreen.tsx     — aurora bg + frosted glass, clock, profile, breathe hint, Framer Motion unlock fade
+  LockScreen.tsx     — aurora bg + frosted glass, IzanOS logo (32px white 40% opacity) above clock, clock, profile, breathe hint, Framer Motion unlock fade
   NotificationSystem.tsx — context + hook + stack UI; NotificationProvider, useNotifications, default export
   Spotlight.tsx          — Cmd/Ctrl+K search overlay; apps, skills, projects, quick actions
-  BootScreen.tsx     — 4s boot: dragon SVG, progress bar, system messages
+  BootScreen.tsx     — 4s boot: IzanOS logo SVG (80px, cyan pulse glow animation), progress bar, system messages
   Desktop.tsx        — #000 bg + ParticleNetwork canvas (hero) + 3 aurora CSS blobs at reduced opacity, no desktop icons; manages wallpaper state + context menu
   ParticleNetwork.tsx — canvas RAF animation: 45 nodes, velocity bounce, mouse proximity lighting, connection lines, data pulses; reads data-wallpaper for node colors; listens for particle-reset custom event
   ContextMenu.tsx    — right-click desktop menu: 9 items, separators, smart edge-avoidance positioning, Framer Motion entrance
   WallpaperPicker.tsx — floating modal 320px, 2×3 grid of 6 wallpapers; exports WALLPAPERS constant + WallpaperId type used by Desktop
-  AboutIzanOS.tsx    — centered glassmorphism modal: dragon logo, version, uptime counter, status dot
+  AboutIzanOS.tsx    — centered glassmorphism modal: IzanOS logo SVG (64px, cyan glow), version, uptime counter, status dot
   Screensaver.tsx    — Glitch Clock screensaver: 2min idle (5s with ?screensaver=1), HH:MM:SS Inter weight 100, RGB split + scan lines + jitter glitch every 3-8s, fade-in/out 1000ms/400ms
-  Menubar.tsx        — fixed top 28px: IzanOS logo left, lang switcher (CAS·CAT·ENG) + wifi+battery+clock right, blur bg
+  Menubar.tsx        — fixed top 28px: IzanOS logo SVG (20px white inline) left, lang switcher (CAS·CAT·ENG) + wifi+battery+clock right, blur bg
   Taskbar.tsx        — floating dock (8 icons, all apps), centered bottom-18px
   Window.tsx         — draggable, resizable, glassmorphism shell (TASKBAR_H = 110)
   WindowManager.tsx  — useWindowManager hook + 8-window renderer
@@ -64,6 +64,11 @@ npm run build   # production build
 /types
   windows.ts         — WindowId, WindowState (with browserUrl), FileNode, DesktopIcon
 /public
+  /icons
+    logo.svg       — IzanOS logo: cyan #00d4ff, pointy-top hexagon + "iz" monogram (dot+stem + Z), transparent bg
+    logo-white.svg — same logo, white stroke, transparent bg
+    logo-dark.svg  — same logo, cyan stroke, #0a0f1a bg
+  favicon.ico      — multi-size ICO (16/32/48px) generated from logo
   /images
     foto-portafolio.png  — profile photo (grayscale in whoami)
   cv.pdf                 — CV download (referenced in files.exe)

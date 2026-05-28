@@ -23,6 +23,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" data-theme="dark" className={`${jetbrainsMono.variable} ${inter.variable} h-full`}>
+      <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/icons/logo.svg" type="image/svg+xml" />
+      </head>
       <body className="h-full overflow-hidden">{children}</body>
     </html>
   );

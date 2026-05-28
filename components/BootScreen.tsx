@@ -88,34 +88,17 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             >
               <motion.svg
-                width="96"
-                height="96"
-                viewBox="0 0 96 96"
+                width="80"
+                height="80"
+                viewBox="0 0 100 100"
                 fill="none"
-                animate={{ filter: ['drop-shadow(0 0 8px #00d4ff44)', 'drop-shadow(0 0 16px #00d4ff88)', 'drop-shadow(0 0 8px #00d4ff44)'] }}
+                animate={{ filter: ['drop-shadow(0 0 8px #00d4ff44)', 'drop-shadow(0 0 18px #00d4ffaa)', 'drop-shadow(0 0 8px #00d4ff44)'] }}
                 transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
               >
-                {/* Outer hexagon */}
-                <polygon points="48,4 88,26 88,70 48,92 8,70 8,26" stroke="#00d4ff" strokeWidth="1.5" fill="none" opacity="0.5"/>
-                {/* Inner diamond */}
-                <polygon points="48,20 72,48 48,76 24,48" stroke="#00d4ff" strokeWidth="1" fill="none" opacity="0.7"/>
-                {/* Dragon wings — left */}
-                <path d="M24,48 L8,26 L30,38" stroke="#00d4ff" strokeWidth="1.5" fill="rgba(0,212,255,0.06)" opacity="0.8"/>
-                {/* Dragon wings — right */}
-                <path d="M72,48 L88,26 L66,38" stroke="#00d4ff" strokeWidth="1.5" fill="rgba(0,212,255,0.06)" opacity="0.8"/>
-                {/* Dragon tail */}
-                <path d="M48,76 L38,92 L48,82 L58,92Z" stroke="#00d4ff" strokeWidth="1" fill="rgba(0,212,255,0.1)" opacity="0.8"/>
-                {/* Dragon head */}
-                <path d="M36,26 L48,4 L60,26 L48,20Z" stroke="#00d4ff" strokeWidth="1" fill="rgba(0,212,255,0.12)" opacity="0.9"/>
-                {/* Eyes */}
-                <circle cx="43" cy="36" r="2.5" fill="#00d4ff" opacity="0.9"/>
-                <circle cx="53" cy="36" r="2.5" fill="#00d4ff" opacity="0.9"/>
-                {/* Core glow */}
-                <circle cx="48" cy="48" r="8" fill="rgba(0,212,255,0.15)"/>
-                <circle cx="48" cy="48" r="4" fill="rgba(0,212,255,0.3)"/>
-                {/* Center cross-lines */}
-                <line x1="48" y1="20" x2="48" y2="76" stroke="#00d4ff" strokeWidth="0.5" opacity="0.3"/>
-                <line x1="24" y1="48" x2="72" y2="48" stroke="#00d4ff" strokeWidth="0.5" opacity="0.3"/>
+                <polygon points="50,8 86.4,29 86.4,71 50,92 13.6,71 13.6,29" stroke="#00d4ff" strokeWidth="3.5" strokeLinejoin="round" fill="none"/>
+                <circle cx="34" cy="33" r="3" fill="#00d4ff"/>
+                <line x1="34" y1="40" x2="34" y2="67" stroke="#00d4ff" strokeWidth="3.5" strokeLinecap="round"/>
+                <polyline points="44,40 68,40 44,67 68,67" stroke="#00d4ff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
               </motion.svg>
             </motion.div>
 

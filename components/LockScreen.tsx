@@ -100,6 +100,17 @@ export default function LockScreen({ onUnlocked }: LockScreenProps) {
           position: 'relative', zIndex: 1,
           display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center',
         }}>
+          {/* Logo */}
+          <svg
+            width="32" height="32" viewBox="0 0 100 100" fill="none"
+            style={{ opacity: 0.4, marginBottom: '24px' }}
+          >
+            <polygon points="50,8 86.4,29 86.4,71 50,92 13.6,71 13.6,29" stroke="#ffffff" strokeWidth="3.5" strokeLinejoin="round"/>
+            <circle cx="34" cy="33" r="3" fill="#ffffff"/>
+            <line x1="34" y1="40" x2="34" y2="67" stroke="#ffffff" strokeWidth="3.5" strokeLinecap="round"/>
+            <polyline points="44,40 68,40 44,67 68,67" stroke="#ffffff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+
           {/* Clock */}
           <div style={{
             fontFamily: INTER,
@@ -198,16 +209,11 @@ export default function LockScreen({ onUnlocked }: LockScreenProps) {
             display: 'flex', alignItems: 'center', gap: '9px',
             color: 'rgba(255,255,255,0.35)', fontFamily: MONO, fontSize: '11px', letterSpacing: '0.02em',
           }}>
-            <svg width="13" height="13" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-              <defs>
-                <linearGradient id="lc-logo-grad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-                  <stop offset="0%"  stopColor="#00ff9d"/>
-                  <stop offset="50%" stopColor="#00d4ff"/>
-                  <stop offset="100%" stopColor="#a855f7"/>
-                </linearGradient>
-              </defs>
-              <path d="M16 3 L28 12 L24 28 L8 28 L4 12 Z" stroke="url(#lc-logo-grad)" strokeWidth="2" strokeLinejoin="round" fill="none"/>
-              <circle cx="16" cy="16" r="3.2" fill="url(#lc-logo-grad)"/>
+            <svg width="13" height="13" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+              <polygon points="50,8 86.4,29 86.4,71 50,92 13.6,71 13.6,29" stroke="rgba(255,255,255,0.5)" strokeWidth="3.5" strokeLinejoin="round"/>
+              <circle cx="34" cy="33" r="3" fill="rgba(255,255,255,0.5)"/>
+              <line x1="34" y1="40" x2="34" y2="67" stroke="rgba(255,255,255,0.5)" strokeWidth="3.5" strokeLinecap="round"/>
+              <polyline points="44,40 68,40 44,67 68,67" stroke="rgba(255,255,255,0.5)" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
             <span>IzanOS <b style={{ fontWeight: 500, color: 'rgba(255,255,255,0.55)' }}>{lockScreen.version}</b></span>
           </div>

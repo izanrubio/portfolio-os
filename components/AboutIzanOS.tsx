@@ -107,23 +107,15 @@ export default function AboutIzanOS({ onClose }: AboutIzanOSProps) {
           padding: '32px 32px 24px',
           gap: '12px',
         }}>
-          {/* Dragon logo */}
+          {/* IzanOS logo */}
           <svg
-            width="72" height="72" viewBox="0 0 96 96" fill="none"
+            width="64" height="64" viewBox="0 0 100 100" fill="none"
             style={{ filter: 'drop-shadow(0 0 12px rgba(0,212,255,0.5))' }}
           >
-            <polygon points="48,4 88,26 88,70 48,92 8,70 8,26" stroke="#00d4ff" strokeWidth="1.5" fill="none" opacity="0.5"/>
-            <polygon points="48,20 72,48 48,76 24,48" stroke="#00d4ff" strokeWidth="1" fill="none" opacity="0.7"/>
-            <path d="M24,48 L8,26 L30,38" stroke="#00d4ff" strokeWidth="1.5" fill="rgba(0,212,255,0.06)" opacity="0.8"/>
-            <path d="M72,48 L88,26 L66,38" stroke="#00d4ff" strokeWidth="1.5" fill="rgba(0,212,255,0.06)" opacity="0.8"/>
-            <path d="M48,76 L38,92 L48,82 L58,92Z" stroke="#00d4ff" strokeWidth="1" fill="rgba(0,212,255,0.1)" opacity="0.8"/>
-            <path d="M36,26 L48,4 L60,26 L48,20Z" stroke="#00d4ff" strokeWidth="1" fill="rgba(0,212,255,0.12)" opacity="0.9"/>
-            <circle cx="43" cy="36" r="2.5" fill="#00d4ff" opacity="0.9"/>
-            <circle cx="53" cy="36" r="2.5" fill="#00d4ff" opacity="0.9"/>
-            <circle cx="48" cy="48" r="8" fill="rgba(0,212,255,0.15)"/>
-            <circle cx="48" cy="48" r="4" fill="rgba(0,212,255,0.3)"/>
-            <line x1="48" y1="20" x2="48" y2="76" stroke="#00d4ff" strokeWidth="0.5" opacity="0.3"/>
-            <line x1="24" y1="48" x2="72" y2="48" stroke="#00d4ff" strokeWidth="0.5" opacity="0.3"/>
+            <polygon points="50,8 86.4,29 86.4,71 50,92 13.6,71 13.6,29" stroke="#00d4ff" strokeWidth="3.5" strokeLinejoin="round"/>
+            <circle cx="34" cy="33" r="3" fill="#00d4ff"/>
+            <line x1="34" y1="40" x2="34" y2="67" stroke="#00d4ff" strokeWidth="3.5" strokeLinecap="round"/>
+            <polyline points="44,40 68,40 44,67 68,67" stroke="#00d4ff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
 
           <div style={{ textAlign: 'center' }}>
