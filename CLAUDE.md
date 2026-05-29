@@ -19,7 +19,7 @@ npm run build   # production build
 ```
 /app
   layout.tsx         — fonts (JetBrains Mono, Inter), metadata
-  page.tsx           — boot → desktop orchestration
+  page.tsx           — boot → desktop orchestration; `HomeOrMobile` component uses `useMobileDetect()` to render `<MobilePortfolio />` on ≤768px or full desktop OS otherwise
   globals.css        — CSS theme vars (dark/light), aurora blob classes, reset, scrollbars
 /components
   LockScreen.tsx     — aurora bg + frosted glass, IzanOS logo (32px white 40% opacity) above clock, clock, profile, breathe hint, Framer Motion unlock fade
@@ -55,6 +55,9 @@ npm run build   # production build
     TerminalWindow.tsx  — #0a0d0a bg + CRT scanlines + vignette; green inner glow rgba(0,255,136,0.12); ALL prompt elements green #00ff88 (not cyan); scroll area (output) + fixed bottom input area with block cursor █ blinking green; welcome typewriter on mount (3 lines, 750ms total); commands: help/whoami/ls projects/cat <slug>/skills/ping izan/sudo hire-me/theme --switch/clear; easter eggs: nmap localhost/exploit/sudo rm -rf / (async deletion sequence 400ms×4 + 2s "Just kidding."); arrow up/down history via histRef/histIdxRef (useRef); timersRef cleanup on unmount; keyframes: term-blink, term-dot
     GameWindow.tsx      — Firewall Breaker breakout game; canvas + useRef game loop, 3 levels, RAF cleanup
     PortfolioSite.tsx   — internal website rendered inside BrowserWindow
+  MobilePortfolio.tsx — full iPhone 15 Pro shell for ≤768px viewports; lock screen (swipe/click unlock), home screen (4×2 app grid + dock), app open animation (scale from icon origin, 350ms), Dynamic Island (expands on notification via useNotifications), 8 apps: Projects (tap-to-expand cards), About (photo+role-typer+contact), Skills (category pills + tags), Contact (contact list + form), Terminal (Kali prompt + commands), Files (filesystem tree nav), Game (canvas Breakout, touch/mouse), Browser (stub); CSS transform scale to fit viewport; all content from data/content.ts
+/hooks
+  useMobileDetect.ts  — returns boolean, true when window.innerWidth ≤ breakpoint (default 768); re-checks on resize; SSR-safe (defaults false)
 /contexts
   LanguageContext.tsx — Lang type ('CAS'|'CAT'|'ENG'), LanguageProvider, useLanguage(); persists to localStorage key 'izanos-lang'; default 'CAS'
   ThemeContext.tsx   — Theme type ('dark'|'light'), ThemeProvider, useTheme(); persists to localStorage key 'izanos-theme'; default 'dark'

@@ -11,6 +11,8 @@ import NotificationSystem, { NotificationProvider, useNotifications } from '@/co
 import Spotlight from '@/components/Spotlight';
 import SpotlightTrigger from '@/components/SpotlightTrigger';
 import Screensaver from '@/components/Screensaver';
+import MobilePortfolio from '@/components/MobilePortfolio';
+import { useMobileDetect } from '@/hooks/useMobileDetect';
 import { notifications } from '@/data/content';
 import { t } from '@/data/translations';
 import { LanguageProvider, useLanguage } from '@/contexts/LanguageContext';
@@ -38,12 +40,17 @@ export default function Home() {
     <ThemeProvider>
       <LanguageProvider>
         <NotificationProvider>
-          <HomeContent />
+          <HomeOrMobile />
           <NotificationSystem />
         </NotificationProvider>
       </LanguageProvider>
     </ThemeProvider>
   );
+}
+
+function HomeOrMobile() {
+  const isMobile = useMobileDetect();
+  return isMobile ? <MobilePortfolio /> : <HomeContent />;
 }
 
 function HomeContent() {
