@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>IzanOS Mobile — iPhone Experience</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;-webkit-font-smoothing:antialiased;user-select:none;-webkit-user-select:none;}
+:root{--inter:'Inter',system-ui,sans-serif;--mono:'JetBrains Mono',monospace;--green:#00ff88;--cyan:#00d4ff;--purple:#7c3aed;--red:#ff4757;--orange:#ff9500;}
+
+/* ── Page ── */
+.page{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+
+/* ── Aurora BG ── */
+.aurora{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse at 50% 50%,#0a0a0a 0%,#000 100%);overflow:hidden;}
+.blob{position:absolute;border-radius:50%;filter:blur(80px);mix-blend-mode:screen;pointer-events:none;will-change:transform;}
+.blob-1{width:60vw;height:60vw;top:-20vw;left:-15vw;background:radial-gradient(circle,rgba(0,255,102,.28),transparent 65%);animation:drift1 22s ease-in-out infinite;}
+.blob-2{width:65vw;height:65vw;bottom:-25vw;right:-20vw;background:radial-gradient(circle,rgba(0,102,255,.25),transparent 65%);animation:drift2 30s ease-in-out infinite;}
+.blob-3{width:45vw;height:45vw;top:30%;left:35%;background:radial-gradient(circle,rgba(0,212,255,.15),transparent 65%);animation:pulse3 16s ease-in-out infinite;}
+@keyframes drift1{0%,100%{transform:translate(0,0) scale(1);}40%{transform:translate(12vw,6vh) scale(1.1);}70%{transform:translate(-4vw,10vh) scale(.95);}}
+@keyframes drift2{0%,100%{transform:translate(0,0) scale(1);}55%{transform:translate(-15vw,-10vh) scale(1.15);}}
+@keyframes pulse3{0%,100%{transform:scale(1);opacity:.7;}50%{transform:scale(1.3);opacity:1;}}
+
+/* ── iPhone frame ── */
+.iphone-wrapper{position:relative;z-index:1;}
+.iphone{
+  width:390px;height:844px;
+  background:linear-gradient(160deg,#2c2c2e 0%,#1a1a1a 45%,#252525 100%);
+  border-radius:55px;position:relative;
+  box-shadow:0 40px 80px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.10),0 0 0 2px rgba(0,0,0,.6),inset 0 0 0 1px rgba(255,255,255,.06);
+  transform-origin:center center;
+}
+.iphone::before{content:'';position:absolute;inset:0;border-radius:55px;background:linear-gradient(160deg,rgba(255,255,255,.12) 0%,transparent 40%,rgba(255,255,255,.04) 100%);pointer-events:none;z-index:10;}
+
+/* Side buttons */
+.btn{position:absolute;background:linear-gradient(90deg,#1c1c1e,#2e2e30,#1c1c1e);border-radius:3px;}
+.btn-silent{left:-4px;top:118px;width:4px;height:28px;border-radius:2px;}
+.btn-vol-up{left:-4px;top:158px;width:4px;height:34px;}
+.btn-vol-dn{left:-4px;top:202px;width:4px;height:34px;}
+.btn-power{right:-4px;top:178px;width:4px;height:50px;}
+
+/* ── Screen ── */
+.screen{position:absolute;top:12px;left:12px;right:12px;bottom:12px;border-radius:47px;overflow:hidden;background:#000;}
+
+/* ── Dynamic Island ── */
+.dynamic-island{
+  position:absolute;top:13px;left:50%;transform:translateX(-50%);
+  width:120px;height:36px;background:#000;border-radius:22px;
+  z-index:300;overflow:hidden;
+  transition:width .45s cubic-bezier(.4,0,.2,1),height .45s cubic-bezier(.4,0,.2,1),border-radius .45s cubic-bezier(.4,0,.2,1);
+  display:flex;align-items:center;justify-content:center;
+}
+.dynamic-island.expanded{width:300px;height:72px;border-radius:30px;}
+.di-content{display:flex;align-items:center;gap:10px;padding:0 14px;opacity:0;transition:opacity .2s ease .2s;white-space:nowrap;overflow:hidden;width:100%;}
+.dynamic-island.expanded .di-content{opacity:1;}
+.di-icon{width:40px;height:40px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.di-text{flex:1;overflow:hidden;}
+.di-title{font-family:var(--inter);font-size:13px;font-weight:600;color:#fff;line-height:1.2;}
+.di-body{font-family:var(--inter);font-size:11px;color:rgba(255,255,255,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;}
+
+/* ── Status bar ── */
+.status-bar{position:absolute;top:0;left:0;right:0;height:54px;display:flex;align-items:flex-end;padding:0 28px 8px;z-index:200;pointer-events:none;}
+.status-time{font-family:var(--inter);font-size:15px;font-weight:700;color:#fff;margin-right:auto;}
+.status-icons{display:flex;align-items:center;gap:6px;}
+
+/* ── Home indicator ── */
+.home-indicator{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:134px;height:5px;background:rgba(255,255,255,.3);border-radius:3px;z-index:200;}
+
+/* ════════════════════════════════════════
+   LOCK SCREEN
+════════════════════════════════════════ */
+.lock-screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;z-index:100;transition:opacity .5s ease,transform .5s cubic-bezier(.4,0,.2,1);}
+.lock-aurora{position:absolute;inset:0;overflow:hidden;background:radial-gradient(ellipse at 50% 50%,#0a0a0a,#000);}
+.lock-blob{position:absolute;border-radius:50%;filter:blur(60px);mix-blend-mode:screen;}
+.lock-blob-1{width:200%;height:200%;top:-80%;left:-60%;background:radial-gradient(circle,rgba(0,255,102,.2),transparent 65%);animation:drift1 22s ease-in-out infinite;}
+.lock-blob-2{width:200%;height:200%;bottom:-80%;right:-50%;background:radial-gradient(circle,rgba(0,102,255,.18),transparent 65%);animation:drift2 30s ease-in-out infinite;}
+.lock-content{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;flex:1;justify-content:center;padding-bottom:60px;}
+.lock-time{font-family:var(--inter);font-size:82px;font-weight:200;color:#fff;letter-spacing:-4px;line-height:1;text-shadow:0 4px 30px rgba(255,255,255,.1);}
+.lock-date{font-family:var(--inter);font-size:16px;font-weight:400;color:rgba(255,255,255,.6);margin-top:10px;letter-spacing:.1em;}
+.lock-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:10px;background:rgba(0,255,136,.12);margin-top:24px;}
+.lock-badge-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:dot-pulse 1.6s ease-in-out infinite;}
+.lock-badge-text{font-family:var(--inter);font-size:12px;color:var(--green);font-weight:500;}
+.lock-hint{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:6px;padding-bottom:44px;font-family:var(--inter);font-size:12px;color:rgba(255,255,255,.35);animation:breathe 3s ease-in-out infinite;}
+.lock-hint svg{opacity:.4;}
+@keyframes breathe{0%,100%{opacity:1;}50%{opacity:.5;}}
+@keyframes dot-pulse{50%{opacity:.35;}}
+.lock-screen.unlocking{opacity:0;transform:scale(1.04) translateY(-24px);}
+
+/* ════════════════════════════════════════
+   HOME SCREEN
+════════════════════════════════════════ */
+.home-screen{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .4s ease;overflow:hidden;}
+.home-screen.visible{opacity:1;pointer-events:auto;}
+.home-wallpaper{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,#0a0a0a,#000);overflow:hidden;}
+.hw-blob{position:absolute;border-radius:50%;filter:blur(60px);mix-blend-mode:screen;}
+.hw-blob-1{width:200%;height:150%;top:-40%;left:-60%;background:radial-gradient(circle,rgba(0,255,102,.22),transparent 65%);animation:drift1 22s ease-in-out infinite;}
+.hw-blob-2{width:200%;height:150%;bottom:-50%;right:-50%;background:radial-gradient(circle,rgba(0,102,255,.20),transparent 65%);animation:drift2 30s ease-in-out infinite;}
+.hw-blob-3{width:100%;height:100%;top:20%;left:10%;background:radial-gradient(circle,rgba(0,212,255,.12),transparent 65%);animation:pulse3 16s ease-in-out infinite;}
+
+/* App grid */
+.app-grid{position:relative;z-index:1;display:grid;grid-template-columns:repeat(4,1fr);gap:20px 10px;padding:70px 20px 20px;flex:1;}
+.app-icon{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .15s ease;}
+.app-icon:active{transform:scale(.9);}
+.icon-img{width:60px;height:60px;border-radius:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.18),inset 0 -1px 0 rgba(0,0,0,.2);overflow:hidden;position:relative;flex-shrink:0;}
+.icon-img svg{width:28px;height:28px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.3));}
+.icon-label{font-family:var(--inter);font-size:11px;font-weight:400;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.8);text-align:center;line-height:1.2;}
+
+/* Gradients */
+.grad-projects{background:linear-gradient(135deg,#00c97a,#00ff9d);}
+.grad-about{background:linear-gradient(135deg,#7b2ff7,#a855f7);}
+.grad-skills{background:linear-gradient(135deg,#0066ff,#00d4ff);}
+.grad-contact{background:linear-gradient(135deg,#ff6b00,#ff9500);}
+.grad-browser{background:linear-gradient(135deg,#0066ff,#7b2ff7);}
+.grad-files{background:linear-gradient(135deg,#00c97a,#0066ff);}
+.grad-terminal{background:linear-gradient(135deg,#111,#222);border:1px solid rgba(0,255,136,.15);}
+.grad-game{background:linear-gradient(135deg,#ff4757,#ff6b35);}
+
+/* Dock */
+.dock{position:relative;z-index:1;display:flex;justify-content:center;padding:0 0 34px;}
+.dock-inner{display:flex;gap:18px;align-items:center;padding:11px 22px;background:rgba(255,255,255,.12);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);border-radius:26px;border:1px solid rgba(255,255,255,.18);box-shadow:0 8px 24px rgba(0,0,0,.35);}
+.dock-icon{width:52px;height:52px;border-radius:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .15s ease;flex-shrink:0;}
+.dock-icon:active{transform:scale(.9);}
+.dock-icon svg{width:24px;height:24px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.3));}
+
+/* ════════════════════════════════════════
+   APP SCREEN
+════════════════════════════════════════ */
+.app-screen{
+  position:absolute;inset:0;background:#000;z-index:150;
+  display:flex;flex-direction:column;
+  transform:scale(.88) translateY(60px);opacity:0;
+  transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .35s ease;
+  pointer-events:none;overflow:hidden;
+}
+.app-screen.open{transform:scale(1) translateY(0);opacity:1;pointer-events:auto;}
+.app-screen.closing{transform:scale(.92) translateY(30px);opacity:0;}
+
+/* Nav bar */
+.app-nav{height:54px;flex-shrink:0;display:flex;align-items:flex-end;padding:0 16px 10px;position:relative;z-index:5;}
+.app-nav-back{display:flex;align-items:center;gap:5px;font-family:var(--inter);font-size:16px;color:var(--cyan);cursor:pointer;-webkit-tap-highlight-color:transparent;min-width:44px;min-height:44px;align-items:center;}
+.app-nav-title{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;font-family:var(--inter);font-size:17px;font-weight:600;color:#fff;white-space:nowrap;}
+.app-content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.app-content::-webkit-scrollbar{display:none;}
+
+/* ════════════════════════════════════════
+   PROJECTS APP
+════════════════════════════════════════ */
+.projects-bg{background:#080810;}
+.projects-header{padding:4px 20px 16px;}
+.projects-heading{font-family:var(--inter);font-size:28px;font-weight:800;color:#f0f4ff;}
+.projects-sub{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.35);margin-top:4px;}
+.project-card{margin:0 16px 12px;background:rgba(255,255,255,.04);border-radius:18px;padding:16px;cursor:pointer;transition:background .15s ease;-webkit-tap-highlight-color:transparent;border:1px solid rgba(255,255,255,.07);}
+.project-card:active{background:rgba(255,255,255,.08);}
+.proj-header{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.proj-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.proj-name{font-family:var(--inter);font-size:16px;font-weight:700;color:#f0f4ff;}
+.proj-badge{font-family:var(--mono);font-size:10px;padding:2px 8px;border-radius:8px;margin-left:auto;flex-shrink:0;}
+.badge-live{background:rgba(0,255,136,.15);color:#00ff88;}
+.badge-dev{background:rgba(255,149,0,.15);color:#ff9500;}
+.proj-cat{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.35);margin-bottom:8px;letter-spacing:.04em;}
+.proj-desc{font-family:var(--inter);font-size:13px;color:rgba(255,255,255,.6);line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.proj-stack{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px;}
+.stack-tag{font-family:var(--mono);font-size:10px;padding:3px 8px;border-radius:6px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.55);}
+.proj-link{margin-top:10px;display:block;}
+.proj-link a{font-family:var(--mono);font-size:11px;text-decoration:none;}
+
+/* ════════════════════════════════════════
+   ABOUT APP
+════════════════════════════════════════ */
+.about-bg{background:#080810;}
+.about-hero{height:240px;position:relative;background:linear-gradient(135deg,#0a0f1e,#0d1520);flex-shrink:0;}
+.about-hero img{width:100%;height:100%;object-fit:cover;object-position:top;filter:grayscale(100%) brightness(.72);}
+.about-hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,#080810 100%);}
+.about-hero-tint{position:absolute;inset:0;background:rgba(0,212,255,.12);mix-blend-mode:color;}
+.about-body{padding:16px 20px 40px;}
+.about-name{font-family:var(--inter);font-size:28px;font-weight:800;color:#f0f4ff;line-height:1.1;}
+.about-role{font-family:var(--mono);font-size:12px;color:var(--cyan);margin-top:4px;}
+.about-status-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:10px;background:rgba(0,255,136,.1);margin-top:14px;}
+.about-status-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:dot-pulse 1.6s ease-in-out infinite;}
+.about-status-label{font-family:var(--inter);font-size:12px;color:var(--green);font-weight:500;}
+.section-label{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.3);letter-spacing:.1em;margin:22px 0 8px;}
+.about-bio{font-family:var(--inter);font-size:14px;color:rgba(255,255,255,.65);line-height:1.65;}
+.contact-row{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.06);text-decoration:none;-webkit-tap-highlight-color:transparent;}
+.contact-row:last-child{border-bottom:none;}
+.contact-ico{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.contact-ico svg{width:16px;height:16px;}
+.contact-val{font-family:var(--inter);font-size:14px;color:#f0f4ff;flex:1;}
+.contact-arr{color:rgba(255,255,255,.2);font-size:16px;}
+.dl-btn{display:flex;align-items:center;justify-content:center;height:52px;border-radius:16px;background:linear-gradient(135deg,#7b2ff7,#a855f7);font-family:var(--inter);font-size:15px;font-weight:700;color:#fff;text-decoration:none;margin-top:20px;box-shadow:0 8px 20px rgba(124,58,237,.4);-webkit-tap-highlight-color:transparent;}
+
+/* ════════════════════════════════════════
+   SKILLS APP
+════════════════════════════════════════ */
+.skills-bg{background:#080810;}
+.skills-cats{display:flex;gap:8px;padding:12px 16px;overflow-x:auto;flex-shrink:0;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.skills-cats::-webkit-scrollbar{display:none;}
+.cat-pill{flex-shrink:0;padding:7px 14px;border-radius:20px;font-family:var(--inter);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s ease;background:rgba(255,255,255,.07);color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.08);-webkit-tap-highlight-color:transparent;}
+.skills-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:8px 16px 40px;}
+.skill-chip{padding:11px 8px;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);text-align:center;font-family:var(--inter);font-size:12px;font-weight:500;color:#f0f4ff;animation:chip-in .25s ease forwards;}
+@keyframes chip-in{from{opacity:0;transform:scale(.88);}to{opacity:1;transform:scale(1);}}
+
+/* ════════════════════════════════════════
+   CONTACT APP
+════════════════════════════════════════ */
+.contact-bg{background:#080810;}
+.ct-header{padding:20px 20px 8px;}
+.ct-title{font-family:var(--inter);font-size:32px;font-weight:800;color:#f0f4ff;}
+.ct-sub{font-family:var(--inter);font-size:14px;color:rgba(255,255,255,.45);margin-top:6px;}
+.ct-list{padding:12px 16px;}
+.ct-row{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.06);text-decoration:none;-webkit-tap-highlight-color:transparent;}
+.ct-row:last-child{border-bottom:none;}
+.ct-ico{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ct-ico svg{width:20px;height:20px;}
+.ct-info{flex:1;}
+.ct-label{font-family:var(--inter);font-size:11px;color:rgba(255,255,255,.35);margin-bottom:2px;}
+.ct-value{font-family:var(--inter);font-size:14px;color:#f0f4ff;font-weight:500;}
+.ct-arr{color:rgba(255,255,255,.2);font-size:16px;}
+.ct-send{display:flex;align-items:center;justify-content:center;margin:16px 16px 40px;height:54px;border-radius:16px;background:linear-gradient(135deg,#00c97a,#00d4ff);font-family:var(--inter);font-size:16px;font-weight:700;color:#000;text-decoration:none;box-shadow:0 8px 24px rgba(0,212,255,.3);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .15s ease,opacity .15s ease;}
+.ct-send:active{transform:scale(.97);opacity:.9;}
+
+/* ════════════════════════════════════════
+   TERMINAL APP
+════════════════════════════════════════ */
+.term-bg{background:#0a0d0a;font-family:var(--mono);font-size:12px;line-height:1.7;}
+.term-scanlines{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,255,136,.012) 0 1px,transparent 1px 3px);z-index:1;}
+.term-out{flex:1;overflow-y:auto;padding:12px 14px 8px;position:relative;z-index:2;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.term-out::-webkit-scrollbar{display:none;}
+.tl{color:#c8d0c8;white-space:pre-wrap;word-break:break-all;margin-bottom:1px;}
+.tl.g{color:#00ff88;}.tl.c{color:#00d4ff;}.tl.r{color:#ff4757;}.tl.d{color:rgba(255,255,255,.4);}
+.tl.w{color:#f0f4ff;}.tl.p{color:#7c3aed;}.tl.o{color:#ff9500;}
+.term-input-area{flex-shrink:0;border-top:1px solid rgba(0,255,136,.08);padding:10px 14px 14px;background:#0a0d0a;position:relative;z-index:2;}
+.term-p1{color:#00ff88;font-family:var(--mono);font-size:12px;}
+.term-p2{display:flex;align-items:center;color:#00ff88;font-family:var(--mono);font-size:12px;}
+.term-inp{flex:1;background:transparent;border:none;outline:none;color:#f0f4ff;font-family:var(--mono);font-size:12px;padding:0;margin-left:8px;caret-color:#00ff88;}
+
+/* ════════════════════════════════════════
+   FILES APP
+════════════════════════════════════════ */
+.files-bg{background:#080810;}
+.files-path{padding:8px 16px 4px;font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.35);}
+.files-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:8px 16px 40px;}
+.file-item{display:flex;flex-direction:column;align-items:center;gap:7px;padding:14px 8px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .15s;}
+.file-item:active{background:rgba(255,255,255,.09);}
+.file-item svg{width:34px;height:34px;}
+.file-name{font-family:var(--inter);font-size:11px;color:#f0f4ff;text-align:center;word-break:break-all;}
+
+/* ════════════════════════════════════════
+   STUB APPS
+════════════════════════════════════════ */
+.stub-bg{background:#080810;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding-bottom:80px;}
+.stub-ico{width:72px;height:72px;border-radius:18px;display:flex;align-items:center;justify-content:center;}
+.stub-ico svg{width:36px;height:36px;}
+.stub-title{font-family:var(--inter);font-size:22px;font-weight:700;color:#f0f4ff;}
+.stub-sub{font-family:var(--inter);font-size:14px;color:rgba(255,255,255,.4);text-align:center;max-width:220px;line-height:1.5;}
+
+/* ════════════════════════════════════════
+   SCALING
+════════════════════════════════════════ */
+</style>
+</head>
+<body>
+<div class="page">
+  <!-- Aurora BG -->
+  <div class="aurora">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <!-- iPhone -->
+  <div class="iphone-wrapper">
+    <div class="iphone" id="iphone">
+      <div class="btn btn-silent"></div>
+      <div class="btn btn-vol-up"></div>
+      <div class="btn btn-vol-dn"></div>
+      <div class="btn btn-power"></div>
+
+      <div class="screen">
+
+        <!-- Dynamic Island -->
+        <div class="dynamic-island" id="di">
+          <div class="di-content" id="diContent">
+            <div class="di-icon" id="diIcon"></div>
+            <div class="di-text">
+              <div class="di-title" id="diTitle"></div>
+              <div class="di-body" id="diBody"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Status bar -->
+        <div class="status-bar">
+          <div class="status-time" id="statusTime">9:41</div>
+          <div class="status-icons">
+            <svg width="18" height="12" viewBox="0 0 18 12" fill="white">
+              <rect x="0" y="6" width="3" height="6" rx="1"/><rect x="4.5" y="4" width="3" height="8" rx="1"/>
+              <rect x="9" y="2" width="3" height="10" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1" opacity=".3"/>
+            </svg>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+              <circle cx="8" cy="11" r="1.2" fill="white"/>
+              <path d="M4.5 8a5 5 0 0 1 7 0" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+              <path d="M1.5 5.5A9.5 9.5 0 0 1 14.5 5.5" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+            </svg>
+            <svg width="26" height="13" viewBox="0 0 26 13" fill="none">
+              <rect x=".5" y=".5" width="21" height="12" rx="3.5" stroke="white" stroke-opacity=".4"/>
+              <rect x="2" y="2" width="16" height="9" rx="2" fill="white"/>
+              <path d="M23 5v3a1.5 1.5 0 0 0 0-3z" fill="white" fill-opacity=".4"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- ═══ LOCK SCREEN ═══ -->
+        <div class="lock-screen" id="lockScreen">
+          <div class="lock-aurora"><div class="lock-blob lock-blob-1"></div><div class="lock-blob lock-blob-2"></div></div>
+          <div class="lock-content">
+            <div class="lock-time" id="lockTime">9:41</div>
+            <div class="lock-date" id="lockDate">WEDNESDAY, 28 MAY</div>
+            <div class="lock-badge">
+              <div class="lock-badge-dot"></div>
+              <div class="lock-badge-text">Available for hire</div>
+            </div>
+          </div>
+          <div class="lock-hint">
+            <svg width="18" height="12" viewBox="0 0 18 12" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><polyline points="16 10 9 3 2 10"/></svg>
+            Swipe up to unlock
+          </div>
+        </div>
+
+        <!-- ═══ HOME SCREEN ═══ -->
+        <div class="home-screen" id="homeScreen">
+          <div class="home-wallpaper"><div class="hw-blob hw-blob-1"></div><div class="hw-blob hw-blob-2"></div><div class="hw-blob hw-blob-3"></div></div>
+
+          <div class="app-grid">
+            <div class="app-icon" onclick="openApp('projects')">
+              <div class="icon-img grad-projects"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M8 13h8M8 17h5"/></svg></div>
+              <div class="icon-label">Projects</div>
+            </div>
+            <div class="app-icon" onclick="openApp('about')">
+              <div class="icon-img grad-about"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.5 4.5-7 8-7s7 2.5 8 7"/></svg></div>
+              <div class="icon-label">About</div>
+            </div>
+            <div class="app-icon" onclick="openApp('skills')">
+              <div class="icon-img grad-skills"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></div>
+              <div class="icon-label">Skills</div>
+            </div>
+            <div class="app-icon" onclick="openApp('contact')">
+              <div class="icon-img grad-contact"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+              <div class="icon-label">Contact</div>
+            </div>
+            <div class="app-icon" onclick="openApp('browser')">
+              <div class="icon-img grad-browser"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a13 13 0 0 1 0 18"/><path d="M12 3a13 13 0 0 0 0 18"/></svg></div>
+              <div class="icon-label">Browser</div>
+            </div>
+            <div class="app-icon" onclick="openApp('files')">
+              <div class="icon-img grad-files"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
+              <div class="icon-label">Files</div>
+            </div>
+            <div class="app-icon" onclick="openApp('terminal')">
+              <div class="icon-img grad-terminal"><svg viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l4 4-4 4"/><path d="M12 17h7"/></svg></div>
+              <div class="icon-label">Terminal</div>
+            </div>
+            <div class="app-icon" onclick="openApp('game')">
+              <div class="icon-img grad-game"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4M8 10v4"/><circle cx="15" cy="11" r="1" fill="white"/><circle cx="18" cy="13" r="1" fill="white"/></svg></div>
+              <div class="icon-label">Game</div>
+            </div>
+          </div>
+
+          <!-- Dock -->
+          <div class="dock">
+            <div class="dock-inner">
+              <div class="dock-icon grad-browser" onclick="openApp('browser')"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a13 13 0 0 1 0 18"/><path d="M12 3a13 13 0 0 0 0 18"/></svg></div>
+              <div class="dock-icon grad-files" onclick="openApp('files')"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
+              <div class="dock-icon grad-terminal" onclick="openApp('terminal')"><svg viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l4 4-4 4"/><path d="M12 17h7"/></svg></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ APP: PROJECTS ═══ -->
+        <div class="app-screen" id="app-projects">
+          <div class="app-nav" style="background:#080810;">
+            <div class="app-nav-back" onclick="closeApp()"><svg width="10" height="16" viewBox="0 0 10 16" fill="none"><path d="M8 2L2 8l6 6" stroke="#00d4ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>&nbsp;Home</div>
+            <div class="app-nav-title">projects.exe</div>
+          </div>
+          <div class="app-content projects-bg" id="projectsList">
+            <div class="projects-header">
+              <div class="projects-heading">Projects</div>
+              <div class="projects-sub">5 repositories · 3 live · 2 in development</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ APP: ABOUT ═══ -->
+        <div class="app-screen" id="app-about">
+          <div class="app-nav" style="background:transparent;position:absolute;top:0;left:0;right:0;z-index:20;">
+            <div class="app-nav-back" onclick="closeApp()" style="background:rgba(0,0,0,.3);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:4px 10px;border-radius:20px;"><svg width="10" height="16" viewBox="0 0 10 16" fill="none"><path d="M8 2L2 8l6 6" stroke="#00d4ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>&nbsp;Home</div>
+          </div>
+          <div class="app-content about-bg" style="padding-top:0;">
+            <div class="about-hero">
+              <img src="/images/foto-portafolio.png" alt="Izan" onerror="this.parentElement.style.background='linear-gradient(135deg,#0a0f1e,#1a1035)'">
+              <div class="about-hero-tint"></div>
+              <div class="about-hero-overlay"></div>
+            </div>
+            <div class="about-body">
+              <div class="about-name">Izan Rubio</div>
+              <div class="about-role">Full Stack Developer & Cybersecurity Specialist</div>
+              <div class="about-status-pill"><div class="about-status-dot"></div><div class="about-status-label">Disponible para proyectos</div></div>
+              <div class="section-label">SOBRE MÍ</div>
+              <div class="about-bio">Desarrollador Full Stack de Terrassa, Barcelona. Formado en DAW y Ciberseguridad en el Institut Nicolau Copèrnic. Disfruto construyendo todo tipo de proyectos web — desde SaaS hasta plataformas de aprendizaje — y tengo la costumbre de aprender algo nuevo cada día.</div>
+              <div class="section-label">CONTACTO</div>
+              <div>
+                <a class="contact-row" href="mailto:izanrubiocerezo@gmail.com">
+                  <div class="contact-ico" style="background:rgba(0,212,255,.12);"><svg viewBox="0 0 24 24" fill="none" stroke="#00d4ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                  <div class="contact-val">izanrubiocerezo@gmail.com</div>
+                  <div class="contact-arr">›</div>
+                </a>
+                <a class="contact-row" href="https://github.com/izanrubio" target="_blank">
+                  <div class="contact-ico" style="background:rgba(168,85,247,.12);"><svg viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></div>
+                  <div class="contact-val">github.com/izanrubio</div>
+                  <div class="contact-arr">›</div>
+                </a>
+                <a class="contact-row" href="https://linkedin.com/in/izan-rubio-cerezo" target="_blank">
+                  <div class="contact-ico" style="background:rgba(0,102,255,.12);"><svg viewBox="0 0 24 24" fill="none" stroke="#0066ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></div>
+                  <div class="contact-val">linkedin.com/in/izan-rubio-cerezo</div>
+                  <div class="contact-arr">›</div>
+                </a>
+                <a class="contact-row" href="tel:637689946">
+                  <div class="contact-ico" style="background:rgba(0,255,136,.10);"><svg viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.13 6.13l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+                  <div class="contact-val">637 689 946</div>
+                  <div class="contact-arr">›</div>
+                </a>
+                <div class="contact-row" style="cursor:default;">
+                  <div class="contact-ico" style="background:rgba(255,149,0,.10);"><svg viewBox="0 0 24 24" fill="none" stroke="#ff9500" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+                  <div class="contact-val">Terrassa, Barcelona</div>
+                </div>
+              </div>
+              <a href="/cv.pdf" download class="dl-btn">⬇ Download CV</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ APP: SKILLS ═══ -->
+        <div class="app-screen" id="app-skills">
+          <div class="app-nav" style="background:#080810;">
+            <div class="app-nav-back" onclick="closeApp()"><svg width="10" height="16" viewBox="0 0 10 16" fill="none"><path d="M8 2L2 8l6 6" stroke="#00d4ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>&nbsp;Home</div>
+            <div class="app-nav-title">skills.exe</div>
+          </div>
+          <div class="app-content skills-bg" style="display:flex;flex-direction:column;">
+            <div class="skills-cats" id="skillsCats"></div>
+            <div class="skills-grid" id="skillsGrid"></div>
+          </div>
+        </div>
+
+        <!-- ═══ APP: CONTACT ═══ -->
+        <div class="app-screen" id="app-contact">
+          <div class="app-nav" style="background:#080810;">
+            <div class="app-nav-back" onclick="closeApp()"><svg width="10" height="16" viewBox="0 0 10 16" fill="none"><path d="M8 2L2 8l6 6" stroke="#00d4ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>&nbsp;Home</div>
+            <div class="app-nav-title">contact.exe</div>
+          </div>
+          <div class="app-content contact-bg">
+            <div class="ct-header"><div class="ct-title">Let's talk.</div><div class="ct-sub">Siempre abierto a nuevas oportunidades</div></div>
+            <div class="ct-list">
+              <a class="ct-row" href="mailto:izanrubiocerezo@gmail.com"><div class="ct-ico" style="background:rgba(0,212,255,.12);"><svg viewBox="0 0 24 24" fill="none" stroke="#00d4ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><div class="ct-info"><div class="ct-label">Email</div><div class="ct-value">izanrubiocerezo@gmail.com</div></div><div class="ct-arr">›</div></a>
+              <a class="ct-row" href="https://github.com/izanrubio" target="_blank"><div class="ct-ico" style="background:rgba(168,85,247,.12);"><svg viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></div><div class="ct-info"><div class="ct-label">GitHub</div><div class="ct-value">github.com/izanrubio</div></div><div class="ct-arr">›</div></a>
+              <a class="ct-row" href="https://linkedin.com/in/izan-rubio-cerezo" target="_blank"><div class="ct-ico" style="background:rgba(0,102,255,.12);"><svg viewBox="0 0 24 24" fill="none" stroke="#0066ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></div><div class="ct-info"><div class="ct-label">LinkedIn</div><div class="ct-value">linkedin.com/in/izan-rubio-cerezo</div></div><div class="ct-arr">›</div></a>
+              <a class="ct-row" href="tel:637689946"><div class="ct-ico" style="background:rgba(0,255,136,.10);"><svg viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.13 6.13l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div class="ct-info"><div class="ct-label">Phone</div><div class="ct-value">637 689 946</div></div><div class="ct-arr">›</div></a>
+              <div class="ct-row" style="cursor:default;"><div class="ct-ico" style="background:rgba(255,149,0,.10);"><svg viewBox="0 0 24 24" fill="none" stroke="#ff9500" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div class="ct-info"><div class="ct-label">Location</div><div class="ct-value">Terrassa, Barcelona, Spain</div></div></div>
+            </div>
+            <a href="mailto:izanrubiocerezo@gmail.com" class="ct-send">Send Message →</a>
+          </div>
+        </div>
+
+        <!-- ═══ APP: TERMINAL ═══ -->
+        <div class="app-screen" id="app-terminal" style="position:relative;">
+          <div class="term-scanlines"></div>
+          <div class="app-nav" style="background:#0a0d0a;position:relative;z-index:5;">
+            <div class="app-nav-back" onclick="closeApp()" style="color:#00ff88;"><svg width="10" height="16" viewBox="0 0 10 16" fill="none"><path d="M8 2L2 8l6 6" stroke="#00ff88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>&nbsp;Home</div>
+            <div class="app-nav-title" style="color:#00ff88;">terminal.exe</div>
+          </div>
+          <div class="term-bg" style="flex:1;display:flex;flex-direction:column;min-height:0;position:relative;z-index:2;">
+            <div class="term-out" id="termOut">
+              <div class="tl c" style="font-weight:600;">IzanOS Terminal v2.0.4</div>
+              <div class="tl d">Type 'help' for available commands.</div>
+              <div class="tl d">────────────────────────────────</div>
+            </div>
+            <div class="term-input-area">
+              <div class="term-p1">┌──(izanos㉿IzanOS)-[~]</div>
+              <div class="term-p2"><span>└─$</span><input class="term-inp" id="termInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="send"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ APP: FILES ═══ -->
+        <div class="app-screen" id="app-files">
+          <div class="app-nav" style="background:#080810;">
+            <div class="app-nav-back" onclick="closeApp()"><svg width="10" height="16" viewBox="0 0 10 16" fill="none"><path d="M8 2L2 8l6 6" stroke="#00d4ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>&nbsp;Home</div>
+            <div class="app-nav-title">files.exe</div>
+          </div>
+          <div class="app-content files-bg">
+            <div class="files-path">~/Home</div>
+            <div class="files-grid">
+              <div class="file-item"><svg viewBox="0 0 24 24" fill="none" stroke="#00d4ff" stroke-width="1.5"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="rgba(0,212,255,.12)"/></svg><div class="file-name">Documents</div></div>
+              <div class="file-item"><svg viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="rgba(0,255,136,.12)"/></svg><div class="file-name">Pictures</div></div>
+              <div class="file-item"><svg viewBox="0 0 24 24" fill="none" stroke="#ff9500" stroke-width="1.5"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="rgba(255,149,0,.12)"/></svg><div class="file-name">Downloads</div></div>
+              <div class="file-item" onclick="window.open('/cv.pdf','_blank')"><svg viewBox="0 0 24 24" fill="none" stroke="#ff4757" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="rgba(255,71,87,.12)"/><polyline points="14 2 14 8 20 8"/></svg><div class="file-name">IzanRubio_CV.pdf</div></div>
+              <div class="file-item"><svg viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" fill="rgba(168,85,247,.12)"/><circle cx="8.5" cy="8.5" r="1.5" fill="#a855f7"/><polyline points="21 15 16 10 5 21"/></svg><div class="file-name">foto-portafolio.png</div></div>
+              <div class="file-item"><svg viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="rgba(0,255,136,.12)"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h8M8 17h6"/></svg><div class="file-name">README.md</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ APP: BROWSER ═══ -->
+        <div class="app-screen" id="app-browser">
+          <div class="app-nav" style="background:#080810;"><div class="app-nav-back" onclick="closeApp()"><svg width="10" height="16" viewBox="0 0 10 16" fill="none"><path d="M8 2L2 8l6 6" stroke="#00d4ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>&nbsp;Home</div><div class="app-nav-title">browser.exe</div></div>
+          <div class="stub-bg"><div class="stub-ico grad-browser"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a13 13 0 0 1 0 18"/><path d="M12 3a13 13 0 0 0 0 18"/></svg></div><div class="stub-title">Browser</div><div class="stub-sub">Available on desktop version with full navigation</div></div>
+        </div>
+
+        <!-- ═══ APP: GAME ═══ -->
+        <div class="app-screen" id="app-game">
+          <div class="app-nav" style="background:#080810;"><div class="app-nav-back" onclick="closeApp()" style="color:#ff4757;"><svg width="10" height="16" viewBox="0 0 10 16" fill="none"><path d="M8 2L2 8l6 6" stroke="#ff4757" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>&nbsp;Home</div><div class="app-nav-title" style="color:#ff4757;">game.exe</div></div>
+          <div class="stub-bg"><div class="stub-ico grad-game"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4M8 10v4"/><circle cx="15" cy="11" r="1" fill="white"/><circle cx="18" cy="13" r="1" fill="white"/></svg></div><div class="stub-title">Firewall Breaker</div><div class="stub-sub">Play the full game on desktop — mobile coming soon</div></div>
+        </div>
+
+        <!-- Home indicator -->
+        <div class="home-indicator"></div>
+
+      </div><!-- /screen -->
+    </div><!-- /iphone -->
+  </div><!-- /iphone-wrapper -->
+</div><!-- /page -->
+
+<script>
+/* ══ Data ══ */
+const PROJECTS = [
+  { slug:'ciberchurros', name:'CiberChurros', category:'WEB · CIBERSEGURIDAD', desc:'Plataforma web de ciberseguridad con arquitectura de agente local. El usuario ejecuta herramientas de red reales (nmap, ping, traceroute) desde el navegador.', stack:['Laravel','Python','TLS','FastAPI'], status:'live', demo:'ciberchurros.com', accent:'#00ff88' },
+  { slug:'laraveles', name:'Laraveles.es', category:'WEB · APRENDIZAJE', desc:'Plataforma de aprendizaje para la comunidad hispana de Laravel. Cursos, snippets y recursos con búsqueda potenciada por Claude AI.', stack:['Astro','Node.js','Claude API','Tailwind'], status:'live', demo:'laraveles.es', accent:'#00d4ff' },
+  { slug:'stastarat', name:'StasTarat', category:'WEB · ASOCIACIÓN', desc:'Web oficial del Club Stas Tarat, asociación cultural de juegos de mesa, rol y wargames de Terrassa con casi 40 años de historia.', stack:['Laravel','PHP','MySQL'], status:'live', demo:'stastarat.com', accent:'#7c3aed' },
+  { slug:'docflow', name:'DocFlow', category:'SAAS · DOCUMENTACIÓN', desc:'SaaS de gestión documental con flujos de aprobación, firma digital y control de versiones para empresas medianas.', stack:['Laravel','React','Stripe'], status:'in-development', accent:'#ff9500' },
+  { slug:'barbercompte', name:'BarberCompte', category:'SAAS · BARBERÍA', desc:'Sistema de gestión completo para barberías: reservas online, punto de venta, control de stock y fidelización de clientes.', stack:['Laravel','MySQL','Stripe'], status:'in-development', accent:'#ff4757' },
+];
+
+const SKILLS = [
+  { key:'languages', label:'Languages', accent:'#00d4ff', items:['Python','JavaScript','TypeScript','PHP','Java','SQL','Bash'] },
+  { key:'frontend',  label:'Frontend',  accent:'#7c3aed', items:['React','Next.js','Vue','Astro','Tailwind CSS','Framer Motion'] },
+  { key:'backend',   label:'Backend',   accent:'#00ff88', items:['Node.js','Laravel','Django','FastAPI','NestJS','REST API'] },
+  { key:'databases', label:'Databases', accent:'#ff9500', items:['MySQL','PostgreSQL','MongoDB','Redis','SQLite'] },
+  { key:'security',  label:'Security',  accent:'#ff4757', items:['Kali Linux','Burp Suite','Nmap','OWASP','Pentesting','CTF'] },
+  { key:'devops',    label:'DevOps',    accent:'#00d4ff', items:['Git','Docker','Linux','AWS','Vercel','CI/CD'] },
+  { key:'other',     label:'Other',     accent:'#a855f7', items:['Figma','Claude API','Arduino','Agile/Scrum'] },
+];
+
+/* ══ State ══ */
+let STATE = 'locked';
+let ACTIVE = null;
+let diTimer = null;
+let tHist = [], tHistIdx = 0, tInited = false;
+let activeCat = 'languages';
+
+/* ══ Clock ══ */
+(function(){
+  const DAYS=['SUN','MON','TUE','WED','THU','FRI','SAT'];
+  const MONS=['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+  const pad = n => n<10?'0'+n:''+n;
+  function tick(){
+    const d=new Date();
+    const t=pad(d.getHours())+':'+pad(d.getMinutes());
+    document.getElementById('statusTime').textContent=t;
+    document.getElementById('lockTime').textContent=t;
+    document.getElementById('lockDate').textContent=DAYS[d.getDay()]+', '+d.getDate()+' '+MONS[d.getMonth()];
+  }
+  tick(); setInterval(tick,1000);
+})();
+
+/* ══ Scale iPhone ══ */
+function scale(){
+  const ph=document.getElementById('iphone');
+  const vw=window.innerWidth, vh=window.innerHeight;
+  const s=Math.min((vw-16)/390,(vh-24)/844,1);
+  ph.style.transform='scale('+s+')';
+}
+scale(); window.addEventListener('resize',scale);
+
+/* ══ Dynamic Island ══ */
+function showDI(icon,iconSvg,title,body){
+  const di=document.getElementById('di');
+  document.getElementById('diIcon').className='di-icon '+icon;
+  document.getElementById('diIcon').innerHTML=iconSvg;
+  document.getElementById('diTitle').textContent=title;
+  document.getElementById('diBody').textContent=body;
+  di.classList.add('expanded');
+  if(diTimer)clearTimeout(diTimer);
+  diTimer=setTimeout(()=>di.classList.remove('expanded'),3500);
+}
+const SVGS={
+  projects:`<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M8 13h8"/></svg>`,
+  about:`<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.5 4.5-7 8-7s7 2.5 8 7"/></svg>`,
+  skills:`<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>`,
+  contact:`<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
+  terminal:`<svg viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;"><path d="M5 8l4 4-4 4"/><path d="M12 17h7"/></svg>`,
+  files:`<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>`,
+};
+const DI_MSGS={
+  projects:['grad-projects','projects.exe','5 projects · tap to explore'],
+  about:['grad-about','whoami.exe','Izan Rubio · Full Stack Dev'],
+  skills:['grad-skills','skills.exe','40+ technologies'],
+  contact:['grad-contact','contact.exe','Usually replies < 24h'],
+  terminal:['grad-terminal','terminal.exe',"Type 'help' for commands"],
+  files:['grad-files','files.exe','Browse your files'],
+};
+
+/* ══ Lock screen ══ */
+(function(){
+  const lock=document.getElementById('lockScreen');
+  let sy=null;
+  const go=()=>{
+    if(STATE!=='locked')return;
+    STATE='t';
+    lock.classList.add('unlocking');
+    setTimeout(()=>{
+      lock.style.display='none';
+      const h=document.getElementById('homeScreen');
+      h.classList.add('visible');
+      STATE='home';
+      setTimeout(()=>showDI('grad-about',SVGS.about,'IzanOS','Welcome! Tap any app to explore.'),2000);
+      setTimeout(()=>showDI('grad-projects',SVGS.projects,'projects.exe','5 projects · 3 live · 2 in dev'),5500);
+    },480);
+  };
+  lock.addEventListener('click',go);
+  lock.addEventListener('touchstart',e=>{sy=e.touches[0].clientY;},{passive:true});
+  lock.addEventListener('touchmove',e=>{if(sy!==null&&sy-e.touches[0].clientY>40)go();},{passive:true});
+})();
+
+/* ══ App open/close ══ */
+function openApp(name){
+  if(STATE!=='home')return;
+  ACTIVE=name;
+  STATE='app';
+  if(name==='projects')initProjects();
+  if(name==='skills')initSkills();
+  if(name==='terminal')initTerminal();
+  const sc=document.getElementById('app-'+name);
+  if(!sc)return;
+  sc.style.display='flex';
+  sc.getBoundingClientRect();
+  requestAnimationFrame(()=>sc.classList.add('open'));
+  const m=DI_MSGS[name];
+  if(m)setTimeout(()=>showDI(m[0],SVGS[name]||SVGS.projects,m[1],m[2]),400);
+}
+
+function closeApp(){
+  if(STATE!=='app')return;
+  const sc=document.getElementById('app-'+ACTIVE);
+  if(!sc)return;
+  sc.classList.remove('open');
+  sc.classList.add('closing');
+  setTimeout(()=>{
+    sc.classList.remove('closing');
+    sc.style.display='none';
+    ACTIVE=null;
+    STATE='home';
+  },350);
+}
+
+/* Hide all apps initially */
+document.querySelectorAll('.app-screen').forEach(s=>s.style.display='none');
+
+/* ══ Projects ══ */
+function initProjects(){
+  const c=document.getElementById('projectsList');
+  if(c.querySelector('.project-card'))return;
+  PROJECTS.forEach(p=>{
+    const wip=p.status==='in-development';
+    const d=document.createElement('div');
+    d.className='project-card';
+    d.style.borderLeft=`3px solid ${p.accent}50`;
+    d.innerHTML=`
+      <div class="proj-header">
+        <div class="proj-dot" style="background:${p.accent};box-shadow:0 0 6px ${p.accent};"></div>
+        <div class="proj-name">${p.name}</div>
+        <div class="proj-badge ${wip?'badge-dev':'badge-live'}">${wip?'DEV':'LIVE'}</div>
+      </div>
+      <div class="proj-cat">${p.category}</div>
+      <div class="proj-desc">${p.desc}</div>
+      <div class="proj-stack">${p.stack.map(s=>`<span class="stack-tag">${s}</span>`).join('')}</div>
+      ${p.demo?`<div class="proj-link"><a href="https://${p.demo}" target="_blank" style="color:${p.accent};">${p.demo}</a></div>`:''}
+    `;
+    c.appendChild(d);
+  });
+  const sp=document.createElement('div');sp.style.height='20px';c.appendChild(sp);
+}
+
+/* ══ Skills ══ */
+function initSkills(){
+  const cats=document.getElementById('skillsCats');
+  if(cats.querySelector('.cat-pill'))return;
+  SKILLS.forEach(cat=>{
+    const pill=document.createElement('div');
+    pill.className='cat-pill'+(cat.key===activeCat?' active':'');
+    pill.textContent=cat.label;
+    if(cat.key===activeCat){pill.style.background=cat.accent;pill.style.color='#000';pill.style.borderColor=cat.accent;}
+    pill.addEventListener('click',()=>{
+      activeCat=cat.key;
+      document.querySelectorAll('.cat-pill').forEach(p=>{p.classList.remove('active');p.style.background='';p.style.color='';p.style.borderColor='';});
+      pill.classList.add('active');pill.style.background=cat.accent;pill.style.color='#000';pill.style.borderColor=cat.accent;
+      renderSkills(cat.key);
+    });
+    cats.appendChild(pill);
+  });
+  renderSkills(activeCat);
+}
+function renderSkills(key){
+  const g=document.getElementById('skillsGrid');
+  const cat=SKILLS.find(c=>c.key===key);
+  g.innerHTML='';
+  if(!cat)return;
+  cat.items.forEach((item,i)=>{
+    const c=document.createElement('div');
+    c.className='skill-chip';
+    c.textContent=item;
+    c.style.borderColor=cat.accent+'30';
+    c.style.animationDelay=(i*30)+'ms';
+    g.appendChild(c);
+  });
+}
+
+/* ══ Terminal ══ */
+function initTerminal(){
+  if(tInited)return;
+  tInited=true;
+  const inp=document.getElementById('termInput');
+  inp.addEventListener('keydown',e=>{
+    if(e.key==='Enter'){
+      const v=inp.value.trim();
+      if(v){tHist.push(v);tHistIdx=tHist.length;}
+      termRun(v);inp.value='';
+    } else if(e.key==='ArrowUp'){
+      e.preventDefault();
+      tHistIdx=Math.max(0,tHistIdx-1);inp.value=tHist[tHistIdx]||'';
+    } else if(e.key==='ArrowDown'){
+      e.preventDefault();
+      tHistIdx=Math.min(tHist.length,tHistIdx+1);inp.value=tHist[tHistIdx]||'';
+    }
+  });
+  document.getElementById('app-terminal').addEventListener('click',()=>inp.focus());
+}
+function ta(html,cls){
+  const out=document.getElementById('termOut');
+  const d=document.createElement('div');
+  d.className='tl'+(cls?' '+cls:'');d.innerHTML=html;
+  out.appendChild(d);out.scrollTop=out.scrollHeight;
+}
+function termRun(raw){
+  const cmd=raw.trim().replace(/\s+/g,' ').toLowerCase();
+  ta('┌──(izanos㉿IzanOS)-[~]');
+  ta('└─$ <span style="color:#f0f4ff;">'+raw+'</span>');
+  if(!cmd)return;
+  switch(cmd){
+    case 'help':
+      ta('Available commands:','c');
+      [['whoami','who is Izan'],['ls projects','list projects'],['skills','tech stack'],['ping izan','contact info'],['sudo hire-me','the important one'],['clear','clear terminal']].forEach(([c,d])=>ta(`<span class="g" style="display:inline-block;min-width:14ch;">${c}</span><span class="d">— ${d}</span>`));
+      break;
+    case 'whoami':
+      ta('<span style="color:#f0f4ff;font-weight:600;">Izan Rubio Cerezo</span>');
+      ta('Full Stack Developer & Cybersecurity Specialist');
+      ta('Terrassa, Barcelona · <span class="g">Available for hire</span>');
+      break;
+    case 'ls projects':
+      PROJECTS.forEach(p=>ta(`<span class="p">drwxr-xr-x</span> <span class="d">izan</span> <span style="color:#f0f4ff;display:inline-block;min-width:14ch;">${p.name}</span><span class="d">→ ${p.stack.slice(0,2).join(' · ')}</span>${p.status==='in-development'?' <span class="o">[DEV]</span>':''}`));
+      break;
+    case 'skills':
+      SKILLS.forEach(s=>ta(`<span class="c" style="font-weight:600;display:inline-block;min-width:12ch;">${s.label.toUpperCase()}</span>${s.items.slice(0,4).join(' · ')}`));
+      break;
+    case 'ping izan':
+      ta('PING izan (Terrassa, ES): 56 data bytes');
+      ta('3 packets, 0% packet loss','g');
+      ta('Status: online · usually replies < 24h','c');
+      break;
+    case 'sudo hire-me':
+      ta('<span class="d">[sudo] password: ••••••••</span>');
+      ta('✓ Authentication successful.','g');
+      ta('Great choice. 🚀','g');
+      ta('Email: <span class="c">izanrubiocerezo@gmail.com</span>');
+      ta('CV: <a href="/cv.pdf" download style="color:#00d4ff;">/cv.pdf</a>');
+      break;
+    case 'clear':
+      document.getElementById('termOut').innerHTML='';
+      break;
+    case 'nmap localhost':
+      ta('<span class="r" style="font-weight:600;">WARNING: Intrusion attempt logged.</span>');
+      ta('<span class="r">Access denied. I see you. 👀</span>');
+      showDI('grad-terminal',SVGS.terminal,'⚠ Intrusion Detected','Access denied — nice try.');
+      break;
+    default:
+      if(cmd.startsWith('cat ')){
+        const slug=cmd.slice(4).trim();
+        const p=PROJECTS.find(x=>x.slug===slug);
+        if(p){ta(`<span class="c">${p.name}</span> — ${p.category}`);ta(`Stack: ${p.stack.join(' · ')}`);ta(p.desc);}
+        else ta(`<span class="r">cat: ${raw.slice(4)}: No such file</span>`);
+        break;
+      }
+      ta(`<span class="r">zsh: command not found: ${raw}</span>`);
+      ta('Type <span class="g">help</span> for available commands.');
+  }
+}
+</script>
+</body>
+</html>
