@@ -19,7 +19,7 @@ npm run build   # production build
 ```
 /app
   layout.tsx         — fonts (JetBrains Mono, Inter), metadata
-  page.tsx           — boot → desktop orchestration
+  page.tsx           — boot → desktop orchestration; `HomeOrMobile` component uses `useMobileDetect()` to render `<MobilePortfolio />` on ≤768px or full desktop OS otherwise
   globals.css        — CSS theme vars (dark/light), aurora blob classes, reset, scrollbars
 /components
   LockScreen.tsx     — aurora bg + frosted glass, IzanOS logo (32px white 40% opacity) above clock, clock, profile, breathe hint, Framer Motion unlock fade
@@ -52,9 +52,12 @@ npm run build   # production build
     ContactWindow.tsx   — left col (340px): ~/CONTACT path, "Let's talk." title, subtitle, 5 contact items (email/github/linkedin/phone/location) in 22px 1fr grid with cyan hover, response time pill (green), pulsing status dot; decorative "GET IN TOUCH" rotated -90deg. Right col: form (name/email/subject/message) with cyan focus glow, red shake on empty submit, green success state 2s; blob + hairline top; all text from translations; contactPulseDot/contactShake/contactSendPop keyframes
     BrowserWindow.tsx   — simulated browser: internal portfolio or iframe
     FilesWindow.tsx     — toolbar (back/forward nav history, breadcrumb, grid/list toggle, search), sidebar 180px (Places: Home/Documents/Pictures/Downloads + Bookmarks: Projects/CV), grid 4-col file cards with per-type SVG icons (folder/url/pdf/png/readme), 3D tilt hover, double-click open behavior (folder→navigate, url→browser, pdf→download, png→preview modal, readme→WIP modal), list view, image preview modal (Next.js Image + duotone overlay), readme WIP modal, toast slide-up notifications, status bar (item count + path); nav history: `nav:{stack,idx}` state, Escape closes modals; keyframes: fiWipDot, fiSlideUp
-    TerminalWindow.tsx  — Kali-style prompt ┌──(izanos㉿IzanOS)-[~] with interactive history
+    TerminalWindow.tsx  — #0a0d0a bg + CRT scanlines + vignette; green inner glow rgba(0,255,136,0.12); ALL prompt elements green #00ff88 (not cyan); scroll area (output) + fixed bottom input area with block cursor █ blinking green; welcome typewriter on mount (3 lines, 750ms total); commands: help/whoami/ls projects/cat <slug>/skills/ping izan/sudo hire-me/theme --switch/clear; easter eggs: nmap localhost/exploit/sudo rm -rf / (async deletion sequence 400ms×4 + 2s "Just kidding."); arrow up/down history via histRef/histIdxRef (useRef); timersRef cleanup on unmount; keyframes: term-blink, term-dot
     GameWindow.tsx      — Firewall Breaker breakout game; canvas + useRef game loop, 3 levels, RAF cleanup
     PortfolioSite.tsx   — internal website rendered inside BrowserWindow
+  MobilePortfolio.tsx — full iPhone 15 Pro shell for ≤768px viewports; lock screen (swipe/click unlock), home screen (4×2 app grid + dock), app open animation (scale from icon origin, 350ms), Dynamic Island (expands on notification via useNotifications), 8 apps: Projects (tap-to-expand cards), About (photo+role-typer+contact), Skills (category pills + tags), Contact (contact list + form), Terminal (Kali prompt + commands), Files (filesystem tree nav), Game (canvas Breakout, touch/mouse), Browser (stub); CSS transform scale to fit viewport; all content from data/content.ts; `--app-accent` CSS variable per app; `VHero` shared hero header component; terminal auto-types `whoami` on open; game has HUD overlay + particles; files has 2-col grid + rich SVG icons; `overflow:hidden` + `border-radius:46px` on `.mob-appview` enforces screen clipping
+/hooks
+  useMobileDetect.ts  — returns boolean, true when window.innerWidth ≤ breakpoint (default 768); re-checks on resize; SSR-safe (defaults false)
 /contexts
   LanguageContext.tsx — Lang type ('CAS'|'CAT'|'ENG'), LanguageProvider, useLanguage(); persists to localStorage key 'izanos-lang'; default 'CAS'
   ThemeContext.tsx   — Theme type ('dark'|'light'), ThemeProvider, useTheme(); persists to localStorage key 'izanos-theme'; default 'dark'
