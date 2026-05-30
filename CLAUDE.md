@@ -47,7 +47,7 @@ npm run build   # production build
     TerminalIcon.tsx — 60×60, dark gradient + green >_ SVG
   /windows
     ProjectsWindow.tsx  — sidebar (250px) with per-project accent color + animated content area; hexToRgba helper; fade transition 150ms out / 160ms in; accent blob, large decorative numeral, WIP pulsing badge, project counter bottom-right; ACCENT map: ciberchurros #00ff88, laraveles #00d4ff, stastarat #7c3aed, docflow #ff9500, barbercompte #ff4757
-    WhoamiWindow.tsx    — two-col layout: photo (38%) with grayscale+duotone+vignette+grain+scanlines+corner crop marks + info (62%) with ~/WHOAMI path, name+cyan dot, role typer (tRoles 0-2, useEffect), 40px accent line, bio, contact grid (email/github/linkedin/location/phone), status bar with green pulsing dot; decorative IR monogram + cyan blob top-right; window inner glow rgba(0,212,255,0.10)
+    WhoamiWindow.tsx    — two-col layout: photo (38%) with duotone+vignette+grain+scanlines+corner crop marks (no grayscale — full color) + info (62%) with ~/WHOAMI path, name+cyan dot, role typer (tRoles 0-2, useEffect), 40px accent line, bio, contact grid (email/github/linkedin/location/phone), status bar with green pulsing dot; decorative IR monogram + cyan blob top-right; window inner glow rgba(0,212,255,0.10)
     SkillsWindow.tsx    — sidebar (260px) with 7 categories, per-category accent color + SVG icon + tech count + active gradient left-border; right panel: accent blob, 200px decorative bg text, heading (white + accent glow), skills as tags with stagger entrance animation (30ms/tag via --skill-i CSS var + .izanos-skill-tag class); gridKey remount trick restarts animations on category switch; fade transition 150ms out / 200ms in; counter bottom-right; CAT_ACCENT map: languages/devops #00d4ff, frontend #7c3aed, backend #00ff88, databases #ff9500, security #ff4757, other #a855f7
     ContactWindow.tsx   — left col (340px): ~/CONTACT path, "Let's talk." title, subtitle, 5 contact items (email/github/linkedin/phone/location) in 22px 1fr grid with cyan hover, response time pill (green), pulsing status dot; decorative "GET IN TOUCH" rotated -90deg. Right col: form (name/email/subject/message) with cyan focus glow, red shake on empty submit, green success state 2s; blob + hairline top; all text from translations; contactPulseDot/contactShake/contactSendPop keyframes
     BrowserWindow.tsx   — simulated browser: internal portfolio or iframe
@@ -73,7 +73,7 @@ npm run build   # production build
     logo-dark.svg  — same logo, cyan stroke, #0a0f1a bg
   favicon.ico      — multi-size ICO (16/32/48px) generated from logo
   /images
-    foto-portafolio.png  — profile photo (grayscale in whoami)
+    foto-portafolio.png  — profile photo (full color, no filter)
   cv.pdf                 — CV download (referenced in files.exe)
 ```
 
