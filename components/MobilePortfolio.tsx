@@ -753,7 +753,6 @@ export default function MobilePortfolio() {
   const [appAccent,  setAppAccent]  = useState('#00d4ff');
   const [island,     setIsland]     = useState<{ title: string; msg: string } | null>(null);
   const [clock,      setClock]      = useState({ time: '9:41', date: 'Thursday, 29 May' });
-  const [scale,      setScale]      = useState(1);
 
   const screenRef       = useRef<HTMLDivElement>(null);
   const islandTimerRef  = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -772,11 +771,6 @@ export default function MobilePortfolio() {
     tick(); const id = setInterval(tick, 1000); return () => clearInterval(id);
   }, []);
 
-  /* Scale */
-  useEffect(() => {
-    const fit = () => setScale(Math.min((window.innerWidth - 24) / 390, (window.innerHeight - 24) / 844, 1));
-    fit(); window.addEventListener('resize', fit); return () => window.removeEventListener('resize', fit);
-  }, []);
 
   /* Connect NotificationSystem → Dynamic Island */
   useEffect(() => {
@@ -855,81 +849,56 @@ export default function MobilePortfolio() {
   return (
     <>
       <style>{`
-        .mob-page{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#000;overflow:hidden;}
-        .mob-aurora{position:absolute;inset:0;overflow:hidden;background:radial-gradient(ellipse at 50% 50%,#0a0a0a,#000);}
-        .mob-blob{position:absolute;border-radius:50%;filter:blur(120px);mix-blend-mode:screen;pointer-events:none;}
-        .mob-b1{width:60vw;height:60vw;top:-20vw;left:-15vw;background:radial-gradient(circle,rgba(0,255,102,.28),transparent 65%);animation:mob-drift1 28s ease-in-out infinite;}
-        .mob-b2{width:65vw;height:65vw;bottom:-25vw;right:-20vw;background:radial-gradient(circle,rgba(0,102,255,.26),transparent 65%);animation:mob-drift2 34s ease-in-out infinite;}
-        .mob-b3{width:45vw;height:45vw;top:30%;left:30%;background:radial-gradient(circle,rgba(0,255,255,.15),transparent 65%);animation:mob-pulse3 18s ease-in-out infinite;}
-        @keyframes mob-drift1{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(15vw,8vh) scale(1.15);}66%{transform:translate(-5vw,12vh) scale(.95);}}
-        @keyframes mob-drift2{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-20vw,-12vh) scale(1.2);}}
-        @keyframes mob-pulse3{0%,100%{opacity:.7;transform:scale(1);}50%{opacity:1;transform:scale(1.35);}}
+        *{-webkit-tap-highlight-color:transparent;}
+        .mob-screen{position:fixed;inset:0;background:#000;overflow:hidden;display:flex;flex-direction:column;}
+        .mob-wallpaper{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,#0b1020,#05060c);overflow:hidden;}
+        .mob-wb{position:absolute;border-radius:50%;filter:blur(90px);mix-blend-mode:screen;}
+        .mob-wb1{width:80vw;height:80vw;top:-20vw;left:-20vw;background:radial-gradient(circle,rgba(0,255,136,.3),transparent 65%);animation:mob-drift1 24s ease-in-out infinite;}
+        .mob-wb2{width:90vw;height:90vw;bottom:-30vw;right:-25vw;background:radial-gradient(circle,rgba(0,102,255,.3),transparent 65%);animation:mob-drift2 30s ease-in-out infinite;}
+        .mob-wb3{width:60vw;height:60vw;top:35%;left:25%;background:radial-gradient(circle,rgba(124,58,237,.22),transparent 65%);animation:mob-pulse3 20s ease-in-out infinite;}
+        @keyframes mob-drift1{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(10vw,6vh) scale(1.1);}66%{transform:translate(-4vw,10vh) scale(.95);}}
+        @keyframes mob-drift2{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-12vw,-8vh) scale(1.15);}}
+        @keyframes mob-pulse3{0%,100%{opacity:.7;transform:scale(1);}50%{opacity:1;transform:scale(1.3);}}
         @keyframes mob-dotpulse{50%{opacity:.35;}}
         @keyframes mob-blink{0%,100%{opacity:1;}50%{opacity:0;}}
         @keyframes mob-shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}75%{transform:translateX(4px);}}
         @keyframes mob-floatup{0%,100%{transform:translateY(0);opacity:.5;}50%{transform:translateY(-6px);opacity:.9;}}
-        .mob-stage{position:relative;z-index:10;transform-origin:center;}
-        .mob-phone{position:relative;width:390px;height:844px;border-radius:56px;background:linear-gradient(145deg,#2a2a2c 0%,#1a1a1a 40%,#0e0e0e 100%);padding:11px;box-shadow:0 40px 80px rgba(0,0,0,.6),0 0 0 2px rgba(255,255,255,.05),inset 0 0 2px rgba(255,255,255,.2);}
-        .mob-phone::before{content:'';position:absolute;inset:2px;border-radius:54px;background:linear-gradient(115deg,rgba(255,255,255,.12),transparent 18%,transparent 82%,rgba(255,255,255,.08));pointer-events:none;z-index:5;}
-        .mob-btn{position:absolute;background:linear-gradient(90deg,#2a2a2c,#111);border-radius:3px;}
-        .mob-screen{position:relative;width:100%;height:100%;border-radius:46px;overflow:hidden;background:#000;}
-        .mob-wallpaper{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,#0b1020,#05060c);overflow:hidden;}
-        .mob-wb{position:absolute;border-radius:50%;filter:blur(60px);mix-blend-mode:screen;}
-        .mob-wb1{width:280px;height:280px;top:-60px;left:-60px;background:radial-gradient(circle,rgba(0,255,136,.3),transparent 65%);animation:mob-drift1 24s ease-in-out infinite;}
-        .mob-wb2{width:300px;height:300px;bottom:-80px;right:-70px;background:radial-gradient(circle,rgba(0,102,255,.3),transparent 65%);animation:mob-drift2 30s ease-in-out infinite;}
-        .mob-wb3{width:200px;height:200px;top:40%;left:30%;background:radial-gradient(circle,rgba(124,58,237,.22),transparent 65%);animation:mob-pulse3 20s ease-in-out infinite;}
-        .mob-statusbar{position:absolute;top:0;left:0;right:0;height:54px;display:flex;align-items:center;justify-content:space-between;padding:18px 30px 0;z-index:40;pointer-events:none;}
-        .mob-island{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:122px;height:36px;background:#000;border-radius:20px;z-index:60;overflow:hidden;transition:width .4s cubic-bezier(.2,.9,.3,1.2),height .4s cubic-bezier(.2,.9,.3,1.2),border-radius .4s;display:flex;align-items:center;cursor:pointer;}
-        .mob-island.exp{width:310px;height:68px;border-radius:32px;}
+        .mob-statusbar{position:absolute;top:0;left:0;right:0;height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:40;pointer-events:none;background:rgba(0,0,0,.5);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);}
+        .mob-island{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:122px;height:36px;background:#000;border-radius:20px;z-index:60;overflow:hidden;transition:width .4s cubic-bezier(.2,.9,.3,1.2),height .4s cubic-bezier(.2,.9,.3,1.2),border-radius .4s;display:flex;align-items:center;cursor:pointer;}
+        .mob-island.exp{width:min(310px,90vw);height:68px;border-radius:32px;}
         .mob-island-c{display:flex;align-items:center;gap:10px;width:100%;padding:0 12px;opacity:0;transition:opacity .2s ease .15s;}
         .mob-island.exp .mob-island-c{opacity:1;}
-        .mob-lock{position:absolute;inset:0;z-index:50;backdrop-filter:blur(2px);display:flex;flex-direction:column;align-items:center;transition:transform .5s cubic-bezier(.4,0,.2,1),opacity .4s ease;}
+        .mob-lock{position:absolute;inset:0;z-index:50;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);display:flex;flex-direction:column;align-items:center;transition:transform .5s cubic-bezier(.4,0,.2,1),opacity .4s ease;}
         .mob-lock.off{transform:translateY(-100%);opacity:0;pointer-events:none;}
-        .mob-home{position:absolute;inset:0;z-index:30;padding:64px 20px 0;display:flex;flex-direction:column;transition:opacity .3s;}
+        .mob-home{position:absolute;inset:0;z-index:30;padding:56px 24px 0;display:flex;flex-direction:column;transition:opacity .3s;}
         .mob-home.dim{opacity:.3;}
-        .mob-app-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px 12px;margin-top:8px;}
-        .mob-app{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;}
-        .mob-icon{width:60px;height:60px;border-radius:15px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px -4px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.22),inset 0 -1px 0 rgba(0,0,0,.2);transition:transform .15s ease;flex-shrink:0;}
+        .mob-app-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(14px,4vw,24px) clamp(8px,3vw,16px);margin-top:10px;}
+        .mob-app{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;user-select:none;}
+        .mob-icon{width:clamp(54px,14vw,68px);height:clamp(54px,14vw,68px);border-radius:15px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px -4px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.22),inset 0 -1px 0 rgba(0,0,0,.2);transition:transform .15s ease;flex-shrink:0;}
         .mob-app:active .mob-icon{transform:scale(.88);}
         .mob-app-name{font-size:11px;font-weight:500;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.7);}
-        .mob-dock{margin-top:auto;margin-bottom:28px;display:flex;justify-content:center;gap:18px;padding:14px 18px;border-radius:30px;background:rgba(255,255,255,.1);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);border:1px solid rgba(255,255,255,.12);}
+        .mob-dock{margin-top:auto;display:flex;justify-content:center;gap:18px;padding:12px 20px;padding-bottom:max(20px,env(safe-area-inset-bottom,20px));border-radius:30px 30px 0 0;background:rgba(255,255,255,.08);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);border-top:1px solid rgba(255,255,255,.1);}
         .mob-dock .mob-icon{width:56px;height:56px;}
-        .mob-appview{position:absolute;inset:0;z-index:45;background:#06070d;display:flex;flex-direction:column;opacity:0;transform:scale(.4);transform-origin:var(--origin,center);pointer-events:none;transition:opacity .35s cubic-bezier(.4,0,.2,1),transform .35s cubic-bezier(.4,0,.2,1);overflow:hidden;border-radius:46px;}
-        .mob-appview.open{opacity:1;transform:scale(1);pointer-events:auto;}
+        .mob-appview{position:absolute;inset:0;z-index:45;background:#06070d;display:flex;flex-direction:column;opacity:0;transform:translateY(100%);pointer-events:none;transition:opacity .3s ease,transform .35s cubic-bezier(.4,0,.2,1);overflow:hidden;}
+        .mob-appview.open{opacity:1;transform:translateY(0);pointer-events:auto;}
         .mob-appnav{flex-shrink:0;height:88px;padding:46px 20px 0;display:flex;align-items:center;gap:8px;background:rgba(8,10,18,.92);border-bottom:1px solid rgba(255,255,255,.06);position:relative;z-index:2;}
         .mob-back{display:inline-flex;align-items:center;gap:3px;color:var(--app-accent,#00d4ff);font-size:16px;font-weight:500;cursor:pointer;background:none;border:none;padding:0;}
         .mob-nav-title{position:absolute;left:50%;transform:translateX(-50%);font-family:var(--font-jetbrains),monospace;font-size:13px;color:rgba(255,255,255,.7);white-space:nowrap;}
         .mob-appscroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;}
         .mob-appscroll::-webkit-scrollbar{width:0;}
-        .mob-home-ind{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:134px;height:5px;border-radius:3px;background:rgba(255,255,255,.3);z-index:70;cursor:pointer;}
+        .mob-home-ind{position:absolute;bottom:max(6px,env(safe-area-inset-bottom,6px));left:50%;transform:translateX(-50%);width:134px;height:5px;border-radius:3px;background:rgba(255,255,255,.3);z-index:70;cursor:pointer;}
       `}</style>
 
-      <div className="mob-page">
-        <div className="mob-aurora">
-          <div className="mob-blob mob-b1" /><div className="mob-blob mob-b2" /><div className="mob-blob mob-b3" />
+      <div className="mob-screen" ref={screenRef}>
+        <div className="mob-wallpaper">
+          <div className="mob-wb mob-wb1" /><div className="mob-wb mob-wb2" /><div className="mob-wb mob-wb3" />
         </div>
 
-        <div className="mob-stage" style={{ transform: `scale(${scale})` }}>
-          <div className="mob-phone">
-            <div className="mob-btn" style={{ left: -3, top: 130, width: 4, height: 28 }} />
-            <div className="mob-btn" style={{ left: -3, top: 180, width: 4, height: 50 }} />
-            <div className="mob-btn" style={{ left: -3, top: 244, width: 4, height: 50 }} />
-            <div className="mob-btn" style={{ right: -3, top: 200, width: 4, height: 78 }} />
-
-            <div className="mob-screen" ref={screenRef}>
-              <div className="mob-wallpaper">
-                <div className="mob-wb mob-wb1" /><div className="mob-wb mob-wb2" /><div className="mob-wb mob-wb3" />
-              </div>
-
-              {/* Status bar */}
-              <div className="mob-statusbar">
-                <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', letterSpacing: '-0.01em', fontFamily: INTER }}>{clock.time}</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <svg width="18" height="12" viewBox="0 0 18 12" fill="#fff"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2.5" width="3" height="9.5" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
-                  <svg width="17" height="12" viewBox="0 0 17 12" fill="#fff"><path d="M8.5 2.5a10 10 0 0 1 7 2.8l-1.4 1.5a8 8 0 0 0-11.2 0L1.5 5.3a10 10 0 0 1 7-2.8z" opacity=".95"/><path d="M8.5 6.5a5 5 0 0 1 3.5 1.4L8.5 11.5 5 7.9a5 5 0 0 1 3.5-1.4z"/></svg>
-                  <svg width="26" height="13" viewBox="0 0 26 13" fill="none"><rect x="1" y="1.5" width="21" height="10" rx="3" stroke="#fff" strokeOpacity=".5" strokeWidth="1"/><rect x="2.5" y="3" width="16" height="7" rx="1.5" fill="#fff"/><rect x="23.5" y="4.5" width="1.6" height="4" rx="1" fill="#fff" fillOpacity=".5"/></svg>
-                </div>
-              </div>
+        {/* Status bar */}
+        <div className="mob-statusbar">
+          <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', letterSpacing: '-0.01em', fontFamily: INTER }}>{clock.time}</div>
+          <div style={{ fontFamily: INTER, fontSize: 13, fontWeight: 700, color: '#fff', letterSpacing: '0.04em' }}>IzanOS</div>
+        </div>
 
               {/* Dynamic Island */}
               <div className={`mob-island${island ? ' exp' : ''}`} onClick={() => setIsland(null)}>
@@ -1030,9 +999,6 @@ export default function MobilePortfolio() {
               {/* Home indicator */}
               <div className="mob-home-ind" onClick={activeApp ? closeApp : undefined} />
             </div>
-          </div>
-        </div>
-      </div>
-    </>
+  </>
   );
 }
