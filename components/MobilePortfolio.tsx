@@ -742,9 +742,9 @@ export default function MobilePortfolio() {
         .mob-app-name{font-size:11px;font-weight:500;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.7);}
         .mob-dock{margin-top:auto;margin-bottom:28px;display:flex;justify-content:center;gap:18px;padding:14px 18px;border-radius:30px;background:rgba(255,255,255,.1);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);border:1px solid rgba(255,255,255,.12);}
         .mob-dock .mob-icon{width:56px;height:56px;}
-        .mob-appview{position:absolute;inset:0;z-index:45;background:#06070d;display:flex;flex-direction:column;opacity:0;transform:scale(.4);transform-origin:var(--origin,center);pointer-events:none;transition:opacity .35s cubic-bezier(.4,0,.2,1),transform .35s cubic-bezier(.4,0,.2,1);}
+        .mob-appview{position:absolute;inset:0;z-index:45;background:#06070d;display:flex;flex-direction:column;opacity:0;transform:scale(.4);transform-origin:var(--origin,center);pointer-events:none;transition:opacity .35s cubic-bezier(.4,0,.2,1),transform .35s cubic-bezier(.4,0,.2,1);overflow:hidden;border-radius:46px;}
         .mob-appview.open{opacity:1;transform:scale(1);pointer-events:auto;}
-        .mob-appnav{flex-shrink:0;height:92px;padding:50px 20px 0;display:flex;align-items:center;gap:8px;background:rgba(8,10,18,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06);position:relative;z-index:2;}
+        .mob-appnav{flex-shrink:0;height:88px;padding:46px 20px 0;display:flex;align-items:center;gap:8px;background:rgba(8,10,18,.92);border-bottom:1px solid rgba(255,255,255,.06);position:relative;z-index:2;}
         .mob-back{display:inline-flex;align-items:center;gap:3px;color:#00d4ff;font-size:16px;font-weight:500;cursor:pointer;background:none;border:none;padding:0;}
         .mob-nav-title{position:absolute;left:50%;transform:translateX(-50%);font-family:var(--font-jetbrains),monospace;font-size:13px;color:rgba(255,255,255,.7);white-space:nowrap;}
         .mob-appscroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;}
