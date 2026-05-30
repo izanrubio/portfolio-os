@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useState, useEffect, useRef, KeyboardEvent } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { personal, projects, skills, filesystem } from '@/data/content';
 import { FileNode } from '@/types/windows';
@@ -351,112 +351,102 @@ function ContactApp() {
 /* ════════════════════════════════════════
    TERMINAL APP
 ════════════════════════════════════════ */
-type TLine = { id: number; html: string };
-let _tid = 0;
+type TBlock = { id: number; cmd: string; output: string };
+let _tbid = 0;
+
+const TERM_OUTPUTS: Record<string, string> = {
+  whoami:
+    `<span style="color:#f0f4ff;font-weight:600;">${personal.name}</span>\n` +
+    `<span style="color:#00d4ff;">${personal.role}</span>\n` +
+    `${personal.location} · <span style="color:#00ff88;">Available for hire ●</span>`,
+
+  'ls projects':
+    projects.map(p => {
+      const stack = ((p as { terminalStack?: string[] }).terminalStack ?? p.stack.slice(0, 3)).join(' · ');
+      const wip   = p.status === 'in-development';
+      return `<span style="color:#7c3aed;">drwxr-xr-x</span>  <span style="color:#f0f4ff;">${p.name}</span>  <span style="color:rgba(255,255,255,.4);">→ ${stack}</span>${wip ? ' <span style="color:#ff9500;">[EN DESARROLLO]</span>' : ''}`;
+    }).join('\n'),
+
+  skills:
+    skills.map(s =>
+      `<span style="color:#00d4ff;font-weight:600;">${s.label.toUpperCase().padEnd(10)}</span><span style="color:#c8d0c8;">${s.items.slice(0, 4).join(' · ')}</span>`
+    ).join('\n'),
+
+  'ping izan':
+    `<span style="color:#c8d0c8;">Email:    <span style="color:#f0f4ff;">${personal.email}</span></span>\n` +
+    `<span style="color:#c8d0c8;">GitHub:   <span style="color:#f0f4ff;">github.com/izanrubio</span></span>\n` +
+    `<span style="color:#c8d0c8;">LinkedIn: <span style="color:#f0f4ff;">linkedin.com/in/izan-rubio-cerezo</span></span>\n` +
+    `<span style="color:#c8d0c8;">Phone:    <span style="color:#f0f4ff;">${personal.contact.phone}</span></span>\n` +
+    `<span style="color:#00ff88;">Ping successful — host is alive. ●</span>`,
+
+  'sudo hire-me':
+    `<span style="color:rgba(255,255,255,.4);">Verificando credenciales...</span>\n` +
+    `<span style="color:#00ff88;font-weight:700;">ACCESO CONCEDIDO ✓</span>\n` +
+    `<span style="color:#c8d0c8;">Izan está disponible para nuevos proyectos.</span>\n` +
+    `<span style="color:#c8d0c8;">Contacto: <span style="color:#00d4ff;">${personal.email}</span></span>`,
+
+  'nmap localhost':
+    `<span style="color:#c8d0c8;">Starting Nmap scan...</span>\n` +
+    `<span style="color:#ff4757;font-weight:700;">WARNING: Intrusion attempt logged.</span>\n` +
+    `<span style="color:#ff4757;">Nice try. I see you, visitor. 👀</span>\n` +
+    `<span style="color:#ff4757;">Access denied.</span>`,
+};
+
+const CMD_BUTTONS: string[] = ['whoami', 'ls projects', 'skills', 'ping izan', 'sudo hire-me', 'nmap localhost'];
 
 function TerminalApp() {
-  const [lines, setLines] = useState<TLine[]>([]);
-  const [inp, setInp]   = useState('');
-  const histRef         = useRef<string[]>([]);
-  const histIdxRef      = useRef(0);
-  const outRef          = useRef<HTMLDivElement>(null);
-  const inputRef        = useRef<HTMLInputElement>(null);
-  const timerRef        = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const [blocks, setBlocks] = useState<TBlock[]>([]);
+  const [active, setActive] = useState<string | null>(null);
+  const outRef = useRef<HTMLDivElement>(null);
 
-  const push = (html: string) => setLines(prev => [...prev, { id: _tid++, html }]);
-
-  useEffect(() => { outRef.current?.scrollTo(0, outRef.current.scrollHeight); }, [lines]);
-
-  /* Welcome + auto-type whoami on mount */
   useEffect(() => {
-    push(`<span style="color:#00d4ff;font-weight:600;">IzanOS Terminal v2.0.4</span>`);
-    push(`<span style="color:rgba(255,255,255,.4);">Type 'help' for available commands.</span>`);
-    push(`<span style="color:rgba(255,255,255,.12);">─────────────────────────────</span>`);
+    outRef.current?.scrollTo({ top: outRef.current.scrollHeight, behavior: 'smooth' });
+  }, [blocks]);
 
-    // Auto-type whoami
-    const txt = 'whoami';
-    let i = 0;
-    // Temporary div to show typing
-    const typeId = _tid++;
-    setLines(prev => [...prev,
-      { id: _tid++, html: '<span style="color:#00ff88;">┌──(izanos㉿IzanOS)-[~]</span>' },
-      { id: typeId, html: `<span style="color:#00ff88;">└─$</span> <span style="color:#f0f4ff;" id="auto-type"></span><span style="display:inline-block;width:8px;height:14px;background:#00ff88;vertical-align:text-bottom;margin-left:2px;animation:mob-blink 1s steps(1) infinite;"></span>` },
-    ]);
-
-    const type = () => {
-      if (i <= txt.length) {
-        setLines(prev => prev.map(l => l.id === typeId
-          ? { ...l, html: `<span style="color:#00ff88;">└─$</span> <span style="color:#f0f4ff;">${txt.slice(0, i)}</span>${i < txt.length ? '<span style="display:inline-block;width:8px;height:14px;background:#00ff88;vertical-align:text-bottom;margin-left:2px;animation:mob-blink 1s steps(1) infinite;"></span>' : ''}` }
-          : l
-        ));
-        i++;
-        timerRef.current = setTimeout(type, 95);
-      } else {
-        push(`<div class="tv-out">${TERM_CMDS.whoami()}</div>`);
-        setTimeout(() => inputRef.current?.focus(), 400);
-      }
-    };
-    timerRef.current = setTimeout(type, 600);
-    return () => clearTimeout(timerRef.current);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const TERM_CMDS: Record<string, () => string> = {
-    help: () => `<span style="color:#00d4ff;">Available commands:</span>\n  whoami · ls projects · skills · ping izan\n  sudo hire-me · nmap localhost · exploit · clear`,
-    whoami: () => `${personal.name}\n<span style="color:#00d4ff;">${personal.role}</span>\n${personal.location} · <span style="color:#00ff88;">Available for hire ●</span>`,
-    'ls projects': () => `<span style="color:rgba(255,255,255,.3);">total ${projects.length}</span>\n${projects.map(p => {
-      const stack = ((p as {terminalStack?: string[]}).terminalStack ?? p.stack.slice(0, 3)).join(' · ');
-      return `<span style="color:#7c3aed;">drwxr-xr-x</span>  <span style="color:rgba(255,255,255,.5);">izan</span>  <span style="color:#f0f4ff;">${p.name.padEnd(16)}</span><span style="color:rgba(255,255,255,.4);">→ ${stack}</span>${p.status === 'in-development' ? ' <span style="color:#ff9500;">[WIP]</span>' : ''}`;
-    }).join('\n')}`,
-    skills: () => skills.map(s => `<span style="color:#00d4ff;font-weight:600;">${s.label.toUpperCase().padEnd(12)}</span>${s.items.slice(0, 4).join(' · ')}`).join('\n'),
-    'ping izan': () => `PING izan (127.0.0.1): 56 data bytes\n64 bytes: icmp_seq=0 ttl=64 time=0.042 ms\n<span style="color:#00ff88;">→ Always reachable. Just send a message.</span>`,
-    'sudo hire-me': () => `<span style="color:rgba(255,255,255,.4);">[sudo] password for visitor:</span>\n<span style="color:#00ff88;">✓ Access granted.</span>\n<span style="color:#00d4ff;">Opening contact channel... ${personal.email}</span>`,
-    'nmap localhost': () => `Starting Nmap scan...\n<span style="color:#ff4757;font-weight:700;">WARNING: Intrusion attempt logged.</span>\n<span style="color:#ff4757;">Access denied. I see you, visitor.</span>\nNice try. 👀`,
-    exploit: () => `<span style="color:rgba(255,255,255,.4);">Searching exploits...</span>\n<span style="color:#ff4757;">Exploit failed: this system is hardened. 🛡️</span>`,
-  };
-
-  const run = (raw: string) => {
-    const cmd = raw.trim().replace(/\s+/g, ' ').toLowerCase();
-    push(`<span style="color:#00ff88;">┌──(izanos㉿IzanOS)-[~]</span>`);
-    push(`<span style="color:#00ff88;">└─$</span> <span style="color:#f0f4ff;">${raw.replace(/</g, '&lt;')}</span>`);
-    if (!cmd) return;
-    histRef.current.push(raw); histIdxRef.current = histRef.current.length;
-    if (cmd === 'clear') { setLines([]); return; }
-    const fn = TERM_CMDS[cmd];
-    push(`<div style="white-space:pre-wrap;color:#c8d0c8;">${fn ? fn() : `<span style="color:#ff4757;">command not found: ${raw.replace(/</g, '&lt;')}</span>\nType <span style="color:#00d4ff;">help</span> for available commands.`}</div>`);
-  };
-
-  const histStep = (dir: -1 | 1) => {
-    const h = histRef.current;
-    if (!h.length) return;
-    histIdxRef.current = Math.max(0, Math.min(h.length, histIdxRef.current + dir));
-    setInp(h[histIdxRef.current] ?? '');
-  };
-
-  const onKey = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') { run(inp); setInp(''); }
-    else if (e.key === 'ArrowUp')   { e.preventDefault(); histStep(-1); }
-    else if (e.key === 'ArrowDown') { e.preventDefault(); histStep(1); }
+  const run = (cmd: string) => {
+    setActive(cmd);
+    setTimeout(() => setActive(null), 220);
+    setBlocks(prev => [...prev, { id: _tbid++, cmd, output: TERM_OUTPUTS[cmd] ?? '' }]);
   };
 
   return (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#0a0d0a', overflow: 'hidden', minHeight: 0, height: '100%' }}>
-      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'repeating-linear-gradient(0deg,rgba(0,255,136,.012) 0 1px,transparent 1px 3px)', zIndex: 1 }} />
-      <div ref={outRef} onClick={() => inputRef.current?.focus()}
-        style={{ flex: 1, overflowY: 'auto', padding: '16px 16px 8px', fontFamily: MONO, fontSize: 13, lineHeight: 1.7, position: 'relative', zIndex: 2, scrollbarWidth: 'thin', scrollbarColor: 'rgba(0,255,136,.2) transparent' }}>
-        {lines.map(l => <div key={l.id} dangerouslySetInnerHTML={{ __html: l.html }} style={{ wordBreak: 'break-all', marginBottom: 1 }} />)}
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#0a0d0a', overflow: 'hidden', minHeight: 0, position: 'relative' }}>
+      {/* CRT scanlines */}
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'repeating-linear-gradient(0deg,rgba(0,255,136,.012) 0 1px,transparent 1px 3px)', zIndex: 0 }} />
+
+      {/* Welcome header */}
+      <div style={{ flexShrink: 0, padding: '14px 16px 10px', position: 'relative', zIndex: 1 }}>
+        <div style={{ fontFamily: MONO, fontSize: 13, color: '#00d4ff', fontWeight: 600 }}>IzanOS Terminal v2.0.4</div>
+        <div style={{ fontFamily: MONO, fontSize: 11, color: 'rgba(255,255,255,.4)', marginTop: 4 }}>Tap a command to execute.</div>
+        <div style={{ height: 1, background: 'rgba(255,255,255,.08)', marginTop: 10 }} />
       </div>
-      <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 8, padding: '12px 14px 14px', background: 'rgba(0,0,0,.8)', borderTop: '1px solid rgba(0,255,136,.1)', fontFamily: MONO, fontSize: 13, position: 'relative', zIndex: 2 }}>
-        <span style={{ color: '#00ff88', fontWeight: 600, flexShrink: 0 }}>└─$</span>
-        <input ref={inputRef} value={inp} onChange={e => setInp(e.target.value)} onKeyDown={onKey}
-          style={{ flex: 1, minWidth: 0, background: 'transparent', border: 'none', outline: 'none', color: '#f0f4ff', fontFamily: MONO, fontSize: 13, caretColor: '#00ff88' }}
-          autoComplete="off" autoCapitalize="off" spellCheck={false} />
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2, flexShrink: 0 }}>
-          {([-1, 1] as const).map(dir => (
-            <button key={dir} onClick={() => { histStep(dir); inputRef.current?.focus(); }}
-              style={{ width: 26, height: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 5, background: 'rgba(0,255,136,.08)', border: '1px solid rgba(0,255,136,.18)', color: '#00ff88', cursor: 'pointer' }}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 11, height: 11 }}>
-                <polyline points={dir === -1 ? '18 15 12 9 6 15' : '6 9 12 15 18 9'} />
-              </svg>
+
+      {/* Output area */}
+      <div ref={outRef} style={{ flex: 1, overflowY: 'auto', padding: '4px 16px 12px', fontFamily: MONO, fontSize: 12, lineHeight: 1.7, position: 'relative', zIndex: 1, scrollbarWidth: 'thin', scrollbarColor: 'rgba(0,255,136,.2) transparent' }}>
+        {blocks.map(b => (
+          <div key={b.id} style={{ marginBottom: 14 }}>
+            <div style={{ color: '#00ff88' }}>└─$ <span style={{ color: '#f0f4ff' }}>{b.cmd}</span></div>
+            <div dangerouslySetInnerHTML={{ __html: b.output }} style={{ whiteSpace: 'pre-wrap', color: '#c8d0c8', paddingLeft: 4, wordBreak: 'break-word' }} />
+          </div>
+        ))}
+        {blocks.length === 0 && (
+          <div style={{ color: 'rgba(255,255,255,.2)', fontFamily: MONO, fontSize: 11, paddingTop: 8 }}>No output yet. Tap a command below.</div>
+        )}
+      </div>
+
+      {/* Command buttons */}
+      <div style={{ flexShrink: 0, padding: '10px 14px', paddingBottom: `max(14px, env(safe-area-inset-bottom, 14px))`, borderTop: '1px solid rgba(0,255,136,.08)', background: '#0a0d0a', position: 'relative', zIndex: 1 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+          {CMD_BUTTONS.map(cmd => (
+            <button key={cmd} onClick={() => run(cmd)} style={{
+              padding: '14px 10px', borderRadius: 12, cursor: 'pointer',
+              background: active === cmd ? 'rgba(0,255,136,.2)' : 'rgba(0,255,136,.06)',
+              border: '1px solid rgba(0,255,136,.2)',
+              fontFamily: MONO, fontSize: 12, color: '#00ff88',
+              transition: 'background .15s ease',
+              textAlign: 'left' as const,
+            }}>
+              {cmd}
             </button>
           ))}
         </div>
