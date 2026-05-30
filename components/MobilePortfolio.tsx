@@ -144,6 +144,7 @@ function ProjectsApp() {
 function AboutApp() {
   const { lang } = useLanguage();
   const [typed, setTyped] = useState('');
+  const [photoErr, setPhotoErr] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => {
@@ -163,7 +164,15 @@ function AboutApp() {
   return (
     <div style={{ paddingBottom: 40 }}>
       <div style={{ position: 'relative', width: '100%', height: 320, overflow: 'hidden', background: '#04060c', flexShrink: 0 }}>
-        <Image src={personal.photo} alt={personal.name} fill style={{ objectFit: 'cover', objectPosition: 'top', filter: 'grayscale(100%) brightness(0.72)' }} />
+        {photoErr ? (
+          <div style={{ width: '100%', height: '100%', background: '#1a1a2e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ fontFamily: INTER, fontWeight: 800, fontSize: 32, color: '#fff', letterSpacing: '0.05em' }}>IR</span>
+          </div>
+        ) : (
+          <Image src={personal.photo} alt={personal.name} fill
+            style={{ objectFit: 'cover', objectPosition: 'top', filter: 'grayscale(100%) brightness(0.72)' }}
+            onError={() => setPhotoErr(true)} />
+        )}
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg,rgba(0,212,255,.45),transparent 50%,rgba(167,85,247,.55))', mixBlendMode: 'color' }} />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg,transparent 50%,rgba(6,7,13,1) 100%)' }} />
       </div>
@@ -637,6 +646,19 @@ function GameApp() {
       // Ball
       ctx.save(); ctx.shadowColor='#fff'; ctx.shadowBlur=10; ctx.fillStyle='#fff';
       ctx.beginPath(); ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2); ctx.fill(); ctx.restore();
+      // TAP TO CONTINUE when ball is stuck mid-game (life lost, not game over)
+      if (playing && ball.stuck) {
+        ctx.save();
+        ctx.font = 'bold 12px monospace';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        const msg = 'TAP TO CONTINUE';
+        const tw = ctx.measureText(msg).width;
+        ctx.fillStyle = 'rgba(0,0,0,.65)';
+        ctx.beginPath(); ctx.roundRect(W/2-tw/2-14, H/2-14, tw+28, 28, 6); ctx.fill();
+        ctx.fillStyle = '#00ff88'; ctx.shadowColor = '#00ff88'; ctx.shadowBlur = 6;
+        ctx.fillText(msg, W/2, H/2);
+        ctx.restore();
+      }
       rafRef.current = requestAnimationFrame(step);
     };
     rafRef.current = requestAnimationFrame(step);
@@ -656,15 +678,27 @@ function GameApp() {
     // Expose start handler
     (canvas as HTMLCanvasElement & { _onOverlayClick?: () => void })._onOverlayClick = onOverlayClick;
 
-    canvas.addEventListener('touchmove', e => { e.preventDefault(); movePaddle(e.touches[0].clientX); }, { passive: false });
-    canvas.addEventListener('mousemove', e => { if (e.buttons) movePaddle(e.clientX); });
-    canvas.addEventListener('mousedown', e => movePaddle(e.clientX));
+    const onTouchMove = (e: TouchEvent) => { e.preventDefault(); movePaddle(e.touches[0].clientX); };
+    const onTouchStart = (e: TouchEvent) => {
+      e.preventDefault();
+      movePaddle(e.touches[0].clientX);
+      if (playing && ball.stuck) launch();
+    };
+    const onMouseMove  = (e: MouseEvent) => { if (e.buttons) movePaddle(e.clientX); };
+    const onMouseDown  = (e: MouseEvent) => { movePaddle(e.clientX); if (playing && ball.stuck) launch(); };
+
+    canvas.addEventListener('touchstart', onTouchStart, { passive: false });
+    canvas.addEventListener('touchmove',  onTouchMove,  { passive: false });
+    canvas.addEventListener('mousemove',  onMouseMove);
+    canvas.addEventListener('mousedown',  onMouseDown);
 
     reset();
     return () => {
       cancelAnimationFrame(rafRef.current);
-      canvas.removeEventListener('touchmove', () => {});
-      canvas.removeEventListener('mousemove', () => {});
+      canvas.removeEventListener('touchstart', onTouchStart);
+      canvas.removeEventListener('touchmove',  onTouchMove);
+      canvas.removeEventListener('mousemove',  onMouseMove);
+      canvas.removeEventListener('mousedown',  onMouseDown);
     };
   }, []);
 
