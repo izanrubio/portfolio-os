@@ -131,7 +131,7 @@ export default function WhoamiWindow() {
           src={personal.photo}
           alt={personal.name}
           fill
-          style={{ objectFit: 'cover', objectPosition: 'center top', filter: 'grayscale(100%) brightness(0.85)' }}
+          style={{ objectFit: 'cover', objectPosition: 'center top' }}
         />
         {/* Duotone */}
         <div style={{

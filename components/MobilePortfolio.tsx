@@ -170,7 +170,7 @@ function AboutApp() {
           </div>
         ) : (
           <Image src={personal.photo} alt={personal.name} fill
-            style={{ objectFit: 'cover', objectPosition: 'top', filter: 'grayscale(100%) brightness(0.72)' }}
+            style={{ objectFit: 'cover', objectPosition: 'top' }}
             onError={() => setPhotoErr(true)} />
         )}
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg,rgba(0,212,255,.45),transparent 50%,rgba(167,85,247,.55))', mixBlendMode: 'color' }} />
