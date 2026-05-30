@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { personal, projects, skills, filesystem } from '@/data/content';
 import { FileNode } from '@/types/windows';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useNotifications } from '@/components/NotificationSystem';
 import { tRoles } from '@/data/translations';
 
 const INTER = 'var(--font-inter), Inter, sans-serif';
@@ -743,7 +742,6 @@ const APPS: { id: AppId; label: string }[] = [
    MAIN COMPONENT
 ════════════════════════════════════════ */
 export default function MobilePortfolio() {
-  const { notifs } = useNotifications();
 
   const [appState,   setAppState]   = useState<'booting' | 'locked' | 'home'>('booting');
   const [bootMsgs,   setBootMsgs]   = useState<string[]>([]);
@@ -751,12 +749,9 @@ export default function MobilePortfolio() {
   const [activeApp,  setActiveApp]  = useState<AppId | null>(null);
   const [appOrigin,  setAppOrigin]  = useState('center center');
   const [appAccent,  setAppAccent]  = useState('#00d4ff');
-  const [island,     setIsland]     = useState<{ title: string; msg: string } | null>(null);
   const [clock,      setClock]      = useState({ time: '9:41', date: 'Thursday, 29 May' });
 
   const screenRef       = useRef<HTMLDivElement>(null);
-  const islandTimerRef  = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  const prevNotifsLen   = useRef(0);
   const touchStartY     = useRef<number | null>(null);
 
   /* Clock */
@@ -772,17 +767,6 @@ export default function MobilePortfolio() {
   }, []);
 
 
-  /* Connect NotificationSystem → Dynamic Island */
-  useEffect(() => {
-    if (notifs.length > prevNotifsLen.current && notifs[0]) {
-      const n = notifs[0];
-      showIsland(n.title, n.body);
-    }
-    prevNotifsLen.current = notifs.length;
-  }, [notifs]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  /* Cleanup island timer */
-  useEffect(() => () => clearTimeout(islandTimerRef.current), []);
 
   /* Boot sequence */
   useEffect(() => {
@@ -810,16 +794,7 @@ export default function MobilePortfolio() {
     return () => { timers.forEach(clearTimeout); cancelAnimationFrame(raf); };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const showIsland = (title: string, msg: string) => {
-    setIsland({ title, msg });
-    clearTimeout(islandTimerRef.current);
-    islandTimerRef.current = setTimeout(() => setIsland(null), 3000);
-  };
-
-  const unlock = () => {
-    setAppState('home');
-    setTimeout(() => showIsland('Welcome to IzanOS', 'Tap any app to explore'), 700);
-  };
+  const unlock = () => setAppState('home');
 
   const openApp = (app: AppId, e: React.MouseEvent) => {
     const icon = (e.currentTarget as HTMLElement).querySelector('.mob-icon') as HTMLElement | null;
@@ -830,7 +805,6 @@ export default function MobilePortfolio() {
     }
     setActiveApp(app);
     setAppAccent(APP_ACCENTS[app]);
-    showIsland(APP_TITLES[app], 'Opened');
   };
 
   const closeApp = () => setActiveApp(null);
@@ -863,14 +837,9 @@ export default function MobilePortfolio() {
         @keyframes mob-blink{0%,100%{opacity:1;}50%{opacity:0;}}
         @keyframes mob-shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}75%{transform:translateX(4px);}}
         @keyframes mob-floatup{0%,100%{transform:translateY(0);opacity:.5;}50%{transform:translateY(-6px);opacity:.9;}}
-        .mob-statusbar{position:absolute;top:0;left:0;right:0;height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:40;pointer-events:none;background:rgba(0,0,0,.5);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);}
-        .mob-island{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:122px;height:36px;background:#000;border-radius:20px;z-index:60;overflow:hidden;transition:width .4s cubic-bezier(.2,.9,.3,1.2),height .4s cubic-bezier(.2,.9,.3,1.2),border-radius .4s;display:flex;align-items:center;cursor:pointer;}
-        .mob-island.exp{width:min(310px,90vw);height:68px;border-radius:32px;}
-        .mob-island-c{display:flex;align-items:center;gap:10px;width:100%;padding:0 12px;opacity:0;transition:opacity .2s ease .15s;}
-        .mob-island.exp .mob-island-c{opacity:1;}
         .mob-lock{position:absolute;inset:0;z-index:50;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);display:flex;flex-direction:column;align-items:center;transition:transform .5s cubic-bezier(.4,0,.2,1),opacity .4s ease;}
         .mob-lock.off{transform:translateY(-100%);opacity:0;pointer-events:none;}
-        .mob-home{position:absolute;inset:0;z-index:30;padding:56px 24px 0;display:flex;flex-direction:column;transition:opacity .3s;}
+        .mob-home{position:absolute;inset:0;z-index:30;padding:env(safe-area-inset-top,20px) 24px 0;display:flex;flex-direction:column;transition:opacity .3s;}
         .mob-home.dim{opacity:.3;}
         .mob-app-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(14px,4vw,24px) clamp(8px,3vw,16px);margin-top:10px;}
         .mob-app{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;user-select:none;}
@@ -894,32 +863,7 @@ export default function MobilePortfolio() {
           <div className="mob-wb mob-wb1" /><div className="mob-wb mob-wb2" /><div className="mob-wb mob-wb3" />
         </div>
 
-        {/* Status bar */}
-        <div className="mob-statusbar">
-          <div style={{ fontSize: 15, fontWeight: 700, color: '#fff', letterSpacing: '-0.01em', fontFamily: INTER }}>{clock.time}</div>
-          <div style={{ fontFamily: INTER, fontSize: 13, fontWeight: 700, color: '#fff', letterSpacing: '0.04em' }}>IzanOS</div>
-        </div>
-
-              {/* Dynamic Island */}
-              <div className={`mob-island${island ? ' exp' : ''}`} onClick={() => setIsland(null)}>
-                <div className="mob-island-c">
-                  {island && (
-                    <>
-                      <div style={{ width: 34, height: 34, borderRadius: 9, background: 'rgba(0,212,255,.15)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                        </svg>
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 12, fontWeight: 700, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: INTER }}>{island.title}</div>
-                        <div style={{ fontSize: 11, color: 'rgba(255,255,255,.6)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontFamily: INTER }}>{island.msg}</div>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              {/* Boot screen */}
+        {/* Boot screen */}
               <AnimatePresence>
                 {appState === 'booting' && (
                   <motion.div key="mob-boot" initial={{ opacity: 1 }} exit={{ opacity: 0, backgroundColor: '#ffffff' }} transition={{ duration: 0.5, ease: 'easeInOut' }}
