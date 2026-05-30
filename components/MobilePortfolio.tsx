@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { useState, useEffect, useRef, KeyboardEvent } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { personal, projects, skills, filesystem } from '@/data/content';
 import { FileNode } from '@/types/windows';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -584,7 +585,9 @@ const APPS: { id: AppId; label: string }[] = [
 export default function MobilePortfolio() {
   const { notifs } = useNotifications();
 
-  const [locked,    setLocked]    = useState(true);
+  const [appState,  setAppState]  = useState<'booting' | 'locked' | 'home'>('booting');
+  const [bootMsgs,  setBootMsgs]  = useState<string[]>([]);
+  const [bootProg,  setBootProg]  = useState(0);
   const [activeApp, setActiveApp] = useState<AppId | null>(null);
   const [appOrigin, setAppOrigin] = useState('center center');
   const [island,    setIsland]    = useState<{ title: string; msg: string } | null>(null);
@@ -626,6 +629,41 @@ export default function MobilePortfolio() {
   /* Cleanup island timer */
   useEffect(() => () => clearTimeout(islandTimerRef.current), []);
 
+  /* Boot sequence */
+  useEffect(() => {
+    const MSGS = [
+      '[ OK ] Starting IzanOS kernel...',
+      '[ OK ] Loading display manager...',
+      '[ OK ] Mounting filesystems...',
+      '[ OK ] Loading portfolio modules...',
+      '[ OK ] Welcome, visitor.',
+    ];
+    const TIMINGS = [400, 900, 1400, 2000, 2800];
+    const timers: ReturnType<typeof setTimeout>[] = [];
+
+    TIMINGS.forEach((t, i) => {
+      timers.push(setTimeout(() => setBootMsgs(prev => [...prev, MSGS[i]]), t));
+    });
+
+    const start = performance.now();
+    const TOTAL = 4000;
+    let raf: number;
+    const animate = (now: number) => {
+      const p = Math.min(1, (now - start) / TOTAL);
+      const eased = Math.sin(p * Math.PI * 0.5) * 0.6 + p * 0.4;
+      setBootProg(Math.min(99, eased * 100));
+      if (p < 1) raf = requestAnimationFrame(animate);
+      else setBootProg(100);
+    };
+    raf = requestAnimationFrame(animate);
+
+    timers.push(setTimeout(() => {
+      setAppState('locked');
+    }, 4600));
+
+    return () => { timers.forEach(clearTimeout); cancelAnimationFrame(raf); };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const showIsland = (title: string, msg: string) => {
     setIsland({ title, msg });
     clearTimeout(islandTimerRef.current);
@@ -633,7 +671,7 @@ export default function MobilePortfolio() {
   };
 
   const unlock = () => {
-    setLocked(false);
+    setAppState('home');
     setTimeout(() => showIsland('Welcome to IzanOS', 'Tap any app to explore'), 700);
   };
 
@@ -761,9 +799,60 @@ export default function MobilePortfolio() {
                 </div>
               </div>
 
+              {/* Boot screen */}
+              <AnimatePresence>
+                {appState === 'booting' && (
+                  <motion.div
+                    key="mob-boot"
+                    initial={{ opacity: 1 }}
+                    exit={{ opacity: 0, backgroundColor: '#ffffff' }}
+                    transition={{ duration: 0.5, ease: 'easeInOut' }}
+                    style={{ position: 'absolute', inset: 0, background: '#000', zIndex: 90, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}
+                  >
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.7 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}
+                    >
+                      <motion.img
+                        src="/icons/logo.svg"
+                        alt="IzanOS"
+                        width={60}
+                        height={60}
+                        animate={{ filter: ['drop-shadow(0 0 6px rgba(0,212,255,0.3))', 'drop-shadow(0 0 16px rgba(0,212,255,0.8))', 'drop-shadow(0 0 6px rgba(0,212,255,0.3))'] }}
+                        transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+                      />
+                      <div style={{ fontFamily: INTER, fontWeight: 800, fontSize: 20, letterSpacing: '0.3em', color: '#f0f4ff', marginTop: 2 }}>IzanOS</div>
+                      <div style={{ fontFamily: MONO, fontSize: 11, color: '#00d4ff' }}>Aurora 0.3</div>
+                    </motion.div>
+
+                    {/* Progress bar */}
+                    <div style={{ width: 200, height: 2, background: '#1a1a2e', borderRadius: 1, marginTop: 32, overflow: 'hidden' }}>
+                      <div style={{ height: '100%', background: 'linear-gradient(to right, #00d4ff, #7c3aed)', borderRadius: 1, width: `${bootProg}%`, transition: 'width 0.1s linear' }} />
+                    </div>
+
+                    {/* System messages */}
+                    <div style={{ position: 'absolute', bottom: 32, left: 24, right: 24, display: 'flex', flexDirection: 'column', gap: 3 }}>
+                      {bootMsgs.map((msg, i) => (
+                        <motion.div
+                          key={i}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ duration: 0.3 }}
+                          style={{ fontFamily: MONO, fontSize: 10, color: '#4a5568' }}
+                        >{msg}</motion.div>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               {/* Lock screen */}
-              <div className={`mob-lock${locked ? '' : ' off'}`}
-                onClick={locked ? unlock : undefined}
+              <div
+                className={`mob-lock${appState === 'home' ? ' off' : ''}`}
+                style={appState === 'booting' ? { opacity: 0, pointerEvents: 'none' } : {}}
+                onClick={appState === 'locked' ? unlock : undefined}
                 onTouchStart={e => { touchStartY.current = e.touches[0].clientY; }}
                 onTouchMove={e => { if (touchStartY.current !== null && touchStartY.current - e.touches[0].clientY > 40) { unlock(); touchStartY.current = null; } }}>
                 <div style={{ marginTop: 130, fontSize: 80, fontWeight: 300, color: '#fff', letterSpacing: -3, lineHeight: 1, fontFamily: INTER, textShadow: '0 4px 40px rgba(255,255,255,.15)' }}>{clock.time}</div>
