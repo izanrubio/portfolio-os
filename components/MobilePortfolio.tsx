@@ -750,13 +750,36 @@ const WP_LIST = [
   { id:'forest',    name:'Forest',    grad:'linear-gradient(135deg,#0a2e1a,#00c97a,#00ff88)' },
 ];
 
-function SettingsApp() {
+/* per-wallpaper blob radial-gradient colors [wb1, wb2, wb3] */
+const WP_BLOBS: Record<string, [string,string,string]> = {
+  aurora:    ['rgba(0,255,136,.3)',   'rgba(0,102,255,.3)',   'rgba(124,58,237,.22)'],
+  sunset:    ['rgba(255,149,0,.38)',  'rgba(255,71,87,.32)',  'rgba(124,58,237,.25)'],
+  ocean:     ['rgba(0,102,255,.38)',  'rgba(0,212,255,.32)',  'rgba(0,255,136,.2)'],
+  cyberpunk: ['rgba(236,72,153,.38)','rgba(124,58,237,.32)', 'rgba(0,212,255,.2)'],
+  midnight:  ['rgba(0,102,255,.28)',  'rgba(10,10,80,.9)',    'rgba(124,58,237,.2)'],
+  forest:    ['rgba(0,201,122,.38)',  'rgba(0,255,136,.28)',  'rgba(0,102,50,.3)'],
+};
+
+/* section label translations for Settings */
+const SET_LABELS: Record<string, [string,string,string,string]> = {
+  CAS: ['Apariencia', 'Sistema', 'Contacto',  'Créditos'],
+  CAT: ['Aparença',   'Sistema', 'Contacte',  'Crèdits'],
+  ENG: ['Appearance', 'System',  'Contact',   'Credits'],
+};
+
+/* app-name translations */
+const APP_LABEL_MAP: Record<string, Record<string,string>> = {
+  CAS: { projects:'Proyectos', about:'Sobre mí',  skills:'Skills',    contact:'Contacto', browser:'Navegador', files:'Archivos', terminal:'Terminal', game:'Juego',    settings:'Ajustes' },
+  CAT: { projects:'Projectes', about:'Sobre mi',  skills:'Skills',    contact:'Contacte', browser:'Navegador', files:'Arxius',   terminal:'Terminal', game:'Joc',      settings:'Ajustos' },
+  ENG: { projects:'Projects',  about:'About',     skills:'Skills',    contact:'Contact',  browser:'Browser',   files:'Files',    terminal:'Terminal', game:'Game',     settings:'Settings' },
+};
+
+function SettingsApp({ wallpaper, onWallpaper }: { wallpaper: string; onWallpaper: (id: string) => void }) {
   const { theme, toggleTheme } = useTheme();
   const { lang, setLang }      = useLanguage();
   const [uptime, setUptime]    = useState(0);
   const [toast, setToast]      = useState<string | null>(null);
   const [wpOpen, setWpOpen]    = useState(false);
-  const [wpSel, setWpSel]      = useState('aurora');
   const toastRef               = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => { const id = setInterval(() => setUptime(s => s + 1), 1000); return () => clearInterval(id); }, []);
@@ -770,7 +793,8 @@ function SettingsApp() {
 
   const fmtUptime = (s: number) => `${Math.floor(s / 60)}m ${String(s % 60).padStart(2, '0')}s`;
 
-  const selWp = WP_LIST.find(w => w.id === wpSel) ?? WP_LIST[0];
+  const selWp  = WP_LIST.find(w => w.id === wallpaper) ?? WP_LIST[0];
+  const sLabels = SET_LABELS[lang] ?? SET_LABELS.CAS;
 
   /* row helper */
   const ROW: React.CSSProperties = { display:'flex', alignItems:'center', gap:14, padding:'0 16px', minHeight:50 };
@@ -795,7 +819,7 @@ function SettingsApp() {
     <div style={{ flex:1, overflowY:'auto', padding:'20px 16px 40px', scrollbarWidth:'none', position:'relative' }}>
 
       {/* ── APARIENCIA ── */}
-      {secLabel('Apariencia', 0)}
+      {secLabel(sLabels[0], 0)}
       <div style={CARD}>
         {/* Tema */}
         <div style={ROW}>
@@ -821,9 +845,9 @@ function SettingsApp() {
         <div style={{ maxHeight: wpOpen ? 240 : 0, overflow:'hidden', transition:'max-height .3s ease', background:'rgba(0,0,0,.2)' }}>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:12, padding:16 }}>
             {WP_LIST.map(w => (
-              <div key={w.id} onClick={() => { setWpSel(w.id); showToast(`${w.name} aplicado`); }} style={{ cursor:'pointer', textAlign:'center' }}>
-                <div style={{ width:'100%', height:60, borderRadius:10, background:w.grad, border: wpSel===w.id ? '2px solid #00d4ff' : '2px solid transparent', position:'relative', transition:'border-color .2s', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                  {wpSel===w.id && <svg viewBox="0 0 24 24" fill="none" stroke="#002430" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{width:14,height:14,background:'#00d4ff',borderRadius:'50%',padding:3}}><polyline points="20 6 9 17 4 12"/></svg>}
+              <div key={w.id} onClick={() => { onWallpaper(w.id); showToast(`${w.name} aplicado`); }} style={{ cursor:'pointer', textAlign:'center' }}>
+                <div style={{ width:'100%', height:60, borderRadius:10, background:w.grad, border: wallpaper===w.id ? '2px solid #00d4ff' : '2px solid transparent', position:'relative', transition:'border-color .2s', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  {wallpaper===w.id && <svg viewBox="0 0 24 24" fill="none" stroke="#002430" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{width:14,height:14,background:'#00d4ff',borderRadius:'50%',padding:3}}><polyline points="20 6 9 17 4 12"/></svg>}
                 </div>
                 <div style={{ fontFamily:MONO, fontSize:9, color:'rgba(255,255,255,.5)', marginTop:6, letterSpacing:'0.05em' }}>{w.name}</div>
               </div>
@@ -848,7 +872,7 @@ function SettingsApp() {
       </div>
 
       {/* ── SISTEMA ── */}
-      {secLabel('Sistema')}
+      {secLabel(sLabels[1])}
       <div style={CARD}>
         <div style={ROW}>
           {ic('#7c3aed', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" style={{width:20,height:20}}><path d="M12 3 20 8 17 19 7 19 4 8Z"/><circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none"/></svg>)}
@@ -873,7 +897,7 @@ function SettingsApp() {
       </div>
 
       {/* ── CONTACTO ── */}
-      {secLabel('Contacto')}
+      {secLabel(sLabels[2])}
       <div style={CARD}>
         <div style={{ ...ROW, cursor:'pointer' }} onClick={() => { navigator.clipboard?.writeText(personal.email).catch(()=>{}); showToast('Copiado ✓'); }}>
           {ic('#00ff88', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:20,height:20}}><rect x="3" y="5" width="18" height="14" rx="2"/><polyline points="3 7 12 13 21 7"/></svg>)}
@@ -898,7 +922,7 @@ function SettingsApp() {
       </div>
 
       {/* ── CRÉDITOS ── */}
-      {secLabel('Créditos')}
+      {secLabel(sLabels[3])}
       <div style={CARD}>
         <div style={ROW}>
           {ic('rgba(255,255,255,.4)', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:20,height:20}}><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.5 4.5-7 8-7s7 2.5 8 7"/></svg>)}
@@ -964,6 +988,8 @@ const APPS: { id: AppId; label: string }[] = [
    MAIN COMPONENT
 ════════════════════════════════════════ */
 export default function MobilePortfolio() {
+  const { theme }          = useTheme();
+  const { lang }           = useLanguage();
 
   const [appState,   setAppState]   = useState<'booting' | 'locked' | 'home'>('booting');
   const [bootMsgs,   setBootMsgs]   = useState<string[]>([]);
@@ -972,6 +998,18 @@ export default function MobilePortfolio() {
   const [appOrigin,  setAppOrigin]  = useState('center center');
   const [appAccent,  setAppAccent]  = useState('#00d4ff');
   const [clock,      setClock]      = useState({ time: '9:41', date: 'Thursday, 29 May' });
+  const [wallpaper,  setWallpaperState] = useState<string>(() => {
+    if (typeof window === 'undefined') return 'aurora';
+    return localStorage.getItem('izanos-mobile-wp') ?? 'aurora';
+  });
+
+  const setWallpaper = (id: string) => {
+    setWallpaperState(id);
+    localStorage.setItem('izanos-mobile-wp', id);
+  };
+
+  const blobColors = WP_BLOBS[wallpaper] ?? WP_BLOBS.aurora;
+  const appLabels  = APP_LABEL_MAP[lang] ?? APP_LABEL_MAP.CAS;
 
   const screenRef       = useRef<HTMLDivElement>(null);
   const touchStartY     = useRef<number | null>(null);
@@ -1040,7 +1078,7 @@ export default function MobilePortfolio() {
     files:    <FilesApp />,
     browser:  <StubApp app="browser" />,
     game:     <GameApp />,
-    settings: <SettingsApp />,
+    settings: <SettingsApp wallpaper={wallpaper} onWallpaper={setWallpaper} />,
   };
 
   return (
@@ -1082,8 +1120,10 @@ export default function MobilePortfolio() {
       `}</style>
 
       <div className="mob-screen" ref={screenRef}>
-        <div className="mob-wallpaper">
-          <div className="mob-wb mob-wb1" /><div className="mob-wb mob-wb2" /><div className="mob-wb mob-wb3" />
+        <div className="mob-wallpaper" style={{ background: theme === 'light' ? 'radial-gradient(ellipse at 50% 30%,#0f1428,#06080f)' : undefined }}>
+          <div className="mob-wb mob-wb1" style={{ background: `radial-gradient(circle,${blobColors[0]},transparent 65%)` }} />
+          <div className="mob-wb mob-wb2" style={{ background: `radial-gradient(circle,${blobColors[1]},transparent 65%)` }} />
+          <div className="mob-wb mob-wb3" style={{ background: `radial-gradient(circle,${blobColors[2]},transparent 65%)` }} />
         </div>
 
         {/* Boot screen */}
@@ -1135,7 +1175,7 @@ export default function MobilePortfolio() {
                   {APPS.map(a => (
                     <div key={a.id} className="mob-app" onClick={e => openApp(a.id, e)}>
                       <div className="mob-icon" style={{ background: GRADS[a.id] }}><AppSvg app={a.id} /></div>
-                      <div className="mob-app-name">{a.label}</div>
+                      <div className="mob-app-name">{appLabels[a.id] ?? a.label}</div>
                     </div>
                   ))}
                 </div>
