@@ -17,6 +17,7 @@ import { notifications } from '@/data/content';
 import { t } from '@/data/translations';
 import { LanguageProvider, useLanguage } from '@/contexts/LanguageContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
+import { WallpaperProvider } from '@/contexts/WallpaperContext';
 import { WindowId } from '@/types/windows';
 
 type AppState = 'booting' | 'locked' | 'desktop';
@@ -39,10 +40,12 @@ export default function Home() {
   return (
     <ThemeProvider>
       <LanguageProvider>
-        <NotificationProvider>
-          <HomeOrMobile />
-          <NotificationSystem />
-        </NotificationProvider>
+        <WallpaperProvider>
+          <NotificationProvider>
+            <HomeOrMobile />
+            <NotificationSystem />
+          </NotificationProvider>
+        </WallpaperProvider>
       </LanguageProvider>
     </ThemeProvider>
   );

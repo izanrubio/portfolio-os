@@ -7,6 +7,8 @@ import { personal, projects, skills, filesystem } from '@/data/content';
 import { FileNode } from '@/types/windows';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useWallpaper } from '@/contexts/WallpaperContext';
+import type { WallpaperId } from '@/components/WallpaperPicker';
 import { tRoles } from '@/data/translations';
 
 const INTER = 'var(--font-inter), Inter, sans-serif';
@@ -741,7 +743,7 @@ function GameApp() {
 /* ════════════════════════════════════════
    SETTINGS APP
 ════════════════════════════════════════ */
-const WP_LIST = [
+const WP_LIST: { id: WallpaperId; name: string; grad: string }[] = [
   { id:'aurora',    name:'Aurora',    grad:'linear-gradient(135deg,#00ff88,#00d4ff,#7c3aed)' },
   { id:'sunset',    name:'Sunset',    grad:'linear-gradient(135deg,#ff9500,#ff4757,#7c3aed)' },
   { id:'ocean',     name:'Ocean',     grad:'linear-gradient(135deg,#0066ff,#00d4ff,#00ff88)' },
@@ -774,9 +776,10 @@ const APP_LABEL_MAP: Record<string, Record<string,string>> = {
   ENG: { projects:'Projects',  about:'About',     skills:'Skills',    contact:'Contact',  browser:'Browser',   files:'Files',    terminal:'Terminal', game:'Game',     settings:'Settings' },
 };
 
-function SettingsApp({ wallpaper, onWallpaper }: { wallpaper: string; onWallpaper: (id: string) => void }) {
-  const { theme, toggleTheme } = useTheme();
-  const { lang, setLang }      = useLanguage();
+function SettingsApp() {
+  const { theme, toggleTheme }             = useTheme();
+  const { lang, setLang }                  = useLanguage();
+  const { wallpaper, setWallpaper: onWallpaper } = useWallpaper();
   const [uptime, setUptime]    = useState(0);
   const [toast, setToast]      = useState<string | null>(null);
   const [wpOpen, setWpOpen]    = useState(false);
@@ -998,16 +1001,8 @@ export default function MobilePortfolio() {
   const [appOrigin,  setAppOrigin]  = useState('center center');
   const [appAccent,  setAppAccent]  = useState('#00d4ff');
   const [clock,      setClock]      = useState({ time: '9:41', date: 'Thursday, 29 May' });
-  const [wallpaper,  setWallpaperState] = useState<string>(() => {
-    if (typeof window === 'undefined') return 'aurora';
-    return localStorage.getItem('izanos-mobile-wp') ?? 'aurora';
-  });
 
-  const setWallpaper = (id: string) => {
-    setWallpaperState(id);
-    localStorage.setItem('izanos-mobile-wp', id);
-  };
-
+  const { wallpaper } = useWallpaper();
   const blobColors = WP_BLOBS[wallpaper] ?? WP_BLOBS.aurora;
   const appLabels  = APP_LABEL_MAP[lang] ?? APP_LABEL_MAP.CAS;
 
@@ -1078,7 +1073,7 @@ export default function MobilePortfolio() {
     files:    <FilesApp />,
     browser:  <StubApp app="browser" />,
     game:     <GameApp />,
-    settings: <SettingsApp wallpaper={wallpaper} onWallpaper={setWallpaper} />,
+    settings: <SettingsApp />,
   };
 
   return (
@@ -1086,6 +1081,16 @@ export default function MobilePortfolio() {
       <style>{`
         *{-webkit-tap-highlight-color:transparent;}
         .mob-screen{position:fixed;inset:0;background:#000;overflow:hidden;display:flex;flex-direction:column;}
+        .mob-screen.mob-light{background:#e8edf5;}
+        .mob-screen.mob-light .mob-wallpaper{background:radial-gradient(ellipse at 50% 30%,#d8e4f4,#e8edf5)!important;}
+        .mob-screen.mob-light .mob-wb{opacity:.2;mix-blend-mode:multiply;}
+        .mob-screen.mob-light .mob-app-name{color:rgba(0,0,40,.8);text-shadow:none;}
+        .mob-screen.mob-light .mob-dock{background:rgba(255,255,255,.6)!important;border-top:1px solid rgba(0,0,0,.09)!important;}
+        .mob-screen.mob-light .mob-appview{background:#f0f4ff!important;}
+        .mob-screen.mob-light .mob-appnav{background:rgba(255,255,255,.92)!important;border-bottom:1px solid rgba(0,0,0,.08)!important;}
+        .mob-screen.mob-light .mob-nav-title{color:rgba(0,0,40,.7)!important;}
+        .mob-screen.mob-light .mob-back{color:var(--app-accent,#0066ff)!important;}
+        .mob-screen.mob-light .mob-home-ind{background:rgba(0,0,0,.18)!important;}
         .mob-wallpaper{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,#0b1020,#05060c);overflow:hidden;}
         .mob-wb{position:absolute;border-radius:50%;filter:blur(90px);mix-blend-mode:screen;}
         .mob-wb1{width:80vw;height:80vw;top:-20vw;left:-20vw;background:radial-gradient(circle,rgba(0,255,136,.3),transparent 65%);animation:mob-drift1 24s ease-in-out infinite;}
@@ -1119,7 +1124,7 @@ export default function MobilePortfolio() {
         .mob-home-ind{position:absolute;bottom:max(6px,env(safe-area-inset-bottom,6px));left:50%;transform:translateX(-50%);width:134px;height:5px;border-radius:3px;background:rgba(255,255,255,.3);z-index:70;cursor:pointer;}
       `}</style>
 
-      <div className="mob-screen" ref={screenRef}>
+      <div className={`mob-screen${theme === 'light' ? ' mob-light' : ''}`} ref={screenRef}>
         <div className="mob-wallpaper" style={{ background: theme === 'light' ? 'radial-gradient(ellipse at 50% 30%,#0f1428,#06080f)' : undefined }}>
           <div className="mob-wb mob-wb1" style={{ background: `radial-gradient(circle,${blobColors[0]},transparent 65%)` }} />
           <div className="mob-wb mob-wb2" style={{ background: `radial-gradient(circle,${blobColors[1]},transparent 65%)` }} />

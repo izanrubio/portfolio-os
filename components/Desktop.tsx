@@ -1,15 +1,15 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { useTheme } from '@/contexts/ThemeContext';
 import ParticleNetwork from './ParticleNetwork';
 import ContextMenu from './ContextMenu';
-import WallpaperPicker, { WALLPAPERS, WallpaperId } from './WallpaperPicker';
+import WallpaperPicker, { WALLPAPERS } from './WallpaperPicker';
+import { useWallpaper } from '@/contexts/WallpaperContext';
 import AboutIzanOS from './AboutIzanOS';
 import { WindowId } from '@/types/windows';
 
-const LS_KEY = 'izanos-wallpaper';
 
 interface DesktopProps {
   children: React.ReactNode;
@@ -21,24 +21,10 @@ export default function Desktop({ children, onOpenWindow, onNavigate }: DesktopP
   const { theme } = useTheme();
   const dark = theme === 'dark';
 
-  const [wallpaperId, setWallpaperId] = useState<WallpaperId>('aurora');
+  const { wallpaper: wallpaperId, setWallpaper: handleSetWallpaper } = useWallpaper();
   const [ctxMenu, setCtxMenu]         = useState<{ x: number; y: number } | null>(null);
   const [showWallpaper, setShowWallpaper] = useState(false);
   const [showAbout, setShowAbout]         = useState(false);
-
-  // Load wallpaper from localStorage on mount + set data-wallpaper attr
-  useEffect(() => {
-    const saved = localStorage.getItem(LS_KEY) as WallpaperId | null;
-    const id = saved && WALLPAPERS.find(w => w.id === saved) ? saved : 'aurora';
-    setWallpaperId(id);
-    document.documentElement.setAttribute('data-wallpaper', id);
-  }, []);
-
-  const handleSetWallpaper = useCallback((id: WallpaperId) => {
-    setWallpaperId(id);
-    document.documentElement.setAttribute('data-wallpaper', id);
-    localStorage.setItem(LS_KEY, id);
-  }, []);
 
   const wallpaper = WALLPAPERS.find(w => w.id === wallpaperId) ?? WALLPAPERS[0];
 
