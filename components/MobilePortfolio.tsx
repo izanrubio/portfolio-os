@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { personal, projects, skills, filesystem } from '@/data/content';
 import { FileNode } from '@/types/windows';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { tRoles } from '@/data/translations';
 
 const INTER = 'var(--font-inter), Inter, sans-serif';
@@ -26,7 +27,7 @@ const ACCENT: Record<string, string> = {
   barbercompte: '#ff4757',
 };
 
-type AppId = 'projects' | 'about' | 'skills' | 'contact' | 'browser' | 'files' | 'terminal' | 'game';
+type AppId = 'projects' | 'about' | 'skills' | 'contact' | 'browser' | 'files' | 'terminal' | 'game' | 'settings';
 
 const GRADS: Record<AppId, string> = {
   projects: 'linear-gradient(135deg,#00c97a,#00ff9d)',
@@ -37,17 +38,19 @@ const GRADS: Record<AppId, string> = {
   files:    'linear-gradient(135deg,#00c97a,#0066ff)',
   terminal: 'linear-gradient(135deg,#1a1a1a,#2a2a2a)',
   game:     'linear-gradient(135deg,#ff4757,#ff6b35)',
+  settings: 'linear-gradient(135deg,#6b7280,#4b5563)',
 };
 
 const APP_TITLES: Record<AppId, string> = {
-  projects: 'projects.exe', about: 'whoami.exe',   skills:   'skills.exe',
+  projects: 'projects.exe', about: 'whoami.exe',   skills:    'skills.exe',
   contact:  'contact.exe',  browser: 'browser.exe', files:    'files.exe',
-  terminal: 'terminal.exe', game:    'game.exe',
+  terminal: 'terminal.exe', game:   'game.exe',     settings: 'settings.exe',
 };
 
 const APP_ACCENTS: Record<AppId, string> = {
   projects: '#00ff88', about: '#7c3aed', skills: '#00d4ff', contact: '#ff9500',
   browser:  '#7c3aed', files: '#00d4ff', terminal: '#00ff88', game: '#ff4757',
+  settings: '#00d4ff',
 };
 
 /* ── Shared hero header ── */
@@ -80,6 +83,7 @@ function AppSvg({ app }: { app: AppId }) {
     browser:  <><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a13 13 0 0 1 0 18M12 3a13 13 0 0 0 0 18" /></>,
     files:    <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />,
     game:     <><rect x="3" y="8" width="18" height="10" rx="4" /><path d="M8 12v3M6.5 13.5h3" /><circle cx="15.5" cy="12.5" r=".8" fill="white" /><circle cx="17" cy="14" r=".8" fill="white" /></>,
+    settings: <><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" /></>,
     terminal: null,
   };
   return <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={S}>{paths[app]}</svg>;
@@ -735,6 +739,199 @@ function GameApp() {
 }
 
 /* ════════════════════════════════════════
+   SETTINGS APP
+════════════════════════════════════════ */
+const WP_LIST = [
+  { id:'aurora',    name:'Aurora',    grad:'linear-gradient(135deg,#00ff88,#00d4ff,#7c3aed)' },
+  { id:'sunset',    name:'Sunset',    grad:'linear-gradient(135deg,#ff9500,#ff4757,#7c3aed)' },
+  { id:'ocean',     name:'Ocean',     grad:'linear-gradient(135deg,#0066ff,#00d4ff,#00ff88)' },
+  { id:'cyberpunk', name:'Cyberpunk', grad:'linear-gradient(135deg,#ec4899,#7c3aed,#00d4ff)' },
+  { id:'midnight',  name:'Midnight',  grad:'linear-gradient(135deg,#0a0a2e,#16213e,#0066ff)' },
+  { id:'forest',    name:'Forest',    grad:'linear-gradient(135deg,#0a2e1a,#00c97a,#00ff88)' },
+];
+
+function SettingsApp() {
+  const { theme, toggleTheme } = useTheme();
+  const { lang, setLang }      = useLanguage();
+  const [uptime, setUptime]    = useState(0);
+  const [toast, setToast]      = useState<string | null>(null);
+  const [wpOpen, setWpOpen]    = useState(false);
+  const [wpSel, setWpSel]      = useState('aurora');
+  const toastRef               = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  useEffect(() => { const id = setInterval(() => setUptime(s => s + 1), 1000); return () => clearInterval(id); }, []);
+  useEffect(() => () => clearTimeout(toastRef.current), []);
+
+  const showToast = (msg: string) => {
+    setToast(msg);
+    clearTimeout(toastRef.current);
+    toastRef.current = setTimeout(() => setToast(null), 1900);
+  };
+
+  const fmtUptime = (s: number) => `${Math.floor(s / 60)}m ${String(s % 60).padStart(2, '0')}s`;
+
+  const selWp = WP_LIST.find(w => w.id === wpSel) ?? WP_LIST[0];
+
+  /* row helper */
+  const ROW: React.CSSProperties = { display:'flex', alignItems:'center', gap:14, padding:'0 16px', minHeight:50 };
+  const CARD: React.CSSProperties = { background:'rgba(255,255,255,.05)', border:'1px solid rgba(255,255,255,.06)', borderRadius:14, overflow:'hidden' };
+  const SEP: React.CSSProperties  = { borderTop:'1px solid rgba(255,255,255,.06)' };
+  const CHEV = <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>;
+  const EXT  = <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>;
+
+  const secLabel = (txt: string, mt = 22) => (
+    <div style={{ fontFamily: INTER, fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,.4)', letterSpacing:'0.1em', textTransform:'uppercase', padding:'0 8px 8px', marginTop: mt }}>{txt}</div>
+  );
+
+  const ic = (color: string, svg: React.ReactNode) => (
+    <span style={{ width:22, height:22, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, color }}>{svg}</span>
+  );
+
+  const right = (...nodes: React.ReactNode[]) => (
+    <span style={{ marginLeft:'auto', display:'flex', alignItems:'center', gap:8, color:'rgba(255,255,255,.45)', fontSize:14, flexShrink:0 }}>{...nodes}</span>
+  );
+
+  return (
+    <div style={{ flex:1, overflowY:'auto', padding:'20px 16px 40px', scrollbarWidth:'none', position:'relative' }}>
+
+      {/* ── APARIENCIA ── */}
+      {secLabel('Apariencia', 0)}
+      <div style={CARD}>
+        {/* Tema */}
+        <div style={ROW}>
+          {ic('#00d4ff', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:20,height:20}}><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>)}
+          <span style={{ fontSize:15, color:'#fff', fontFamily:INTER }}>Tema oscuro</span>
+          {right(
+            <div onClick={() => { toggleTheme(); showToast(theme === 'dark' ? 'Tema claro activado' : 'Tema oscuro activado'); }}
+              style={{ width:44, height:26, borderRadius:999, background: theme==='dark' ? '#00d4ff' : 'rgba(255,255,255,.15)', position:'relative', cursor:'pointer', flexShrink:0, transition:'background .2s' }}>
+              <div style={{ position:'absolute', top:3, left:3, width:20, height:20, borderRadius:'50%', background:'#fff', boxShadow:'0 1px 3px rgba(0,0,0,.4)', transition:'transform .2s cubic-bezier(.4,0,.2,1)', transform: theme==='dark' ? 'translateX(18px)' : 'translateX(0)' }} />
+            </div>
+          )}
+        </div>
+        {/* Wallpaper */}
+        <div style={{ ...ROW, ...SEP, cursor:'pointer' }} onClick={() => setWpOpen(o => !o)}>
+          {ic('#00d4ff', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:20,height:20}}><circle cx="13.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/><circle cx="17.5" cy="10.5" r="1.5" fill="currentColor" stroke="none"/><circle cx="8.5" cy="7.5" r="1.5" fill="currentColor" stroke="none"/><circle cx="6.5" cy="12.5" r="1.5" fill="currentColor" stroke="none"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c1 0 1.5-.8 1.5-1.5 0-.4-.2-.8-.4-1-.3-.3-.4-.6-.4-1 0-.8.7-1.5 1.5-1.5H16c3.3 0 6-2.7 6-6 0-5-4.5-9-10-9z"/></svg>)}
+          <span style={{ fontSize:15, color:'#fff', fontFamily:INTER }}>Wallpaper</span>
+          {right(
+            <span style={{ width:22, height:22, borderRadius:'50%', border:'1.5px solid rgba(255,255,255,.3)', background: selWp.grad, flexShrink:0, display:'block' }} />,
+            <span style={{ color:'rgba(255,255,255,.3)', transform: wpOpen ? 'rotate(90deg)' : 'none', transition:'transform .2s', display:'flex' }}>{CHEV}</span>
+          )}
+        </div>
+        {/* Wallpaper picker (collapsible) */}
+        <div style={{ maxHeight: wpOpen ? 240 : 0, overflow:'hidden', transition:'max-height .3s ease', background:'rgba(0,0,0,.2)' }}>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:12, padding:16 }}>
+            {WP_LIST.map(w => (
+              <div key={w.id} onClick={() => { setWpSel(w.id); showToast(`${w.name} aplicado`); }} style={{ cursor:'pointer', textAlign:'center' }}>
+                <div style={{ width:'100%', height:60, borderRadius:10, background:w.grad, border: wpSel===w.id ? '2px solid #00d4ff' : '2px solid transparent', position:'relative', transition:'border-color .2s', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  {wpSel===w.id && <svg viewBox="0 0 24 24" fill="none" stroke="#002430" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{width:14,height:14,background:'#00d4ff',borderRadius:'50%',padding:3}}><polyline points="20 6 9 17 4 12"/></svg>}
+                </div>
+                <div style={{ fontFamily:MONO, fontSize:9, color:'rgba(255,255,255,.5)', marginTop:6, letterSpacing:'0.05em' }}>{w.name}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+        {/* Idioma */}
+        <div style={{ ...ROW, ...SEP }}>
+          {ic('#00d4ff', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:20,height:20}}><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a13 13 0 0 1 0 18M12 3a13 13 0 0 0 0 18"/></svg>)}
+          <span style={{ fontSize:15, color:'#fff', fontFamily:INTER }}>Idioma</span>
+          {right(
+            <div style={{ display:'flex', background:'rgba(255,255,255,.08)', borderRadius:8, padding:2 }}>
+              {(['CAS','CAT','ENG'] as const).map(l => (
+                <button key={l} onClick={() => { setLang(l); showToast(`Idioma: ${l}`); }}
+                  style={{ border:'none', cursor:'pointer', fontFamily:MONO, fontSize:10, fontWeight:600, padding:'5px 9px', borderRadius:6, letterSpacing:'0.04em', background: lang===l ? '#00d4ff' : 'transparent', color: lang===l ? '#002430' : 'rgba(255,255,255,.5)', transition:'background .2s, color .2s' }}>
+                  {l}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* ── SISTEMA ── */}
+      {secLabel('Sistema')}
+      <div style={CARD}>
+        <div style={ROW}>
+          {ic('#7c3aed', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" style={{width:20,height:20}}><path d="M12 3 20 8 17 19 7 19 4 8Z"/><circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none"/></svg>)}
+          <span style={{ fontSize:15, color:'#fff', fontFamily:INTER }}>IzanOS Aurora</span>
+          {right(<span>0.3</span>)}
+        </div>
+        <div style={{ ...ROW, ...SEP }}>
+          {ic('#7c3aed', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:20,height:20}}><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>)}
+          <span style={{ fontSize:15, color:'#fff', fontFamily:INTER }}>Stack</span>
+          {right(<span style={{ fontSize:12 }}>Next · React · Framer</span>)}
+        </div>
+        <div style={{ ...ROW, ...SEP }}>
+          {ic('#7c3aed', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:20,height:20}}><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>)}
+          <span style={{ fontSize:15, color:'#fff', fontFamily:INTER }}>Uptime</span>
+          {right(<span style={{ fontFamily:MONO, fontSize:13 }}>{fmtUptime(uptime)}</span>)}
+        </div>
+        <div style={{ ...ROW, ...SEP, cursor:'pointer' }} onClick={() => showToast('IzanOS Aurora 0.3 · build 2026')}>
+          {ic('#7c3aed', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:20,height:20}}><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="8" r=".8" fill="currentColor"/></svg>)}
+          <span style={{ fontSize:15, color:'#fff', fontFamily:INTER }}>About IzanOS</span>
+          {right(<span style={{ color:'rgba(255,255,255,.3)' }}>{CHEV}</span>)}
+        </div>
+      </div>
+
+      {/* ── CONTACTO ── */}
+      {secLabel('Contacto')}
+      <div style={CARD}>
+        <div style={{ ...ROW, cursor:'pointer' }} onClick={() => { navigator.clipboard?.writeText(personal.email).catch(()=>{}); showToast('Copiado ✓'); }}>
+          {ic('#00ff88', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:20,height:20}}><rect x="3" y="5" width="18" height="14" rx="2"/><polyline points="3 7 12 13 21 7"/></svg>)}
+          <span style={{ fontSize:13, color:'#fff', fontFamily:INTER, flex:1, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{personal.email}</span>
+          {right(<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00ff88" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>)}
+        </div>
+        <a href={personal.github} target="_blank" rel="noopener" style={{ ...ROW, ...SEP, textDecoration:'none', cursor:'pointer', display:'flex' }}>
+          {ic('#00ff88', <svg viewBox="0 0 24 24" fill="currentColor" style={{width:20,height:20}}><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.2-.8.1-.8.1-.8 1.3.1 2 1.3 2 1.3 1.2 2 3 1.4 3.8 1.1.1-.9.4-1.4.8-1.8-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.3 1.3-3.2-.1-.3-.6-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.7.3 2.9.1 3.2.8.9 1.3 2 1.3 3.2 0 4.6-2.8 5.6-5.5 6 .4.4.8 1 .8 2.2v3.2c0 .3.2.7.8.6A12 12 0 0 0 12 .5z"/></svg>)}
+          <span style={{ fontSize:13, color:'#fff', fontFamily:INTER }}>github.com/izanrubio</span>
+          {right(EXT)}
+        </a>
+        <a href={personal.linkedin} target="_blank" rel="noopener" style={{ ...ROW, ...SEP, textDecoration:'none', cursor:'pointer', display:'flex' }}>
+          {ic('#00ff88', <svg viewBox="0 0 24 24" fill="currentColor" style={{width:20,height:20}}><path d="M20.4 20.4h-3.6v-5.6c0-1.3 0-3-1.9-3s-2.2 1.4-2.2 2.9v5.7H9.1V9h3.5v1.6a3.8 3.8 0 0 1 3.4-1.9c3.7 0 4.4 2.4 4.4 5.6v6zM5 7.4a2.1 2.1 0 1 1 0-4.2 2.1 2.1 0 0 1 0 4.2zM6.8 20.4H3.2V9h3.6v11.4z"/></svg>)}
+          <span style={{ fontSize:13, color:'#fff', fontFamily:INTER }}>in/izan-rubio-cerezo</span>
+          {right(EXT)}
+        </a>
+        <a href="/cv.pdf" download style={{ ...ROW, ...SEP, textDecoration:'none', cursor:'pointer', display:'flex', background:'rgba(0,212,255,.06)' }}>
+          {ic('#00d4ff', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:20,height:20}}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>)}
+          <span style={{ fontSize:15, color:'#fff', fontFamily:INTER }}>Curriculum Vitae</span>
+          {right(<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>)}
+        </a>
+      </div>
+
+      {/* ── CRÉDITOS ── */}
+      {secLabel('Créditos')}
+      <div style={CARD}>
+        <div style={ROW}>
+          {ic('rgba(255,255,255,.4)', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:20,height:20}}><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.5 4.5-7 8-7s7 2.5 8 7"/></svg>)}
+          <span style={{ fontSize:15, color:'#fff', fontFamily:INTER }}>Desarrollado por</span>
+          {right(<span style={{ color:'#fff' }}>{personal.name}</span>)}
+        </div>
+        <a href="https://github.com/izanrubio/portfolio-os" target="_blank" rel="noopener" style={{ ...ROW, ...SEP, textDecoration:'none', cursor:'pointer', display:'flex' }}>
+          {ic('rgba(255,255,255,.4)', <svg viewBox="0 0 24 24" fill="currentColor" style={{width:20,height:20}}><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.2-.8.1-.8.1-.8 1.3.1 2 1.3 2 1.3 1.2 2 3 1.4 3.8 1.1.1-.9.4-1.4.8-1.8-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.3 1.3-3.2-.1-.3-.6-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.7.3 2.9.1 3.2.8.9 1.3 2 1.3 3.2 0 4.6-2.8 5.6-5.5 6 .4.4.8 1 .8 2.2v3.2c0 .3.2.7.8.6A12 12 0 0 0 12 .5z"/></svg>)}
+          <span style={{ fontSize:15, color:'#fff', fontFamily:INTER }}>Código fuente</span>
+          {right(<span style={{ fontSize:12 }}>portfolio-os</span>, <span style={{ color:'rgba(255,255,255,.3)' }}>{CHEV}</span>)}
+        </a>
+        <div style={{ ...ROW, ...SEP, flexDirection:'column', alignItems:'flex-start', padding:'12px 16px', minHeight:'auto' }}>
+          <span style={{ fontSize:15, color:'#fff', fontFamily:INTER, marginBottom:10 }}>Tecnologías</span>
+          <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
+            {['Next.js','React','TypeScript','Tailwind','Framer Motion'].map(t => (
+              <span key={t} style={{ fontFamily:MONO, fontSize:10, background:'rgba(255,255,255,.08)', color:'#fff', borderRadius:6, padding:'4px 8px', letterSpacing:'0.03em' }}>{t}</span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Toast */}
+      {toast && (
+        <div style={{ position:'fixed', bottom:80, left:'50%', transform:'translateX(-50%)', background:'rgba(15,15,25,.95)', border:'1px solid rgba(0,212,255,.25)', color:'#fff', fontFamily:MONO, fontSize:12, padding:'9px 16px', borderRadius:999, backdropFilter:'blur(12px)', display:'inline-flex', alignItems:'center', gap:8, zIndex:100, whiteSpace:'nowrap', animation:'mob-chipin .2s ease' }}>
+          <span style={{ width:6, height:6, borderRadius:'50%', background:'#00ff88', boxShadow:'0 0 8px #00ff88', flexShrink:0 }} />
+          {toast}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════
    STUB APP
 ════════════════════════════════════════ */
 function StubApp({ app }: { app: AppId }) {
@@ -760,6 +957,7 @@ const APPS: { id: AppId; label: string }[] = [
   { id: 'skills',   label: 'Skills'   }, { id: 'contact',  label: 'Contact'  },
   { id: 'browser',  label: 'Browser'  }, { id: 'files',    label: 'Files'    },
   { id: 'terminal', label: 'Terminal' }, { id: 'game',     label: 'Game'     },
+  { id: 'settings', label: 'Settings' },
 ];
 
 /* ════════════════════════════════════════
@@ -842,6 +1040,7 @@ export default function MobilePortfolio() {
     files:    <FilesApp />,
     browser:  <StubApp app="browser" />,
     game:     <GameApp />,
+    settings: <SettingsApp />,
   };
 
   return (
