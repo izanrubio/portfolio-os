@@ -57,13 +57,15 @@ const APP_ACCENTS: Record<AppId, string> = {
 
 /* ── Shared hero header ── */
 function VHero({ eyebrow, title, sub, deco, accent }: { eyebrow: string; title: string; sub: React.ReactNode; deco: string; accent: string }) {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   return (
     <div style={{ position: 'relative', padding: '22px 22px 14px', overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', width: 220, height: 220, borderRadius: '50%', top: -90, right: -70, filter: 'blur(50px)', opacity: .5, pointerEvents: 'none', background: `radial-gradient(circle, ${accent}, transparent 60%)` }} />
-      <div style={{ position: 'absolute', right: -6, top: -28, fontFamily: INTER, fontWeight: 900, fontSize: 150, lineHeight: 1, color: 'rgba(255,255,255,0.03)', letterSpacing: '-0.06em', pointerEvents: 'none', zIndex: 0, whiteSpace: 'nowrap' }}>{deco}</div>
+      <div style={{ position: 'absolute', width: 220, height: 220, borderRadius: '50%', top: -90, right: -70, filter: 'blur(50px)', opacity: isDark ? .5 : .3, pointerEvents: 'none', background: `radial-gradient(circle, ${accent}, transparent 60%)` }} />
+      <div style={{ position: 'absolute', right: -6, top: -28, fontFamily: INTER, fontWeight: 900, fontSize: 150, lineHeight: 1, color: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.04)', letterSpacing: '-0.06em', pointerEvents: 'none', zIndex: 0, whiteSpace: 'nowrap' }}>{deco}</div>
       <div style={{ position: 'relative', zIndex: 1, fontFamily: MONO, fontSize: 10, color: accent, letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 600 }}>{eyebrow}</div>
-      <div style={{ position: 'relative', zIndex: 1, fontSize: 32, fontWeight: 800, letterSpacing: '-0.025em', marginTop: 6, color: '#fff', lineHeight: 1.04, fontFamily: INTER }}>{title}</div>
-      <div style={{ position: 'relative', zIndex: 1, fontFamily: MONO, fontSize: 11, color: 'rgba(255,255,255,0.5)', marginTop: 8, letterSpacing: '0.03em' }}>{sub}</div>
+      <div style={{ position: 'relative', zIndex: 1, fontSize: 32, fontWeight: 800, letterSpacing: '-0.025em', marginTop: 6, color: isDark ? '#fff' : '#0f172a', lineHeight: 1.04, fontFamily: INTER }}>{title}</div>
+      <div style={{ position: 'relative', zIndex: 1, fontFamily: MONO, fontSize: 11, color: isDark ? 'rgba(255,255,255,0.5)' : '#64748b', marginTop: 8, letterSpacing: '0.03em' }}>{sub}</div>
     </div>
   );
 }
