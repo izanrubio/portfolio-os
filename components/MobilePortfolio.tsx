@@ -96,6 +96,8 @@ function AppSvg({ app }: { app: AppId }) {
 ════════════════════════════════════════ */
 function ProjectsApp() {
   const [expanded, setExpanded] = useState<string | null>(null);
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const accent = APP_ACCENTS.projects;
   return (
     <div style={{ paddingBottom: 40 }}>
@@ -107,7 +109,7 @@ function ProjectsApp() {
         const wip   = p.status === 'in-development';
         return (
           <div key={p.slug} onClick={() => setExpanded(isExp ? null : p.slug)}
-            style={{ margin: '12px 18px', borderRadius: 16, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderLeft: `3px solid ${color}`, padding: 16, cursor: 'pointer', transition: 'background .2s' }}>
+            style={{ margin: '12px 18px', borderRadius: 16, background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,.82)', border: isDark ? '1px solid rgba(255,255,255,0.07)' : '1px solid rgba(0,0,0,.07)', borderLeft: `3px solid ${color}`, padding: 16, cursor: 'pointer', transition: 'background .2s', boxShadow: isDark ? 'none' : '0 2px 8px rgba(0,0,0,.05)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span style={{ fontFamily: MONO, fontSize: 9, color, letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 600 }}>{p.category}</span>
               <span style={{ fontFamily: MONO, fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', padding: '3px 9px', borderRadius: 999,
@@ -116,8 +118,8 @@ function ProjectsApp() {
                 {wip ? 'WIP' : 'LIVE'}
               </span>
             </div>
-            <div style={{ fontSize: 19, fontWeight: 700, color: '#fff', marginTop: 6, letterSpacing: '-0.01em', fontFamily: INTER }}>{p.name}</div>
-            <div style={{ fontSize: 13, color: '#9ba3af', lineHeight: 1.55, marginTop: 8, maxHeight: isExp ? 200 : 0, overflow: 'hidden', transition: 'max-height .35s ease' }}>{p.description}</div>
+            <div style={{ fontSize: 19, fontWeight: 700, color: isDark ? '#fff' : '#0f172a', marginTop: 6, letterSpacing: '-0.01em', fontFamily: INTER }}>{p.name}</div>
+            <div style={{ fontSize: 13, color: isDark ? '#9ba3af' : '#475569', lineHeight: 1.55, marginTop: 8, maxHeight: isExp ? 200 : 0, overflow: 'hidden', transition: 'max-height .35s ease' }}>{p.description}</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 12 }}>
               {p.stack.slice(0, 4).map(s => (
                 <span key={s} style={{ fontFamily: MONO, fontSize: 10, fontWeight: 500, padding: '4px 9px', borderRadius: 6, color, background: hexToRgba(color, 0.10), border: `1px solid ${hexToRgba(color, 0.28)}` }}>{s}</span>
@@ -134,7 +136,7 @@ function ProjectsApp() {
                 Open demo →
               </div>
             )}
-            <div style={{ fontFamily: MONO, fontSize: 10, color: 'rgba(255,255,255,.2)', marginTop: 8, textAlign: 'right' }}>
+            <div style={{ fontFamily: MONO, fontSize: 10, color: isDark ? 'rgba(255,255,255,.2)' : '#94a3b8', marginTop: 8, textAlign: 'right' }}>
               {String(i + 1).padStart(2, '0')}
             </div>
           </div>
@@ -149,6 +151,8 @@ function ProjectsApp() {
 ════════════════════════════════════════ */
 function AboutApp() {
   const { lang } = useLanguage();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const [typed, setTyped] = useState('');
   const [photoErr, setPhotoErr] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -183,15 +187,15 @@ function AboutApp() {
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg,transparent 50%,rgba(6,7,13,1) 100%)' }} />
       </div>
       <div style={{ padding: '0 22px 30px', marginTop: -40, position: 'relative', zIndex: 2 }}>
-        <div style={{ fontSize: 30, fontWeight: 800, letterSpacing: '-0.02em', color: '#fff', fontFamily: INTER }}>
+        <div style={{ fontSize: 30, fontWeight: 800, letterSpacing: '-0.02em', color: isDark ? '#fff' : '#0f172a', fontFamily: INTER }}>
           {personal.name}<span style={{ color: '#7c3aed' }}>.</span>
         </div>
         <div style={{ fontFamily: MONO, fontSize: 12, color: '#7c3aed', letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: 6, fontWeight: 600, height: 18, display: 'flex', alignItems: 'center' }}>
           {typed}<span style={{ width: 7, height: 11, background: '#7c3aed', display: 'inline-block', verticalAlign: 'text-bottom', marginLeft: 2, animation: 'mob-blink 1s steps(1) infinite' }} />
         </div>
         <div style={{ fontFamily: MONO, fontSize: 10, color: '#b794f6', letterSpacing: '0.2em', textTransform: 'uppercase', marginTop: 18 }}>~/about</div>
-        <p style={{ fontSize: 14, lineHeight: 1.75, color: '#9ba3af', marginTop: 16, fontFamily: INTER }}>{personal.bio}</p>
-        <div style={{ height: 1, background: 'rgba(255,255,255,.06)', margin: '20px 0' }} />
+        <p style={{ fontSize: 14, lineHeight: 1.75, color: isDark ? '#9ba3af' : '#475569', marginTop: 16, fontFamily: INTER }}>{personal.bio}</p>
+        <div style={{ height: 1, background: isDark ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,.08)', margin: '20px 0' }} />
         <div style={{ fontFamily: MONO, fontSize: 10, color: '#b794f6', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 4 }}>Contact</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           {[
@@ -201,18 +205,18 @@ function AboutApp() {
             { label: 'Phone',    value: `${personal.contact.phone.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3')}`, href: `tel:${personal.contact.phone}` },
             { label: 'Location', value: personal.location,                  href: null },
           ].map(item => (
-            <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 0', borderBottom: '1px solid rgba(255,255,255,.06)' }}>
+            <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 0', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,.08)'}` }}>
               <span style={{ color: '#b794f6', display: 'flex', width: 18, flexShrink: 0 }}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 18, height: 18 }}>
                   <circle cx="12" cy="8" r="4" /><path d="M4 21c1-4.5 4.5-7 8-7s7 2.5 8 7" />
                 </svg>
               </span>
               <div style={{ minWidth: 0 }}>
-                <div style={{ fontFamily: MONO, fontSize: 9, color: 'rgba(255,255,255,.35)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>{item.label}</div>
+                <div style={{ fontFamily: MONO, fontSize: 9, color: isDark ? 'rgba(255,255,255,.35)' : '#94a3b8', letterSpacing: '0.14em', textTransform: 'uppercase' }}>{item.label}</div>
                 {item.href ? (
                   <a href={item.href} target={item.href.startsWith('mailto') || item.href.startsWith('tel') ? undefined : '_blank'} rel="noopener"
-                    style={{ fontSize: 14, color: '#fff', fontWeight: 500, textDecoration: 'none', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block', whiteSpace: 'nowrap' }}>{item.value}</a>
-                ) : <div style={{ fontSize: 14, color: '#fff', fontWeight: 500 }}>{item.value}</div>}
+                    style={{ fontSize: 14, color: isDark ? '#fff' : '#0f172a', fontWeight: 500, textDecoration: 'none', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block', whiteSpace: 'nowrap' }}>{item.value}</a>
+                ) : <div style={{ fontSize: 14, color: isDark ? '#fff' : '#0f172a', fontWeight: 500 }}>{item.value}</div>}
               </div>
             </div>
           ))}
@@ -231,6 +235,8 @@ function AboutApp() {
 ════════════════════════════════════════ */
 function SkillsApp() {
   const [filter, setFilter] = useState('All');
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const total = skills.reduce((n, c) => n + c.items.length, 0);
   const pills = ['All', ...skills.map(s => s.label)];
   const cats = filter === 'All' ? skills : skills.filter(s => s.label === filter);
@@ -240,13 +246,13 @@ function SkillsApp() {
       <VHero eyebrow="Skills" title="My Stack" deco="</>" accent={accent}
         sub={<><b style={{ color: accent, fontWeight: 600 }}>{skills.length}</b> categories · <b style={{ color: accent, fontWeight: 600 }}>{total}</b> technologies</>} />
       {/* Sticky pills */}
-      <div style={{ position: 'sticky', top: 0, zIndex: 5, display: 'flex', gap: 8, padding: '14px 18px', overflowX: 'auto', background: 'rgba(6,7,13,.9)', borderBottom: '1px solid rgba(255,255,255,.05)', scrollbarWidth: 'none', flexShrink: 0 }}>
+      <div style={{ position: 'sticky', top: 0, zIndex: 5, display: 'flex', gap: 8, padding: '14px 18px', overflowX: 'auto', background: isDark ? 'rgba(6,7,13,.9)' : 'rgba(245,247,252,.92)', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,.05)' : 'rgba(0,0,0,.06)'}`, scrollbarWidth: 'none', flexShrink: 0 }}>
         {pills.map(p => (
           <button key={p} onClick={() => setFilter(p)} style={{
             flexShrink: 0, whiteSpace: 'nowrap', fontSize: 13, fontWeight: filter === p ? 600 : 500,
             padding: '8px 16px', borderRadius: 20, cursor: 'pointer',
-            background: filter === p ? accent : 'rgba(255,255,255,.08)',
-            color: filter === p ? '#002430' : 'rgba(255,255,255,.7)',
+            background: filter === p ? accent : (isDark ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.06)'),
+            color: filter === p ? '#002430' : (isDark ? 'rgba(255,255,255,.7)' : '#475569'),
             border: '1px solid transparent', transition: 'background .2s, color .2s', fontFamily: INTER,
           }}>{p}</button>
         ))}
@@ -255,10 +261,10 @@ function SkillsApp() {
       <div style={{ padding: '4px 18px', overflowY: 'auto', flex: 1 }}>
         {cats.map(cat => (
           <div key={cat.key}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', margin: '22px 0 12px', display: 'flex', alignItems: 'center', gap: 8, fontFamily: INTER }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: isDark ? '#fff' : '#0f172a', margin: '22px 0 12px', display: 'flex', alignItems: 'center', gap: 8, fontFamily: INTER }}>
               <span style={{ width: 4, height: 14, borderRadius: 2, background: accent, flexShrink: 0 }} />
               {cat.label}
-              <span style={{ fontFamily: MONO, fontSize: 10, color: 'rgba(255,255,255,.3)', fontWeight: 400, marginLeft: 'auto' }}>{cat.items.length}</span>
+              <span style={{ fontFamily: MONO, fontSize: 10, color: isDark ? 'rgba(255,255,255,.3)' : '#94a3b8', fontWeight: 400, marginLeft: 'auto' }}>{cat.items.length}</span>
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, paddingBottom: 4 }}>
               {cat.items.map(item => (
@@ -282,6 +288,8 @@ function ContactApp() {
   const [form, setForm] = useState({ name: '', email: '', msg: '' });
   const [sent, setSent]   = useState(false);
   const [errs, setErrs]   = useState<Set<string>>(new Set());
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const accent = APP_ACCENTS.contact;
 
   const submit = () => {
@@ -292,9 +300,9 @@ function ContactApp() {
   };
 
   const iStyle = (k: string): React.CSSProperties => ({
-    width: '100%', background: 'rgba(255,255,255,.04)', borderRadius: 10,
-    border: `1px solid ${errs.has(k) ? 'rgba(255,71,87,.5)' : 'rgba(255,255,255,.10)'}`,
-    padding: '12px 14px', color: '#fff', fontFamily: INTER, fontSize: 14, outline: 'none',
+    width: '100%', background: isDark ? 'rgba(255,255,255,.04)' : 'rgba(255,255,255,.85)', borderRadius: 10,
+    border: `1px solid ${errs.has(k) ? 'rgba(255,71,87,.5)' : (isDark ? 'rgba(255,255,255,.10)' : 'rgba(0,0,0,.1)')}`,
+    padding: '12px 14px', color: isDark ? '#fff' : '#0f172a', fontFamily: INTER, fontSize: 14, outline: 'none',
     animation: errs.has(k) ? 'mob-shake 0.35s ease' : 'none',
     transition: 'border-color .2s, box-shadow .2s',
   });
@@ -314,24 +322,24 @@ function ContactApp() {
       {cards.map(item => (
         item.href ? (
           <a key={item.label} href={item.href} target={item.href.startsWith('mailto') || item.href.startsWith('tel') ? undefined : '_blank'} rel="noopener"
-            style={{ display: 'flex', alignItems: 'center', gap: 14, margin: '0 18px 10px', padding: '15px 16px', background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.06)', borderRadius: 14, cursor: 'pointer', textDecoration: 'none', transition: 'background .18s' }}>
+            style={{ display: 'flex', alignItems: 'center', gap: 14, margin: '0 18px 10px', padding: '15px 16px', background: isDark ? 'rgba(255,255,255,.04)' : 'rgba(255,255,255,.82)', border: isDark ? '1px solid rgba(255,255,255,.06)' : '1px solid rgba(0,0,0,.07)', borderRadius: 14, cursor: 'pointer', textDecoration: 'none', transition: 'background .18s', boxShadow: isDark ? 'none' : '0 1px 4px rgba(0,0,0,.05)' }}>
             <span style={{ width: 38, height: 38, borderRadius: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: accent, background: hexToRgba(accent, 0.1), border: `1px solid ${hexToRgba(accent, 0.22)}` }}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 18, height: 18 }}><circle cx="12" cy="8" r="4" /><path d="M4 21c1-4.5 4.5-7 8-7s7 2.5 8 7" /></svg>
             </span>
             <span style={{ flex: 1, minWidth: 0 }}>
-              <span style={{ display: 'block', fontFamily: MONO, fontSize: 9, color: 'rgba(255,255,255,.4)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>{item.label}</span>
-              <span style={{ display: 'block', fontSize: 14, color: '#fff', fontWeight: 500, marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.value}</span>
+              <span style={{ display: 'block', fontFamily: MONO, fontSize: 9, color: isDark ? 'rgba(255,255,255,.4)' : '#94a3b8', letterSpacing: '0.14em', textTransform: 'uppercase' }}>{item.label}</span>
+              <span style={{ display: 'block', fontSize: 14, color: isDark ? '#fff' : '#0f172a', fontWeight: 500, marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.value}</span>
             </span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.3)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 16, height: 16, flexShrink: 0 }}><polyline points="9 18 15 12 9 6" /></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke={isDark ? 'rgba(255,255,255,.3)' : '#94a3b8'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 16, height: 16, flexShrink: 0 }}><polyline points="9 18 15 12 9 6" /></svg>
           </a>
         ) : (
-          <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: 14, margin: '0 18px 10px', padding: '15px 16px', background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.06)', borderRadius: 14 }}>
+          <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: 14, margin: '0 18px 10px', padding: '15px 16px', background: isDark ? 'rgba(255,255,255,.04)' : 'rgba(255,255,255,.82)', border: isDark ? '1px solid rgba(255,255,255,.06)' : '1px solid rgba(0,0,0,.07)', borderRadius: 14, boxShadow: isDark ? 'none' : '0 1px 4px rgba(0,0,0,.05)' }}>
             <span style={{ width: 38, height: 38, borderRadius: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: accent, background: hexToRgba(accent, 0.1), border: `1px solid ${hexToRgba(accent, 0.22)}` }}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 18, height: 18 }}><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
             </span>
             <span style={{ flex: 1 }}>
-              <span style={{ display: 'block', fontFamily: MONO, fontSize: 9, color: 'rgba(255,255,255,.4)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>{item.label}</span>
-              <span style={{ display: 'block', fontSize: 14, color: '#fff', fontWeight: 500, marginTop: 2 }}>{item.value}</span>
+              <span style={{ display: 'block', fontFamily: MONO, fontSize: 9, color: isDark ? 'rgba(255,255,255,.4)' : '#94a3b8', letterSpacing: '0.14em', textTransform: 'uppercase' }}>{item.label}</span>
+              <span style={{ display: 'block', fontSize: 14, color: isDark ? '#fff' : '#0f172a', fontWeight: 500, marginTop: 2 }}>{item.value}</span>
             </span>
           </div>
         )
@@ -483,6 +491,8 @@ const FILE_ICONS: Record<string, string> = {
 
 function FilesApp() {
   const [pathStack, setPathStack] = useState<string[]>([]);
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
 
   const getNode = (path: string[]): FileNode => {
     let node: FileNode = filesystem;
@@ -503,24 +513,24 @@ function FilesApp() {
   return (
     <div style={{ flex: 1, overflowY: 'auto', paddingBottom: 40 }}>
       {/* Breadcrumb bar */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '12px 18px', fontFamily: MONO, fontSize: 12, borderBottom: '1px solid rgba(255,255,255,.05)', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '12px 18px', fontFamily: MONO, fontSize: 12, borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,.05)' : 'rgba(0,0,0,.07)'}`, flexWrap: 'wrap' }}>
         {fullPath.map((part, i) => (
           <span key={i} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            {i > 0 && <span style={{ color: 'rgba(255,255,255,.2)' }}>›</span>}
+            {i > 0 && <span style={{ color: isDark ? 'rgba(255,255,255,.2)' : '#94a3b8' }}>›</span>}
             <span onClick={() => i < fullPath.length - 1 ? setPathStack(pathStack.slice(0, i)) : undefined}
-              style={{ color: i === fullPath.length - 1 ? '#00d4ff' : 'rgba(255,255,255,.4)', cursor: i < fullPath.length - 1 ? 'pointer' : 'default' }}>
+              style={{ color: i === fullPath.length - 1 ? '#00d4ff' : (isDark ? 'rgba(255,255,255,.4)' : '#475569'), cursor: i < fullPath.length - 1 ? 'pointer' : 'default' }}>
               {part}
             </span>
           </span>
         ))}
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 12, padding: 18 }}>
-        {items.length === 0 && <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '50px 20px', color: 'rgba(255,255,255,.3)', fontSize: 14 }}>Esta carpeta está vacía</div>}
+        {items.length === 0 && <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '50px 20px', color: isDark ? 'rgba(255,255,255,.3)' : '#94a3b8', fontSize: 14 }}>Esta carpeta está vacía</div>}
         {items.map(node => (
           <div key={node.name} onClick={() => open(node)}
-            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, padding: '16px 8px', borderRadius: 14, background: 'rgba(255,255,255,.02)', border: '1px solid transparent', cursor: 'pointer', textAlign: 'center', transition: 'background .18s' }}>
+            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, padding: '16px 8px', borderRadius: 14, background: isDark ? 'rgba(255,255,255,.02)' : 'rgba(255,255,255,.78)', border: isDark ? '1px solid transparent' : '1px solid rgba(0,0,0,.07)', cursor: 'pointer', textAlign: 'center', transition: 'background .18s', boxShadow: isDark ? 'none' : '0 1px 4px rgba(0,0,0,.04)' }}>
             <div style={{ width: 54, height: 54 }} dangerouslySetInnerHTML={{ __html: FILE_ICONS[node.type] ?? FILE_ICONS.readme }} />
-            <div style={{ fontFamily: MONO, fontSize: 11, color: 'rgba(255,255,255,.85)', lineHeight: 1.3, wordBreak: 'break-word' }}>
+            <div style={{ fontFamily: MONO, fontSize: 11, color: isDark ? 'rgba(255,255,255,.85)' : '#0f172a', lineHeight: 1.3, wordBreak: 'break-word' }}>
               {node.name.replace(/\.(url|pdf|png|readme)$/i, '')}
             </div>
           </div>
@@ -799,15 +809,24 @@ function SettingsApp() {
   const selWp  = WP_LIST.find(w => w.id === wallpaper) ?? WP_LIST[0];
   const sLabels = SET_LABELS[lang] ?? SET_LABELS.CAS;
 
+  const isDark = theme === 'dark';
+  const COL   = isDark ? '#fff' : '#0f172a';
+  const MUTED = isDark ? 'rgba(255,255,255,.45)' : '#64748b';
+
   /* row helper */
   const ROW: React.CSSProperties = { display:'flex', alignItems:'center', gap:14, padding:'0 16px', minHeight:50 };
-  const CARD: React.CSSProperties = { background:'rgba(255,255,255,.05)', border:'1px solid rgba(255,255,255,.06)', borderRadius:14, overflow:'hidden' };
-  const SEP: React.CSSProperties  = { borderTop:'1px solid rgba(255,255,255,.06)' };
+  const CARD: React.CSSProperties = {
+    background: isDark ? 'rgba(255,255,255,.05)' : 'rgba(255,255,255,.85)',
+    border: isDark ? '1px solid rgba(255,255,255,.06)' : '1px solid rgba(0,0,0,.06)',
+    borderRadius:14, overflow:'hidden',
+    ...(isDark ? {} : { boxShadow:'0 2px 8px rgba(0,0,0,.06)' }),
+  };
+  const SEP: React.CSSProperties = { borderTop: isDark ? '1px solid rgba(255,255,255,.06)' : '1px solid rgba(0,0,0,.06)' };
   const CHEV = <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>;
   const EXT  = <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>;
 
   const secLabel = (txt: string, mt = 22) => (
-    <div style={{ fontFamily: INTER, fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,.4)', letterSpacing:'0.1em', textTransform:'uppercase', padding:'0 8px 8px', marginTop: mt }}>{txt}</div>
+    <div style={{ fontFamily:INTER, fontSize:12, fontWeight:600, color: isDark ? 'rgba(255,255,255,.4)' : '#94a3b8', letterSpacing:'0.1em', textTransform:'uppercase', padding:'0 8px 8px', marginTop:mt }}>{txt}</div>
   );
 
   const ic = (color: string, svg: React.ReactNode) => (
@@ -815,7 +834,7 @@ function SettingsApp() {
   );
 
   const right = (...nodes: React.ReactNode[]) => (
-    <span style={{ marginLeft:'auto', display:'flex', alignItems:'center', gap:8, color:'rgba(255,255,255,.45)', fontSize:14, flexShrink:0 }}>{...nodes}</span>
+    <span style={{ marginLeft:'auto', display:'flex', alignItems:'center', gap:8, color:MUTED, fontSize:14, flexShrink:0 }}>{...nodes}</span>
   );
 
   return (
@@ -827,10 +846,10 @@ function SettingsApp() {
         {/* Tema */}
         <div style={ROW}>
           {ic('#00d4ff', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:20,height:20}}><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>)}
-          <span style={{ fontSize:15, color:'#fff', fontFamily:INTER }}>Tema oscuro</span>
+          <span style={{ fontSize:15, color:COL, fontFamily:INTER }}>Tema oscuro</span>
           {right(
-            <div onClick={() => { toggleTheme(); showToast(theme === 'dark' ? 'Tema claro activado' : 'Tema oscuro activado'); }}
-              style={{ width:44, height:26, borderRadius:999, background: theme==='dark' ? '#00d4ff' : 'rgba(255,255,255,.15)', position:'relative', cursor:'pointer', flexShrink:0, transition:'background .2s' }}>
+            <div onClick={() => { toggleTheme(); showToast(isDark ? 'Tema claro activado' : 'Tema oscuro activado'); }}
+              style={{ width:44, height:26, borderRadius:999, background: isDark ? '#00d4ff' : 'rgba(0,0,0,.15)', position:'relative', cursor:'pointer', flexShrink:0, transition:'background .2s' }}>
               <div style={{ position:'absolute', top:3, left:3, width:20, height:20, borderRadius:'50%', background:'#fff', boxShadow:'0 1px 3px rgba(0,0,0,.4)', transition:'transform .2s cubic-bezier(.4,0,.2,1)', transform: theme==='dark' ? 'translateX(18px)' : 'translateX(0)' }} />
             </div>
           )}
@@ -838,21 +857,21 @@ function SettingsApp() {
         {/* Wallpaper */}
         <div style={{ ...ROW, ...SEP, cursor:'pointer' }} onClick={() => setWpOpen(o => !o)}>
           {ic('#00d4ff', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:20,height:20}}><circle cx="13.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/><circle cx="17.5" cy="10.5" r="1.5" fill="currentColor" stroke="none"/><circle cx="8.5" cy="7.5" r="1.5" fill="currentColor" stroke="none"/><circle cx="6.5" cy="12.5" r="1.5" fill="currentColor" stroke="none"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c1 0 1.5-.8 1.5-1.5 0-.4-.2-.8-.4-1-.3-.3-.4-.6-.4-1 0-.8.7-1.5 1.5-1.5H16c3.3 0 6-2.7 6-6 0-5-4.5-9-10-9z"/></svg>)}
-          <span style={{ fontSize:15, color:'#fff', fontFamily:INTER }}>Wallpaper</span>
+          <span style={{ fontSize:15, color:COL, fontFamily:INTER }}>Wallpaper</span>
           {right(
-            <span style={{ width:22, height:22, borderRadius:'50%', border:'1.5px solid rgba(255,255,255,.3)', background: selWp.grad, flexShrink:0, display:'block' }} />,
+            <span style={{ width:22, height:22, borderRadius:'50%', border: isDark ? '1.5px solid rgba(255,255,255,.3)' : '1.5px solid rgba(0,0,0,.2)', background: selWp.grad, flexShrink:0, display:'block' }} />,
             <span style={{ color:'rgba(255,255,255,.3)', transform: wpOpen ? 'rotate(90deg)' : 'none', transition:'transform .2s', display:'flex' }}>{CHEV}</span>
           )}
         </div>
         {/* Wallpaper picker (collapsible) */}
-        <div style={{ maxHeight: wpOpen ? 240 : 0, overflow:'hidden', transition:'max-height .3s ease', background:'rgba(0,0,0,.2)' }}>
+        <div style={{ maxHeight: wpOpen ? 240 : 0, overflow:'hidden', transition:'max-height .3s ease', background: isDark ? 'rgba(0,0,0,.2)' : 'rgba(0,0,0,.03)' }}>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:12, padding:16 }}>
             {WP_LIST.map(w => (
               <div key={w.id} onClick={() => { onWallpaper(w.id); showToast(`${w.name} aplicado`); }} style={{ cursor:'pointer', textAlign:'center' }}>
                 <div style={{ width:'100%', height:60, borderRadius:10, background:w.grad, border: wallpaper===w.id ? '2px solid #00d4ff' : '2px solid transparent', position:'relative', transition:'border-color .2s', display:'flex', alignItems:'center', justifyContent:'center' }}>
                   {wallpaper===w.id && <svg viewBox="0 0 24 24" fill="none" stroke="#002430" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{width:14,height:14,background:'#00d4ff',borderRadius:'50%',padding:3}}><polyline points="20 6 9 17 4 12"/></svg>}
                 </div>
-                <div style={{ fontFamily:MONO, fontSize:9, color:'rgba(255,255,255,.5)', marginTop:6, letterSpacing:'0.05em' }}>{w.name}</div>
+                <div style={{ fontFamily:MONO, fontSize:9, color: isDark ? 'rgba(255,255,255,.5)' : '#64748b', marginTop:6, letterSpacing:'0.05em' }}>{w.name}</div>
               </div>
             ))}
           </div>
@@ -860,12 +879,12 @@ function SettingsApp() {
         {/* Idioma */}
         <div style={{ ...ROW, ...SEP }}>
           {ic('#00d4ff', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:20,height:20}}><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a13 13 0 0 1 0 18M12 3a13 13 0 0 0 0 18"/></svg>)}
-          <span style={{ fontSize:15, color:'#fff', fontFamily:INTER }}>Idioma</span>
+          <span style={{ fontSize:15, color:COL, fontFamily:INTER }}>Idioma</span>
           {right(
-            <div style={{ display:'flex', background:'rgba(255,255,255,.08)', borderRadius:8, padding:2 }}>
+            <div style={{ display:'flex', background: isDark ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.06)', borderRadius:8, padding:2 }}>
               {(['CAS','CAT','ENG'] as const).map(l => (
                 <button key={l} onClick={() => { setLang(l); showToast(`Idioma: ${l}`); }}
-                  style={{ border:'none', cursor:'pointer', fontFamily:MONO, fontSize:10, fontWeight:600, padding:'5px 9px', borderRadius:6, letterSpacing:'0.04em', background: lang===l ? '#00d4ff' : 'transparent', color: lang===l ? '#002430' : 'rgba(255,255,255,.5)', transition:'background .2s, color .2s' }}>
+                  style={{ border:'none', cursor:'pointer', fontFamily:MONO, fontSize:10, fontWeight:600, padding:'5px 9px', borderRadius:6, letterSpacing:'0.04em', background: lang===l ? '#00d4ff' : 'transparent', color: lang===l ? '#002430' : (isDark ? 'rgba(255,255,255,.5)' : '#64748b'), transition:'background .2s, color .2s' }}>
                   {l}
                 </button>
               ))}
@@ -879,22 +898,22 @@ function SettingsApp() {
       <div style={CARD}>
         <div style={ROW}>
           {ic('#7c3aed', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" style={{width:20,height:20}}><path d="M12 3 20 8 17 19 7 19 4 8Z"/><circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none"/></svg>)}
-          <span style={{ fontSize:15, color:'#fff', fontFamily:INTER }}>IzanOS Aurora</span>
+          <span style={{ fontSize:15, color:COL, fontFamily:INTER }}>IzanOS Aurora</span>
           {right(<span>0.3</span>)}
         </div>
         <div style={{ ...ROW, ...SEP }}>
           {ic('#7c3aed', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:20,height:20}}><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>)}
-          <span style={{ fontSize:15, color:'#fff', fontFamily:INTER }}>Stack</span>
+          <span style={{ fontSize:15, color:COL, fontFamily:INTER }}>Stack</span>
           {right(<span style={{ fontSize:12 }}>Next · React · Framer</span>)}
         </div>
         <div style={{ ...ROW, ...SEP }}>
           {ic('#7c3aed', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:20,height:20}}><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>)}
-          <span style={{ fontSize:15, color:'#fff', fontFamily:INTER }}>Uptime</span>
+          <span style={{ fontSize:15, color:COL, fontFamily:INTER }}>Uptime</span>
           {right(<span style={{ fontFamily:MONO, fontSize:13 }}>{fmtUptime(uptime)}</span>)}
         </div>
         <div style={{ ...ROW, ...SEP, cursor:'pointer' }} onClick={() => showToast('IzanOS Aurora 0.3 · build 2026')}>
           {ic('#7c3aed', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:20,height:20}}><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="8" r=".8" fill="currentColor"/></svg>)}
-          <span style={{ fontSize:15, color:'#fff', fontFamily:INTER }}>About IzanOS</span>
+          <span style={{ fontSize:15, color:COL, fontFamily:INTER }}>About IzanOS</span>
           {right(<span style={{ color:'rgba(255,255,255,.3)' }}>{CHEV}</span>)}
         </div>
       </div>
@@ -904,22 +923,22 @@ function SettingsApp() {
       <div style={CARD}>
         <div style={{ ...ROW, cursor:'pointer' }} onClick={() => { navigator.clipboard?.writeText(personal.email).catch(()=>{}); showToast('Copiado ✓'); }}>
           {ic('#00ff88', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:20,height:20}}><rect x="3" y="5" width="18" height="14" rx="2"/><polyline points="3 7 12 13 21 7"/></svg>)}
-          <span style={{ fontSize:13, color:'#fff', fontFamily:INTER, flex:1, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{personal.email}</span>
+          <span style={{ fontSize:13, color:COL, fontFamily:INTER, flex:1, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{personal.email}</span>
           {right(<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00ff88" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>)}
         </div>
         <a href={personal.github} target="_blank" rel="noopener" style={{ ...ROW, ...SEP, textDecoration:'none', cursor:'pointer', display:'flex' }}>
           {ic('#00ff88', <svg viewBox="0 0 24 24" fill="currentColor" style={{width:20,height:20}}><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.2-.8.1-.8.1-.8 1.3.1 2 1.3 2 1.3 1.2 2 3 1.4 3.8 1.1.1-.9.4-1.4.8-1.8-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.3 1.3-3.2-.1-.3-.6-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.7.3 2.9.1 3.2.8.9 1.3 2 1.3 3.2 0 4.6-2.8 5.6-5.5 6 .4.4.8 1 .8 2.2v3.2c0 .3.2.7.8.6A12 12 0 0 0 12 .5z"/></svg>)}
-          <span style={{ fontSize:13, color:'#fff', fontFamily:INTER }}>github.com/izanrubio</span>
+          <span style={{ fontSize:13, color:COL, fontFamily:INTER }}>github.com/izanrubio</span>
           {right(EXT)}
         </a>
         <a href={personal.linkedin} target="_blank" rel="noopener" style={{ ...ROW, ...SEP, textDecoration:'none', cursor:'pointer', display:'flex' }}>
           {ic('#00ff88', <svg viewBox="0 0 24 24" fill="currentColor" style={{width:20,height:20}}><path d="M20.4 20.4h-3.6v-5.6c0-1.3 0-3-1.9-3s-2.2 1.4-2.2 2.9v5.7H9.1V9h3.5v1.6a3.8 3.8 0 0 1 3.4-1.9c3.7 0 4.4 2.4 4.4 5.6v6zM5 7.4a2.1 2.1 0 1 1 0-4.2 2.1 2.1 0 0 1 0 4.2zM6.8 20.4H3.2V9h3.6v11.4z"/></svg>)}
-          <span style={{ fontSize:13, color:'#fff', fontFamily:INTER }}>in/izan-rubio-cerezo</span>
+          <span style={{ fontSize:13, color:COL, fontFamily:INTER }}>in/izan-rubio-cerezo</span>
           {right(EXT)}
         </a>
         <a href="/cv.pdf" download style={{ ...ROW, ...SEP, textDecoration:'none', cursor:'pointer', display:'flex', background:'rgba(0,212,255,.06)' }}>
           {ic('#00d4ff', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:20,height:20}}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>)}
-          <span style={{ fontSize:15, color:'#fff', fontFamily:INTER }}>Curriculum Vitae</span>
+          <span style={{ fontSize:15, color:COL, fontFamily:INTER }}>Curriculum Vitae</span>
           {right(<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>)}
         </a>
       </div>
@@ -928,20 +947,20 @@ function SettingsApp() {
       {secLabel(sLabels[3])}
       <div style={CARD}>
         <div style={ROW}>
-          {ic('rgba(255,255,255,.4)', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:20,height:20}}><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.5 4.5-7 8-7s7 2.5 8 7"/></svg>)}
-          <span style={{ fontSize:15, color:'#fff', fontFamily:INTER }}>Desarrollado por</span>
-          {right(<span style={{ color:'#fff' }}>{personal.name}</span>)}
+          {ic(isDark ? 'rgba(255,255,255,.4)' : '#94a3b8', <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:20,height:20}}><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.5 4.5-7 8-7s7 2.5 8 7"/></svg>)}
+          <span style={{ fontSize:15, color:COL, fontFamily:INTER }}>Desarrollado por</span>
+          {right(<span style={{ color:COL }}>{personal.name}</span>)}
         </div>
         <a href="https://github.com/izanrubio/portfolio-os" target="_blank" rel="noopener" style={{ ...ROW, ...SEP, textDecoration:'none', cursor:'pointer', display:'flex' }}>
-          {ic('rgba(255,255,255,.4)', <svg viewBox="0 0 24 24" fill="currentColor" style={{width:20,height:20}}><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.2-.8.1-.8.1-.8 1.3.1 2 1.3 2 1.3 1.2 2 3 1.4 3.8 1.1.1-.9.4-1.4.8-1.8-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.3 1.3-3.2-.1-.3-.6-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.7.3 2.9.1 3.2.8.9 1.3 2 1.3 3.2 0 4.6-2.8 5.6-5.5 6 .4.4.8 1 .8 2.2v3.2c0 .3.2.7.8.6A12 12 0 0 0 12 .5z"/></svg>)}
-          <span style={{ fontSize:15, color:'#fff', fontFamily:INTER }}>Código fuente</span>
+          {ic(isDark ? 'rgba(255,255,255,.4)' : '#94a3b8', <svg viewBox="0 0 24 24" fill="currentColor" style={{width:20,height:20}}><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.2-.8.1-.8.1-.8 1.3.1 2 1.3 2 1.3 1.2 2 3 1.4 3.8 1.1.1-.9.4-1.4.8-1.8-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.3 1.3-3.2-.1-.3-.6-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.7.3 2.9.1 3.2.8.9 1.3 2 1.3 3.2 0 4.6-2.8 5.6-5.5 6 .4.4.8 1 .8 2.2v3.2c0 .3.2.7.8.6A12 12 0 0 0 12 .5z"/></svg>)}
+          <span style={{ fontSize:15, color:COL, fontFamily:INTER }}>Código fuente</span>
           {right(<span style={{ fontSize:12 }}>portfolio-os</span>, <span style={{ color:'rgba(255,255,255,.3)' }}>{CHEV}</span>)}
         </a>
         <div style={{ ...ROW, ...SEP, flexDirection:'column', alignItems:'flex-start', padding:'12px 16px', minHeight:'auto' }}>
-          <span style={{ fontSize:15, color:'#fff', fontFamily:INTER, marginBottom:10 }}>Tecnologías</span>
+          <span style={{ fontSize:15, color:COL, fontFamily:INTER, marginBottom:10 }}>Tecnologías</span>
           <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
             {['Next.js','React','TypeScript','Tailwind','Framer Motion'].map(t => (
-              <span key={t} style={{ fontFamily:MONO, fontSize:10, background:'rgba(255,255,255,.08)', color:'#fff', borderRadius:6, padding:'4px 8px', letterSpacing:'0.03em' }}>{t}</span>
+              <span key={t} style={{ fontFamily:MONO, fontSize:10, background: isDark ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.06)', color:COL, border: isDark ? 'none' : '1px solid rgba(0,0,0,.1)', borderRadius:6, padding:'4px 8px', letterSpacing:'0.03em' }}>{t}</span>
             ))}
           </div>
         </div>
@@ -949,7 +968,7 @@ function SettingsApp() {
 
       {/* Toast */}
       {toast && (
-        <div style={{ position:'fixed', bottom:80, left:'50%', transform:'translateX(-50%)', background:'rgba(15,15,25,.95)', border:'1px solid rgba(0,212,255,.25)', color:'#fff', fontFamily:MONO, fontSize:12, padding:'9px 16px', borderRadius:999, backdropFilter:'blur(12px)', display:'inline-flex', alignItems:'center', gap:8, zIndex:100, whiteSpace:'nowrap', animation:'mob-chipin .2s ease' }}>
+        <div style={{ position:'fixed', bottom:80, left:'50%', transform:'translateX(-50%)', background: isDark ? 'rgba(15,15,25,.95)' : 'rgba(255,255,255,.95)', border:'1px solid rgba(0,212,255,.25)', color:COL, fontFamily:MONO, fontSize:12, padding:'9px 16px', borderRadius:999, backdropFilter:'blur(12px)', display:'inline-flex', alignItems:'center', gap:8, zIndex:100, whiteSpace:'nowrap', animation:'mob-chipin .2s ease', boxShadow: isDark ? 'none' : '0 8px 24px rgba(0,0,0,.12)' }}>
           <span style={{ width:6, height:6, borderRadius:'50%', background:'#00ff88', boxShadow:'0 0 8px #00ff88', flexShrink:0 }} />
           {toast}
         </div>
@@ -1081,16 +1100,6 @@ export default function MobilePortfolio() {
       <style>{`
         *{-webkit-tap-highlight-color:transparent;}
         .mob-screen{position:fixed;inset:0;background:#000;overflow:hidden;display:flex;flex-direction:column;}
-        .mob-screen.mob-light{background:#e8edf5;}
-        .mob-screen.mob-light .mob-wallpaper{background:radial-gradient(ellipse at 50% 30%,#d8e4f4,#e8edf5)!important;}
-        .mob-screen.mob-light .mob-wb{opacity:.2;mix-blend-mode:multiply;}
-        .mob-screen.mob-light .mob-app-name{color:rgba(0,0,40,.8);text-shadow:none;}
-        .mob-screen.mob-light .mob-dock{background:rgba(255,255,255,.6)!important;border-top:1px solid rgba(0,0,0,.09)!important;}
-        .mob-screen.mob-light .mob-appview{background:#f0f4ff!important;}
-        .mob-screen.mob-light .mob-appnav{background:rgba(255,255,255,.92)!important;border-bottom:1px solid rgba(0,0,0,.08)!important;}
-        .mob-screen.mob-light .mob-nav-title{color:rgba(0,0,40,.7)!important;}
-        .mob-screen.mob-light .mob-back{color:var(--app-accent,#0066ff)!important;}
-        .mob-screen.mob-light .mob-home-ind{background:rgba(0,0,0,.18)!important;}
         .mob-wallpaper{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,#0b1020,#05060c);overflow:hidden;}
         .mob-wb{position:absolute;border-radius:50%;filter:blur(90px);mix-blend-mode:screen;}
         .mob-wb1{width:80vw;height:80vw;top:-20vw;left:-20vw;background:radial-gradient(circle,rgba(0,255,136,.3),transparent 65%);animation:mob-drift1 24s ease-in-out infinite;}
@@ -1124,7 +1133,7 @@ export default function MobilePortfolio() {
         .mob-home-ind{position:absolute;bottom:max(6px,env(safe-area-inset-bottom,6px));left:50%;transform:translateX(-50%);width:134px;height:5px;border-radius:3px;background:rgba(255,255,255,.3);z-index:70;cursor:pointer;}
       `}</style>
 
-      <div className={`mob-screen${theme === 'light' ? ' mob-light' : ''}`} ref={screenRef}>
+      <div className="mob-screen" ref={screenRef}>
         <div className="mob-wallpaper" style={{ background: theme === 'light' ? 'radial-gradient(ellipse at 50% 30%,#0f1428,#06080f)' : undefined }}>
           <div className="mob-wb mob-wb1" style={{ background: `radial-gradient(circle,${blobColors[0]},transparent 65%)` }} />
           <div className="mob-wb mob-wb2" style={{ background: `radial-gradient(circle,${blobColors[1]},transparent 65%)` }} />
