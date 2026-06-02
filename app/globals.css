@@ -193,6 +193,18 @@ html[data-theme="light"] .win-chrome {
   box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.06) !important;
 }
 
+/* ──────────────── Mobile light mode ──────────────── */
+html[data-theme="light"] .mob-screen { background: #f0f4ff; }
+html[data-theme="light"] .mob-wallpaper { background: radial-gradient(ellipse at 50% 30%, #dce8f8, #eef2fb) !important; }
+html[data-theme="light"] .mob-wb { opacity: .18; mix-blend-mode: multiply; }
+html[data-theme="light"] .mob-app-name { color: rgba(0,0,40,.75); text-shadow: none; }
+html[data-theme="light"] .mob-dock { background: rgba(255,255,255,.65) !important; border-top: 1px solid rgba(0,0,0,.09) !important; }
+html[data-theme="light"] .mob-appview { background: #f5f7fc !important; }
+html[data-theme="light"] .mob-appnav { background: rgba(255,255,255,.8) !important; border-bottom: 1px solid rgba(0,0,0,.08) !important; }
+html[data-theme="light"] .mob-nav-title { color: #0f172a !important; }
+html[data-theme="light"] .mob-back { color: var(--app-accent, #0066ff) !important; }
+html[data-theme="light"] .mob-home-ind { background: rgba(0,0,0,.2) !important; }
+
 /* ── Terminal always dark ── */
 .w-term.win-chrome {
   background: rgba(13,15,22,0.95) !important;
