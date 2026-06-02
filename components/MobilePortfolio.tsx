@@ -5,11 +5,11 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { personal, projects, skills, filesystem } from '@/data/content';
 import { FileNode } from '@/types/windows';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage, type Lang } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useWallpaper } from '@/contexts/WallpaperContext';
 import type { WallpaperId } from '@/components/WallpaperPicker';
-import { tRoles } from '@/data/translations';
+import { t, tRoles } from '@/data/translations';
 
 const INTER = 'var(--font-inter), Inter, sans-serif';
 const MONO  = 'var(--font-jetbrains), monospace';
@@ -99,6 +99,7 @@ function AppSvg({ app }: { app: AppId }) {
 function ProjectsApp() {
   const [expanded, setExpanded] = useState<string | null>(null);
   const { theme } = useTheme();
+  const { lang } = useLanguage();
   const isDark = theme === 'dark';
   const accent = APP_ACCENTS.projects;
   return (
@@ -113,7 +114,7 @@ function ProjectsApp() {
           <div key={p.slug} onClick={() => setExpanded(isExp ? null : p.slug)}
             style={{ margin: '12px 18px', borderRadius: 16, background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,.82)', border: isDark ? '1px solid rgba(255,255,255,0.07)' : '1px solid rgba(0,0,0,.07)', borderLeft: `3px solid ${color}`, padding: 16, cursor: 'pointer', transition: 'background .2s', boxShadow: isDark ? 'none' : '0 2px 8px rgba(0,0,0,.05)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontFamily: MONO, fontSize: 9, color, letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 600 }}>{p.category}</span>
+              <span style={{ fontFamily: MONO, fontSize: 9, color, letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 600 }}>{t(`proj.${p.slug}.category`, lang) || p.category}</span>
               <span style={{ fontFamily: MONO, fontSize: 9, fontWeight: 700, letterSpacing: '0.14em', padding: '3px 9px', borderRadius: 999,
                 ...(wip ? { color: '#ff9500', background: 'rgba(255,149,0,.12)', border: '1px solid rgba(255,149,0,.3)' }
                          : { color: '#00ff88', background: 'rgba(0,255,136,.12)', border: '1px solid rgba(0,255,136,.3)' }) }}>
@@ -121,7 +122,7 @@ function ProjectsApp() {
               </span>
             </div>
             <div style={{ fontSize: 19, fontWeight: 700, color: isDark ? '#fff' : '#0f172a', marginTop: 6, letterSpacing: '-0.01em', fontFamily: INTER }}>{p.name}</div>
-            <div style={{ fontSize: 13, color: isDark ? '#9ba3af' : '#475569', lineHeight: 1.55, marginTop: 8, maxHeight: isExp ? 200 : 0, overflow: 'hidden', transition: 'max-height .35s ease' }}>{p.description}</div>
+            <div style={{ fontSize: 13, color: isDark ? '#9ba3af' : '#475569', lineHeight: 1.55, marginTop: 8, maxHeight: isExp ? 200 : 0, overflow: 'hidden', transition: 'max-height .35s ease' }}>{t(`proj.${p.slug}.description`, lang) || p.description}</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 12 }}>
               {p.stack.slice(0, 4).map(s => (
                 <span key={s} style={{ fontFamily: MONO, fontSize: 10, fontWeight: 500, padding: '4px 9px', borderRadius: 6, color, background: hexToRgba(color, 0.10), border: `1px solid ${hexToRgba(color, 0.28)}` }}>{s}</span>
@@ -130,12 +131,12 @@ function ProjectsApp() {
             {wip && (
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 12, fontFamily: MONO, fontSize: 9, fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color }}>
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: color, boxShadow: `0 0 6px ${color}`, animation: 'mob-dotpulse 1.5s ease-in-out infinite', display: 'inline-block' }} />
-                En desarrollo
+                {t('projects.inDev', lang)}
               </div>
             )}
             {!wip && isExp && p.demo && (
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, marginTop: 14, fontFamily: MONO, fontSize: 11, fontWeight: 600, color }}>
-                Open demo →
+                {t('projects.openDemo', lang)} →
               </div>
             )}
             <div style={{ fontFamily: MONO, fontSize: 10, color: isDark ? 'rgba(255,255,255,.2)' : '#94a3b8', marginTop: 8, textAlign: 'right' }}>
@@ -195,17 +196,17 @@ function AboutApp() {
         <div style={{ fontFamily: MONO, fontSize: 12, color: '#7c3aed', letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: 6, fontWeight: 600, height: 18, display: 'flex', alignItems: 'center' }}>
           {typed}<span style={{ width: 7, height: 11, background: '#7c3aed', display: 'inline-block', verticalAlign: 'text-bottom', marginLeft: 2, animation: 'mob-blink 1s steps(1) infinite' }} />
         </div>
-        <div style={{ fontFamily: MONO, fontSize: 10, color: '#b794f6', letterSpacing: '0.2em', textTransform: 'uppercase', marginTop: 18 }}>~/about</div>
-        <p style={{ fontSize: 14, lineHeight: 1.75, color: isDark ? '#9ba3af' : '#475569', marginTop: 16, fontFamily: INTER }}>{personal.bio}</p>
+        <div style={{ fontFamily: MONO, fontSize: 10, color: '#b794f6', letterSpacing: '0.2em', textTransform: 'uppercase', marginTop: 18 }}>{t('mobile.about.path', lang)}</div>
+        <p style={{ fontSize: 14, lineHeight: 1.75, color: isDark ? '#9ba3af' : '#475569', marginTop: 16, fontFamily: INTER }}>{t('whoami.bio', lang)}</p>
         <div style={{ height: 1, background: isDark ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,.08)', margin: '20px 0' }} />
-        <div style={{ fontFamily: MONO, fontSize: 10, color: '#b794f6', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 4 }}>Contact</div>
+        <div style={{ fontFamily: MONO, fontSize: 10, color: '#b794f6', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 4 }}>{t('mobile.about.contact', lang)}</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           {[
-            { label: 'Email',    value: personal.email,                     href: `mailto:${personal.email}` },
-            { label: 'GitHub',   value: 'github.com/izanrubio',             href: personal.github },
-            { label: 'LinkedIn', value: 'in/izan-rubio-cerezo',             href: personal.linkedin },
-            { label: 'Phone',    value: `${personal.contact.phone.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3')}`, href: `tel:${personal.contact.phone}` },
-            { label: 'Location', value: personal.location,                  href: null },
+            { label: t('contact.label.email',    lang), value: personal.email,                     href: `mailto:${personal.email}` },
+            { label: t('contact.label.github',   lang), value: 'github.com/izanrubio',             href: personal.github },
+            { label: t('contact.label.linkedin', lang), value: 'in/izan-rubio-cerezo',             href: personal.linkedin },
+            { label: t('contact.label.phone',    lang), value: personal.contact.phone.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3'), href: `tel:${personal.contact.phone}` },
+            { label: t('contact.label.location', lang), value: personal.location,                  href: null },
           ].map(item => (
             <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 0', borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,.08)'}` }}>
               <span style={{ color: '#b794f6', display: 'flex', width: 18, flexShrink: 0 }}>
@@ -225,7 +226,7 @@ function AboutApp() {
         </div>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 20, fontFamily: MONO, fontSize: 10, color: 'rgba(255,255,255,.8)', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 600 }}>
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#00ff88', boxShadow: '0 0 8px #00ff88', animation: 'mob-dotpulse 1.6s ease-in-out infinite', display: 'inline-block' }} />
-          {personal.statusText}
+          {t('whoami.status', lang)}
         </div>
       </div>
     </div>
@@ -238,10 +239,13 @@ function AboutApp() {
 function SkillsApp() {
   const [filter, setFilter] = useState('All');
   const { theme } = useTheme();
+  const { lang } = useLanguage();
   const isDark = theme === 'dark';
   const total = skills.reduce((n, c) => n + c.items.length, 0);
-  const pills = ['All', ...skills.map(s => s.label)];
-  const cats = filter === 'All' ? skills : skills.filter(s => s.label === filter);
+  const catLabel = (key: string, fallback: string) => t(`skills.cat.${key}`, lang) || fallback;
+  const allLabel = lang === 'ENG' ? 'All' : lang === 'CAT' ? 'Tot' : 'Todo';
+  const pills = [allLabel, ...skills.map(s => catLabel(s.key, s.label))];
+  const cats = filter === allLabel ? skills : skills.filter(s => catLabel(s.key, s.label) === filter);
   const accent = APP_ACCENTS.skills;
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
@@ -265,7 +269,7 @@ function SkillsApp() {
           <div key={cat.key}>
             <div style={{ fontSize: 14, fontWeight: 600, color: isDark ? '#fff' : '#0f172a', margin: '22px 0 12px', display: 'flex', alignItems: 'center', gap: 8, fontFamily: INTER }}>
               <span style={{ width: 4, height: 14, borderRadius: 2, background: accent, flexShrink: 0 }} />
-              {cat.label}
+              {catLabel(cat.key, cat.label)}
               <span style={{ fontFamily: MONO, fontSize: 10, color: isDark ? 'rgba(255,255,255,.3)' : '#94a3b8', fontWeight: 400, marginLeft: 'auto' }}>{cat.items.length}</span>
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, paddingBottom: 4 }}>
@@ -291,6 +295,7 @@ function ContactApp() {
   const [sent, setSent]   = useState(false);
   const [errs, setErrs]   = useState<Set<string>>(new Set());
   const { theme } = useTheme();
+  const { lang } = useLanguage();
   const isDark = theme === 'dark';
   const accent = APP_ACCENTS.contact;
 
@@ -310,17 +315,17 @@ function ContactApp() {
   });
 
   const cards = [
-    { label: 'Email',    value: personal.email,                                      href: `mailto:${personal.email}` },
-    { label: 'Phone',    value: personal.contact.phone.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3'), href: `tel:${personal.contact.phone}` },
-    { label: 'GitHub',   value: 'github.com/izanrubio',                             href: personal.github },
-    { label: 'LinkedIn', value: 'in/izan-rubio-cerezo',                             href: personal.linkedin },
-    { label: 'Location', value: personal.location,                                  href: null },
+    { label: t('contact.label.email',    lang), value: personal.email,                                      href: `mailto:${personal.email}` },
+    { label: t('contact.label.phone',    lang), value: personal.contact.phone.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3'), href: `tel:${personal.contact.phone}` },
+    { label: t('contact.label.github',   lang), value: 'github.com/izanrubio',                             href: personal.github },
+    { label: t('contact.label.linkedin', lang), value: 'in/izan-rubio-cerezo',                             href: personal.linkedin },
+    { label: t('contact.label.location', lang), value: personal.location,                                  href: null },
   ];
 
   return (
     <div style={{ paddingBottom: 40 }}>
-      <VHero eyebrow="Let's talk" title="Get in touch" deco="TALK" accent={accent}
-        sub={<>Usually responds in <b style={{ color: accent, fontWeight: 600 }}>&lt; 24h</b></>} />
+      <VHero eyebrow={t('contact.heading', lang)} title={t('contact.heading', lang)} deco="TALK" accent={accent}
+        sub={<b style={{ color: accent, fontWeight: 600 }}>{t('mobile.contact.responseTime', lang)}</b>} />
       {cards.map(item => (
         item.href ? (
           <a key={item.label} href={item.href} target={item.href.startsWith('mailto') || item.href.startsWith('tel') ? undefined : '_blank'} rel="noopener"
@@ -347,17 +352,17 @@ function ContactApp() {
         )
       ))}
       <div style={{ padding: '8px 18px 0', display: 'flex', flexDirection: 'column', gap: 12 }}>
-        <div style={{ fontFamily: MONO, fontSize: 10, color: 'rgba(255,255,255,.4)', letterSpacing: '0.2em', textTransform: 'uppercase' }}>Send a message</div>
+        <div style={{ fontFamily: MONO, fontSize: 10, color: isDark ? 'rgba(255,255,255,.4)' : '#94a3b8', letterSpacing: '0.2em', textTransform: 'uppercase' }}>{t('contact.sendHeader', lang)}</div>
         {(['name','email'] as const).map(k => (
           <div key={k}>
-            <label style={{ display: 'block', fontFamily: MONO, fontSize: 9, color: 'rgba(255,255,255,.4)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 6 }}>{k}</label>
-            <input placeholder={k === 'name' ? 'Your name' : 'you@somewhere.com'} type={k === 'email' ? 'email' : 'text'}
+            <label style={{ display: 'block', fontFamily: MONO, fontSize: 9, color: isDark ? 'rgba(255,255,255,.4)' : '#94a3b8', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 6 }}>{t(`contact.form.${k}`, lang)}</label>
+            <input placeholder={t(k === 'name' ? 'contact.form.namePlaceholder' : 'contact.form.emailPlaceholder', lang)} type={k === 'email' ? 'email' : 'text'}
               value={form[k]} onChange={e => setForm(p => ({ ...p, [k]: e.target.value }))} style={iStyle(k)} />
           </div>
         ))}
         <div>
-          <label style={{ display: 'block', fontFamily: MONO, fontSize: 9, color: 'rgba(255,255,255,.4)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 6 }}>Message</label>
-          <textarea placeholder="Tell me what you have in mind..." value={form.msg} onChange={e => setForm(p => ({ ...p, msg: e.target.value }))} rows={3} style={{ ...iStyle('msg'), resize: 'none', lineHeight: 1.5 }} />
+          <label style={{ display: 'block', fontFamily: MONO, fontSize: 9, color: isDark ? 'rgba(255,255,255,.4)' : '#94a3b8', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 6 }}>{t('contact.form.message', lang)}</label>
+          <textarea placeholder={t('contact.form.msgPlaceholder', lang)} value={form.msg} onChange={e => setForm(p => ({ ...p, msg: e.target.value }))} rows={3} style={{ ...iStyle('msg'), resize: 'none', lineHeight: 1.5 }} />
         </div>
         <button onClick={submit} style={{
           width: '100%', padding: 14, border: 'none', borderRadius: 12, cursor: 'pointer',
@@ -366,7 +371,7 @@ function ContactApp() {
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
           transition: 'transform .15s, background .35s',
         }}>
-          {sent ? '✓ Message sent!' : <>Send message <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg></>}
+          {sent ? t('mobile.contact.sent', lang) : <>{t('contact.form.send', lang)} <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg></>}
         </button>
       </div>
     </div>
@@ -379,49 +384,56 @@ function ContactApp() {
 type TBlock = { id: number; cmd: string; output: string };
 let _tbid = 0;
 
-const TERM_OUTPUTS: Record<string, string> = {
-  whoami:
-    `<span style="color:#f0f4ff;font-weight:600;">${personal.name}</span>\n` +
-    `<span style="color:#00d4ff;">${personal.role}</span>\n` +
-    `${personal.location} · <span style="color:#00ff88;">Available for hire ●</span>`,
+function buildTermOutputs(lang: Lang): Record<string, string> {
+  return {
+    whoami:
+      `<span style="color:#f0f4ff;font-weight:600;">${personal.name}</span>\n` +
+      `<span style="color:#00d4ff;">${t('whoami.role.0', lang)} &amp; ${t('whoami.role.1', lang)}</span>\n` +
+      `${personal.location} · <span style="color:#00ff88;">${t('whoami.status', lang)} ●</span>`,
 
-  'ls projects':
-    projects.map(p => {
-      const stack = ((p as { terminalStack?: string[] }).terminalStack ?? p.stack.slice(0, 3)).join(' · ');
-      const wip   = p.status === 'in-development';
-      return `<span style="color:#7c3aed;">drwxr-xr-x</span>  <span style="color:#f0f4ff;">${p.name}</span>  <span style="color:rgba(255,255,255,.4);">→ ${stack}</span>${wip ? ' <span style="color:#ff9500;">[EN DESARROLLO]</span>' : ''}`;
-    }).join('\n'),
+    'ls projects':
+      projects.map(p => {
+        const stack = ((p as { terminalStack?: string[] }).terminalStack ?? p.stack.slice(0, 3)).join(' · ');
+        const wip   = p.status === 'in-development';
+        return `<span style="color:#7c3aed;">drwxr-xr-x</span>  <span style="color:#f0f4ff;">${p.name}</span>  <span style="color:rgba(255,255,255,.4);">→ ${stack}</span>${wip ? ` <span style="color:#ff9500;">[${t('projects.inDev', lang)}]</span>` : ''}`;
+      }).join('\n'),
 
-  skills:
-    skills.map(s =>
-      `<span style="color:#00d4ff;font-weight:600;">${s.label.toUpperCase().padEnd(10)}</span><span style="color:#c8d0c8;">${s.items.slice(0, 4).join(' · ')}</span>`
-    ).join('\n'),
+    skills:
+      skills.map(s =>
+        `<span style="color:#00d4ff;font-weight:600;">${(t(`skills.cat.${s.key}`, lang) || s.label).toUpperCase().padEnd(10)}</span><span style="color:#c8d0c8;">${s.items.slice(0, 4).join(' · ')}</span>`
+      ).join('\n'),
 
-  'ping izan':
-    `<span style="color:#c8d0c8;">Email:    <span style="color:#f0f4ff;">${personal.email}</span></span>\n` +
-    `<span style="color:#c8d0c8;">GitHub:   <span style="color:#f0f4ff;">github.com/izanrubio</span></span>\n` +
-    `<span style="color:#c8d0c8;">LinkedIn: <span style="color:#f0f4ff;">linkedin.com/in/izan-rubio-cerezo</span></span>\n` +
-    `<span style="color:#c8d0c8;">Phone:    <span style="color:#f0f4ff;">${personal.contact.phone}</span></span>\n` +
-    `<span style="color:#00ff88;">Ping successful — host is alive. ●</span>`,
+    'ping izan':
+      `<span style="color:#c8d0c8;">${t('contact.label.email', lang)}:    <span style="color:#f0f4ff;">${personal.email}</span></span>\n` +
+      `<span style="color:#c8d0c8;">GitHub:   <span style="color:#f0f4ff;">github.com/izanrubio</span></span>\n` +
+      `<span style="color:#c8d0c8;">LinkedIn: <span style="color:#f0f4ff;">linkedin.com/in/izan-rubio-cerezo</span></span>\n` +
+      `<span style="color:#c8d0c8;">${t('contact.label.phone', lang)}:    <span style="color:#f0f4ff;">${personal.contact.phone}</span></span>\n` +
+      `<span style="color:#00ff88;">${t('mobile.terminal.whoami', lang)}</span>`,
 
-  'sudo hire-me':
-    `<span style="color:rgba(255,255,255,.4);">Verificando credenciales...</span>\n` +
-    `<span style="color:#00ff88;font-weight:700;">ACCESO CONCEDIDO ✓</span>\n` +
-    `<span style="color:#c8d0c8;">Izan está disponible para nuevos proyectos.</span>\n` +
-    `<span style="color:#c8d0c8;">Contacto: <span style="color:#00d4ff;">${personal.email}</span></span>`,
+    'sudo hire-me': (() => {
+      const parts = t('mobile.terminal.hireMe', lang).split('\n');
+      return parts.map((line, i) => {
+        if (i === 0) return `<span style="color:rgba(255,255,255,.4);">${line}</span>`;
+        if (i === 1) return `<span style="color:#00ff88;font-weight:700;">${line}</span>`;
+        if (i === parts.length - 1) return `<span style="color:#c8d0c8;">${line}<span style="color:#00d4ff;">${personal.email}</span></span>`;
+        return `<span style="color:#c8d0c8;">${line}</span>`;
+      }).join('\n');
+    })(),
 
-  'nmap localhost':
-    `<span style="color:#c8d0c8;">Starting Nmap scan...</span>\n` +
-    `<span style="color:#ff4757;font-weight:700;">WARNING: Intrusion attempt logged.</span>\n` +
-    `<span style="color:#ff4757;">Nice try. I see you, visitor. 👀</span>\n` +
-    `<span style="color:#ff4757;">Access denied.</span>`,
-};
+    'nmap localhost':
+      `<span style="color:#c8d0c8;">Starting Nmap scan...</span>\n` +
+      `<span style="color:#ff4757;font-weight:700;">WARNING: Intrusion attempt logged.</span>\n` +
+      `<span style="color:#ff4757;">Nice try. I see you, visitor. 👀</span>\n` +
+      `<span style="color:#ff4757;">Access denied.</span>`,
+  };
+}
 
 const CMD_BUTTONS: string[] = ['whoami', 'ls projects', 'skills', 'ping izan', 'sudo hire-me', 'nmap localhost'];
 
 function TerminalApp() {
   const [blocks, setBlocks] = useState<TBlock[]>([]);
   const [active, setActive] = useState<string | null>(null);
+  const { lang } = useLanguage();
   const outRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -431,7 +443,8 @@ function TerminalApp() {
   const run = (cmd: string) => {
     setActive(cmd);
     setTimeout(() => setActive(null), 220);
-    setBlocks(prev => [...prev, { id: _tbid++, cmd, output: TERM_OUTPUTS[cmd] ?? '' }]);
+    const outputs = buildTermOutputs(lang);
+    setBlocks(prev => [...prev, { id: _tbid++, cmd, output: outputs[cmd] ?? '' }]);
   };
 
   return (
@@ -442,7 +455,7 @@ function TerminalApp() {
       {/* Welcome header */}
       <div style={{ flexShrink: 0, padding: '14px 16px 10px', position: 'relative', zIndex: 1 }}>
         <div style={{ fontFamily: MONO, fontSize: 13, color: '#00d4ff', fontWeight: 600 }}>IzanOS Terminal v2.0.4</div>
-        <div style={{ fontFamily: MONO, fontSize: 11, color: 'rgba(255,255,255,.4)', marginTop: 4 }}>Tap a command to execute.</div>
+        <div style={{ fontFamily: MONO, fontSize: 11, color: 'rgba(255,255,255,.4)', marginTop: 4 }}>{lang === 'ENG' ? 'Tap a command to execute.' : lang === 'CAT' ? 'Toca una ordre per executar.' : 'Toca un comando para ejecutar.'}</div>
         <div style={{ height: 1, background: 'rgba(255,255,255,.08)', marginTop: 10 }} />
       </div>
 
