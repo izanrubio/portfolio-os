@@ -10,7 +10,9 @@ const translations: Record<Lang, Record<string, string>> = {
     'dock.browser':  'Navegador',
     'dock.files':    'Archivos',
     'dock.terminal': 'Terminal',
-    'dock.game':     'Juego',
+    'dock.game':       'Juego',
+    'dock.experience': 'Experiencia',
+    'dock.education':  'Educación',
     // Spotlight
     'spotlight.placeholder':       'Buscar en IzanOS...',
     'spotlight.section.apps':      'Aplicaciones',
@@ -130,7 +132,9 @@ const translations: Record<Lang, Record<string, string>> = {
     'dock.browser':  'Navegador',
     'dock.files':    'Arxius',
     'dock.terminal': 'Terminal',
-    'dock.game':     'Joc',
+    'dock.game':       'Joc',
+    'dock.experience': 'Experiència',
+    'dock.education':  'Educació',
     // Spotlight
     'spotlight.placeholder':       'Cercar a IzanOS...',
     'spotlight.section.apps':      'Aplicacions',
@@ -250,7 +254,9 @@ const translations: Record<Lang, Record<string, string>> = {
     'dock.browser':  'Browser',
     'dock.files':    'Files',
     'dock.terminal': 'Terminal',
-    'dock.game':     'Game',
+    'dock.game':       'Game',
+    'dock.experience': 'Experience',
+    'dock.education':  'Education',
     // Spotlight
     'spotlight.placeholder':       'Search IzanOS...',
     'spotlight.section.apps':      'Applications',
