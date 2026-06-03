@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { personal, projects, skills, filesystem } from '@/data/content';
+import { personal, projects, skills, filesystem, experience, education } from '@/data/content';
 import { FileNode } from '@/types/windows';
 import { useLanguage, type Lang } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -29,7 +29,7 @@ const ACCENT: Record<string, string> = {
   barbercompte: '#ff4757',
 };
 
-type AppId = 'projects' | 'about' | 'skills' | 'contact' | 'browser' | 'files' | 'terminal' | 'game' | 'settings';
+type AppId = 'projects' | 'about' | 'skills' | 'contact' | 'browser' | 'files' | 'terminal' | 'game' | 'settings' | 'experience' | 'education';
 
 const GRADS: Record<AppId, string> = {
   projects: 'linear-gradient(135deg,#00c97a,#00ff9d)',
@@ -40,19 +40,24 @@ const GRADS: Record<AppId, string> = {
   files:    'linear-gradient(135deg,#00c97a,#0066ff)',
   terminal: 'linear-gradient(135deg,#1a1a1a,#2a2a2a)',
   game:     'linear-gradient(135deg,#ff4757,#ff6b35)',
-  settings: 'linear-gradient(135deg,#6b7280,#4b5563)',
+  settings:    'linear-gradient(135deg,#6b7280,#4b5563)',
+  experience:  'linear-gradient(135deg,#0066ff,#00d4ff)',
+  education:   'linear-gradient(135deg,#7c3aed,#a855f7)',
 };
 
 const APP_TITLES: Record<AppId, string> = {
   projects: 'projects.exe', about: 'whoami.exe',   skills:    'skills.exe',
   contact:  'contact.exe',  browser: 'browser.exe', files:    'files.exe',
-  terminal: 'terminal.exe', game:   'game.exe',     settings: 'settings.exe',
+  terminal:   'terminal.exe', game:    'game.exe',  settings:   'settings.exe',
+  experience: 'experience.exe',                    education:  'education.exe',
 };
 
 const APP_ACCENTS: Record<AppId, string> = {
   projects: '#00ff88', about: '#7c3aed', skills: '#00d4ff', contact: '#ff9500',
   browser:  '#7c3aed', files: '#00d4ff', terminal: '#00ff88', game: '#ff4757',
-  settings: '#00d4ff',
+  settings:   '#00d4ff',
+  experience: '#00d4ff',
+  education:  '#7c3aed',
 };
 
 /* ── Shared hero header ── */
@@ -86,9 +91,11 @@ function AppSvg({ app }: { app: AppId }) {
     contact:  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />,
     browser:  <><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a13 13 0 0 1 0 18M12 3a13 13 0 0 0 0 18" /></>,
     files:    <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />,
-    game:     <><rect x="3" y="8" width="18" height="10" rx="4" /><path d="M8 12v3M6.5 13.5h3" /><circle cx="15.5" cy="12.5" r=".8" fill="white" /><circle cx="17" cy="14" r=".8" fill="white" /></>,
-    settings: <><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" /></>,
-    terminal: null,
+    game:       <><rect x="3" y="8" width="18" height="10" rx="4" /><path d="M8 12v3M6.5 13.5h3" /><circle cx="15.5" cy="12.5" r=".8" fill="white" /><circle cx="17" cy="14" r=".8" fill="white" /></>,
+    settings:   <><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" /></>,
+    experience: <><rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" /></>,
+    education:  <><path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c3 3 9 3 12 0v-5" /></>,
+    terminal:   null,
   };
   return <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={S}>{paths[app]}</svg>;
 }
@@ -993,6 +1000,128 @@ function SettingsApp() {
 }
 
 /* ════════════════════════════════════════
+   TIMELINE HELPERS (shared)
+════════════════════════════════════════ */
+function Badge({ type, label }: { type: 'live' | 'cur' | 'done'; label: string }) {
+  const styles: Record<string, React.CSSProperties> = {
+    live: { color: '#00ff88', background: 'rgba(0,255,136,.12)', border: '1px solid rgba(0,255,136,.3)' },
+    cur:  { color: '#00d4ff', background: 'rgba(0,212,255,.12)', border: '1px solid rgba(0,212,255,.35)' },
+    done: { color: 'rgba(255,255,255,.5)', background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.12)' },
+  };
+  return (
+    <span style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: MONO, fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '4px 9px', borderRadius: 999, whiteSpace: 'nowrap', ...styles[type] }}>
+      {type !== 'done' && <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'currentColor', animation: 'mob-dotpulse 1.5s ease-in-out infinite', flexShrink: 0 }} />}
+      {label}
+    </span>
+  );
+}
+
+/* ════════════════════════════════════════
+   EXPERIENCE APP
+════════════════════════════════════════ */
+function ExperienceApp() {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  const accent = '#00d4ff';
+  const COL   = isDark ? '#fff' : '#0f172a';
+  const MUTED = isDark ? 'rgba(255,255,255,.6)' : '#475569';
+  const DATE  = isDark ? 'rgba(255,255,255,.4)' : '#94a3b8';
+  const CARD_BASE: React.CSSProperties = isDark
+    ? { background: 'rgba(255,255,255,.03)', border: '1px solid rgba(255,255,255,.08)', borderLeft: '3px solid rgba(255,255,255,.2)', borderRadius: 12, padding: 16 }
+    : { background: 'rgba(255,255,255,.82)', border: '1px solid rgba(0,0,0,.07)', borderLeft: '3px solid rgba(0,0,0,.15)', borderRadius: 12, padding: 16, boxShadow: '0 2px 8px rgba(0,0,0,.05)' };
+  const CARD_HL: React.CSSProperties = isDark
+    ? { background: hexToRgba(accent, 0.07), border: `1px solid ${hexToRgba(accent, 0.22)}`, borderLeft: `3px solid ${accent}`, borderRadius: 12, padding: 16 }
+    : { background: hexToRgba(accent, 0.06), border: `1px solid ${hexToRgba(accent, 0.2)}`, borderLeft: `3px solid ${accent}`, borderRadius: 12, padding: 16, boxShadow: '0 2px 8px rgba(0,0,0,.05)' };
+  const CHIP_BASE: React.CSSProperties = { fontFamily: MONO, fontSize: 10.5, fontWeight: 500, padding: '4px 9px', borderRadius: 6, color: isDark ? 'rgba(255,255,255,.7)' : '#475569', background: isDark ? 'rgba(255,255,255,.05)' : 'rgba(0,0,0,.05)', border: isDark ? '1px solid rgba(255,255,255,.1)' : '1px solid rgba(0,0,0,.1)' };
+  const CHIP_HL: React.CSSProperties = { fontFamily: MONO, fontSize: 10.5, fontWeight: 500, padding: '4px 9px', borderRadius: 6, color: accent, background: hexToRgba(accent, 0.10), border: `1px solid ${hexToRgba(accent, 0.28)}` };
+  const DOT_BORDER = isDark ? 'rgba(255,255,255,.3)' : 'rgba(0,0,0,.2)';
+
+  return (
+    <div style={{ flex: 1, overflowY: 'auto', paddingBottom: 40 }}>
+      <VHero eyebrow="Experiencia Laboral" title="Work Experience" deco="JOB" accent={accent}
+        sub={`${experience.length} posiciones`} />
+      <div style={{ position: 'relative', padding: '8px 22px 40px 40px' }}>
+        {/* Timeline vertical line */}
+        <div style={{ position: 'absolute', left: 28, top: 14, bottom: 40, width: 2, background: `linear-gradient(180deg, ${accent}, rgba(255,255,255,0.08))`, borderRadius: 2 }} />
+        {experience.map((e, i) => (
+          <div key={e.company} style={{ position: 'relative', marginBottom: 16, opacity: 0, transform: 'translateY(12px)', animation: `mob-tlrise .5s cubic-bezier(.16,1,.3,1) ${i * 70}ms forwards` }}>
+            {/* Dot */}
+            <div style={{ position: 'absolute', left: -19, top: 18, width: 12, height: 12, borderRadius: '50%', zIndex: 2, background: e.current ? accent : (isDark ? '#06070d' : '#f5f7fc'), border: `2px solid ${e.current ? accent : DOT_BORDER}`, boxShadow: e.current ? `0 0 0 4px ${hexToRgba(accent, 0.20)}, 0 0 12px ${accent}` : 'none' }} />
+            <div style={e.current ? CARD_HL : CARD_BASE}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10 }}>
+                <div>
+                  <div style={{ fontSize: 17, fontWeight: 700, color: COL, lineHeight: 1.2 }}>{e.company}</div>
+                  <div style={{ fontSize: 14, fontWeight: 500, marginTop: 3, color: e.current ? accent : MUTED }}>{e.role}</div>
+                  <div style={{ fontFamily: MONO, fontSize: 11, color: DATE, marginTop: 6 }}>{e.period}</div>
+                </div>
+                {e.current && <Badge type="live" label="Actual" />}
+              </div>
+              {e.description && <div style={{ fontSize: 13, color: MUTED, lineHeight: 1.6, marginTop: 10 }}>{e.description}</div>}
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 12 }}>
+                {e.stack.map(s => <span key={s} style={e.current ? CHIP_HL : CHIP_BASE}>{s}</span>)}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════
+   EDUCATION APP
+════════════════════════════════════════ */
+function EducationApp() {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  const accent = '#7c3aed';
+  const COL   = isDark ? '#fff' : '#0f172a';
+  const MUTED = isDark ? 'rgba(255,255,255,.5)' : '#64748b';
+  const DATE  = isDark ? 'rgba(255,255,255,.4)' : '#94a3b8';
+  const CARD_BASE: React.CSSProperties = isDark
+    ? { background: 'rgba(255,255,255,.03)', border: '1px solid rgba(255,255,255,.08)', borderLeft: '3px solid rgba(255,255,255,.2)', borderRadius: 12, padding: 16 }
+    : { background: 'rgba(255,255,255,.82)', border: '1px solid rgba(0,0,0,.07)', borderLeft: '3px solid rgba(0,0,0,.15)', borderRadius: 12, padding: 16, boxShadow: '0 2px 8px rgba(0,0,0,.05)' };
+  const CARD_HL: React.CSSProperties = isDark
+    ? { background: hexToRgba(accent, 0.07), border: `1px solid ${hexToRgba(accent, 0.22)}`, borderLeft: `3px solid ${accent}`, borderRadius: 12, padding: 16 }
+    : { background: hexToRgba(accent, 0.06), border: `1px solid ${hexToRgba(accent, 0.2)}`, borderLeft: `3px solid ${accent}`, borderRadius: 12, padding: 16, boxShadow: '0 2px 8px rgba(0,0,0,.05)' };
+  const CHIP_BASE: React.CSSProperties = { fontFamily: MONO, fontSize: 10.5, fontWeight: 500, padding: '4px 9px', borderRadius: 6, color: isDark ? 'rgba(255,255,255,.7)' : '#475569', background: isDark ? 'rgba(255,255,255,.05)' : 'rgba(0,0,0,.05)', border: isDark ? '1px solid rgba(255,255,255,.1)' : '1px solid rgba(0,0,0,.1)' };
+  const CHIP_HL: React.CSSProperties = { fontFamily: MONO, fontSize: 10.5, fontWeight: 500, padding: '4px 9px', borderRadius: 6, color: accent, background: hexToRgba(accent, 0.10), border: `1px solid ${hexToRgba(accent, 0.28)}` };
+  const DOT_BORDER = isDark ? 'rgba(255,255,255,.3)' : 'rgba(0,0,0,.2)';
+
+  return (
+    <div style={{ flex: 1, overflowY: 'auto', paddingBottom: 40 }}>
+      <VHero eyebrow="Formación Académica" title="Education" deco="EDU" accent={accent}
+        sub="IES Nicolau Copèrnic · Terrassa" />
+      <div style={{ position: 'relative', padding: '8px 22px 40px 40px' }}>
+        <div style={{ position: 'absolute', left: 28, top: 14, bottom: 40, width: 2, background: `linear-gradient(180deg, ${accent}, rgba(255,255,255,0.08))`, borderRadius: 2 }} />
+        {education.map((e, i) => (
+          <div key={e.degree} style={{ position: 'relative', marginBottom: 16, opacity: 0, transform: 'translateY(12px)', animation: `mob-tlrise .5s cubic-bezier(.16,1,.3,1) ${i * 70}ms forwards`, ...(i === education.length - 1 ? { opacity: .85 } as React.CSSProperties : {}) }}>
+            <div style={{ position: 'absolute', left: -19, top: 18, width: 12, height: 12, borderRadius: '50%', zIndex: 2, background: e.current ? accent : (isDark ? '#06070d' : '#f5f7fc'), border: `2px solid ${e.current ? accent : DOT_BORDER}`, boxShadow: e.current ? `0 0 0 4px ${hexToRgba(accent, 0.20)}, 0 0 12px ${accent}` : 'none' }} />
+            <div style={{ ...(e.current ? CARD_HL : CARD_BASE), ...(i === education.length - 1 ? { opacity: .85 } : {}) }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10 }}>
+                <div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: COL, lineHeight: 1.2 }}>{e.degree}</div>
+                  <div style={{ fontSize: 13, fontWeight: 500, marginTop: 2, color: e.current ? accent : MUTED }}>{e.fullDegree !== e.degree ? e.fullDegree.replace(e.degree + ' — ', '') : e.institute}</div>
+                  {e.fullDegree !== e.degree && <div style={{ fontSize: 12, color: MUTED, marginTop: 1 }}>{e.institute}</div>}
+                  <div style={{ fontFamily: MONO, fontSize: 11, color: DATE, marginTop: 6 }}>{e.period}</div>
+                </div>
+                {e.current ? <Badge type="cur" label="En curso" /> : <Badge type="done" label="Completado" />}
+              </div>
+              {e.description && <div style={{ fontSize: 13, color: MUTED, lineHeight: 1.6, marginTop: 10 }}>{e.description}</div>}
+              {e.tags.length > 0 && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 12 }}>
+                  {e.tags.map(tag => <span key={tag} style={e.current ? CHIP_HL : CHIP_BASE}>{tag}</span>)}
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════
    STUB APP
 ════════════════════════════════════════ */
 function StubApp({ app }: { app: AppId }) {
@@ -1017,8 +1146,9 @@ const APPS: { id: AppId; label: string }[] = [
   { id: 'projects', label: 'Projects' }, { id: 'about',    label: 'About'    },
   { id: 'skills',   label: 'Skills'   }, { id: 'contact',  label: 'Contact'  },
   { id: 'browser',  label: 'Browser'  }, { id: 'files',    label: 'Files'    },
-  { id: 'terminal', label: 'Terminal' }, { id: 'game',     label: 'Game'     },
-  { id: 'settings', label: 'Settings' },
+  { id: 'terminal',   label: 'Terminal'   }, { id: 'game',       label: 'Game'       },
+  { id: 'settings',   label: 'Settings'   },
+  { id: 'experience', label: 'Experience' }, { id: 'education',  label: 'Education'  },
 ];
 
 /* ════════════════════════════════════════
@@ -1107,7 +1237,9 @@ export default function MobilePortfolio() {
     files:    <FilesApp />,
     browser:  <StubApp app="browser" />,
     game:     <GameApp />,
-    settings: <SettingsApp />,
+    settings:   <SettingsApp />,
+    experience: <ExperienceApp />,
+    education:  <EducationApp />,
   };
 
   return (
@@ -1127,6 +1259,7 @@ export default function MobilePortfolio() {
         @keyframes mob-blink{0%,100%{opacity:1;}50%{opacity:0;}}
         @keyframes mob-shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}75%{transform:translateX(4px);}}
         @keyframes mob-floatup{0%,100%{transform:translateY(0);opacity:.5;}50%{transform:translateY(-6px);opacity:.9;}}
+        @keyframes mob-tlrise{to{opacity:1;transform:translateY(0);}}
         .mob-lock{position:absolute;inset:0;z-index:50;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);display:flex;flex-direction:column;align-items:center;transition:transform .5s cubic-bezier(.4,0,.2,1),opacity .4s ease;}
         .mob-lock.off{transform:translateY(-100%);opacity:0;pointer-events:none;}
         .mob-home{position:absolute;inset:0;z-index:30;padding:env(safe-area-inset-top,20px) 24px 0;display:flex;flex-direction:column;transition:opacity .3s;}

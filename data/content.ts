@@ -343,6 +343,64 @@ export const notifications = {
   },
 };
 
+export const experience = [
+  {
+    company: 'VideoAtención',
+    role: 'Desarrollador Web',
+    period: '2025 — Presente',
+    current: true,
+    description: 'Desarrollo y mantenimiento de aplicaciones web. Trabajo con tecnologías modernas en un entorno profesional real.',
+    stack: ['React', 'Laravel', 'TypeScript', 'MySQL'],
+  },
+  {
+    company: 'Duoly',
+    role: 'Developer Web · Prácticas',
+    period: 'Feb 2025 — Jun 2025',
+    current: false,
+    description: 'Prácticas de desarrollo web. Creación de maquetas, scripts automatizados para SEO e Instagram.',
+    stack: ['WordPress', 'HTML', 'CSS', 'JavaScript', 'PHP', 'Python'],
+  },
+];
+
+export const education = [
+  {
+    degree: 'Especialización en Ciberseguridad',
+    fullDegree: 'Curso de Especialización en Ciberseguridad',
+    institute: 'IES Nicolau Copèrnic, Terrassa',
+    period: 'Sep 2025 — May 2026',
+    current: true,
+    description: 'Especialización en seguridad ofensiva, análisis de vulnerabilidades y herramientas de ciberseguridad.',
+    tags: ['Kali Linux', 'OWASP', 'Pentesting', 'CTF'],
+  },
+  {
+    degree: 'CFGS DAW',
+    fullDegree: 'CFGS DAW — Desarrollo de Aplicaciones Web',
+    institute: 'IES Nicolau Copèrnic, Terrassa',
+    period: 'Sep 2023 — May 2025',
+    current: false,
+    description: '',
+    tags: ['HTML', 'CSS', 'JavaScript', 'PHP', 'MySQL', 'Laravel'],
+  },
+  {
+    degree: 'CFGM SMR',
+    fullDegree: 'CFGM SMR — Sistemas Microinformáticos y Redes',
+    institute: 'IES Nicolau Copèrnic, Terrassa',
+    period: 'Sep 2021 — May 2023',
+    current: false,
+    description: '',
+    tags: ['Redes', 'Linux', 'Hardware', 'Windows Server'],
+  },
+  {
+    degree: 'ESO',
+    fullDegree: 'ESO — Educación Secundaria Obligatoria',
+    institute: 'IES Mont Perdut, Terrassa',
+    period: 'Sep 2017 — Jun 2021',
+    current: false,
+    description: '',
+    tags: [],
+  },
+];
+
 export const contextMenu = {
   changeWallpaper:   'Change Wallpaper',
   newTerminal:       'New Terminal',
