@@ -291,7 +291,9 @@ export const spotlight = {
     { id: 'browser',  name: 'Browser'  },
     { id: 'files',    name: 'Files'    },
     { id: 'terminal', name: 'Terminal' },
-    { id: 'game',     name: 'Game',    file: 'game.exe' },
+    { id: 'game',       name: 'Game',       file: 'game.exe'       },
+    { id: 'experience', name: 'Experience', file: 'experience.exe' },
+    { id: 'education',  name: 'Education',  file: 'education.exe'  },
   ],
   actions: [
     { id: 'cv',     name: 'Download CV',  cta: 'Download' },

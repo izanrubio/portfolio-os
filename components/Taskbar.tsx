@@ -11,7 +11,9 @@ import ContactIcon  from './icons/ContactIcon';
 import BrowserIcon  from './icons/BrowserIcon';
 import FilesIcon    from './icons/FilesIcon';
 import TerminalIcon from './icons/TerminalIcon';
-import GameIcon     from './icons/GameIcon';
+import GameIcon       from './icons/GameIcon';
+import ExperienceIcon from './icons/ExperienceIcon';
+import EducationIcon  from './icons/EducationIcon';
 
 const SCALE_MAX = 1.40;
 const RANGE     = 130;
@@ -29,8 +31,10 @@ const DOCK_ITEMS: DockItem[] = [
   { id: 'contact',  labelKey: 'dock.contact',  Icon: ContactIcon  },
   { id: 'browser',  labelKey: 'dock.browser',  Icon: BrowserIcon  },
   { id: 'files',    labelKey: 'dock.files',    Icon: FilesIcon    },
-  { id: 'terminal', labelKey: 'dock.terminal', Icon: TerminalIcon },
-  { id: 'game',     labelKey: 'dock.game',     Icon: GameIcon     },
+  { id: 'terminal',   labelKey: 'dock.terminal',   Icon: TerminalIcon   },
+  { id: 'game',       labelKey: 'dock.game',       Icon: GameIcon       },
+  { id: 'experience', labelKey: 'dock.experience', Icon: ExperienceIcon },
+  { id: 'education',  labelKey: 'dock.education',  Icon: EducationIcon  },
 ];
 
 const SEPARATOR_BEFORE = 4; // vertical rule before browser/files/terminal
