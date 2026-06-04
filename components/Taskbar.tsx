@@ -25,19 +25,19 @@ interface DockItem {
 }
 
 const DOCK_ITEMS: DockItem[] = [
-  { id: 'projects', labelKey: 'dock.projects', Icon: ProjectsIcon },
-  { id: 'whoami',   labelKey: 'dock.about',    Icon: AboutIcon    },
-  { id: 'skills',   labelKey: 'dock.skills',   Icon: SkillsIcon   },
-  { id: 'contact',  labelKey: 'dock.contact',  Icon: ContactIcon  },
-  { id: 'browser',  labelKey: 'dock.browser',  Icon: BrowserIcon  },
-  { id: 'files',    labelKey: 'dock.files',    Icon: FilesIcon    },
-  { id: 'terminal',   labelKey: 'dock.terminal',   Icon: TerminalIcon   },
-  { id: 'game',       labelKey: 'dock.game',       Icon: GameIcon       },
+  { id: 'projects',   labelKey: 'dock.projects',   Icon: ProjectsIcon   },
+  { id: 'whoami',     labelKey: 'dock.about',      Icon: AboutIcon      },
+  { id: 'skills',     labelKey: 'dock.skills',     Icon: SkillsIcon     },
+  { id: 'contact',    labelKey: 'dock.contact',    Icon: ContactIcon    },
   { id: 'experience', labelKey: 'dock.experience', Icon: ExperienceIcon },
   { id: 'education',  labelKey: 'dock.education',  Icon: EducationIcon  },
+  { id: 'browser',    labelKey: 'dock.browser',    Icon: BrowserIcon    },
+  { id: 'files',      labelKey: 'dock.files',      Icon: FilesIcon      },
+  { id: 'terminal',   labelKey: 'dock.terminal',   Icon: TerminalIcon   },
+  { id: 'game',       labelKey: 'dock.game',       Icon: GameIcon       },
 ];
 
-const SEPARATOR_BEFORE = 4; // vertical rule before browser/files/terminal
+const SEPARATOR_BEFORE = 6; // vertical rule before browser/files/terminal/game
 
 interface TaskbarProps {
   windows: WindowState[];

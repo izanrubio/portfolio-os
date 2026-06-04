@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import { personal } from '@/data/content';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { t } from '@/data/translations';
 
 const MONO   = 'var(--font-jetbrains), monospace';
@@ -74,13 +75,13 @@ const CONTACT_ITEMS = [
   },
 ];
 
-function fieldInputStyle(hasError: boolean): React.CSSProperties {
+function fieldInputStyle(hasError: boolean, isDark = true): React.CSSProperties {
   return {
     display: 'block', width: '100%',
     padding: '12px 16px', borderRadius: '8px',
-    background: 'rgba(255,255,255,0.04)',
-    border: `1px solid ${hasError ? 'rgba(255,71,87,0.6)' : 'rgba(255,255,255,0.08)'}`,
-    color: '#fff', fontFamily: INTER, fontSize: '14px', fontWeight: 500,
+    background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.85)',
+    border: `1px solid ${hasError ? 'rgba(255,71,87,0.6)' : (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.12)')}`,
+    color: isDark ? '#fff' : '#0f172a', fontFamily: INTER, fontSize: '14px', fontWeight: 500,
     outline: 'none',
     transition: 'border-color .2s ease, box-shadow .2s ease, background .2s ease',
     animation: hasError ? 'contactShake 0.35s ease' : 'none',
@@ -89,6 +90,8 @@ function fieldInputStyle(hasError: boolean): React.CSSProperties {
 
 export default function ContactWindow() {
   const { lang } = useLanguage();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const [form, setForm]     = useState<Record<FormKey, string>>({ name: '', email: '', subject: '', message: '' });
   const [sent, setSent]     = useState(false);
   const [errors, setErrors] = useState<Set<FormKey>>(new Set());
@@ -116,8 +119,8 @@ export default function ContactWindow() {
     e.currentTarget.style.boxShadow   = '0 0 0 3px rgba(0,212,255,0.10)';
   };
   const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>, hasError: boolean) => {
-    e.currentTarget.style.borderColor = hasError ? 'rgba(255,71,87,0.6)' : 'rgba(255,255,255,0.08)';
-    e.currentTarget.style.background  = 'rgba(255,255,255,0.04)';
+    e.currentTarget.style.borderColor = hasError ? 'rgba(255,71,87,0.6)' : (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.12)');
+    e.currentTarget.style.background  = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.85)';
     e.currentTarget.style.boxShadow   = 'none';
   };
 
@@ -125,15 +128,15 @@ export default function ContactWindow() {
     <div
       className="h-full flex overflow-hidden"
       style={{
-        background: 'rgba(8,8,12,0.92)',
+        background: isDark ? 'rgba(8,8,12,0.92)' : 'transparent',
         boxShadow: 'inset 0 0 0 1px rgba(0,212,255,0.10)',
       }}
     >
       {/* ── LEFT COLUMN ── */}
       <div style={{
         width: '340px', flexShrink: 0,
-        background: 'rgba(0,0,0,0.30)',
-        borderRight: '1px solid rgba(255,255,255,0.06)',
+        background: isDark ? 'rgba(0,0,0,0.30)' : 'rgba(0,0,0,0.04)',
+        borderRight: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.08)',
         padding: '40px 32px',
         position: 'relative',
         display: 'flex', flexDirection: 'column',
@@ -145,7 +148,7 @@ export default function ContactWindow() {
           transform: 'translateY(-50%) rotate(-90deg)',
           transformOrigin: 'center',
           fontFamily: INTER, fontWeight: 900, fontSize: '86px', lineHeight: 1,
-          color: 'rgba(255,255,255,0.025)', letterSpacing: '-0.04em',
+          color: isDark ? 'rgba(255,255,255,0.025)' : 'rgba(0,0,0,0.04)', letterSpacing: '-0.04em',
           whiteSpace: 'nowrap', pointerEvents: 'none', zIndex: 0, userSelect: 'none',
         }}>GET IN TOUCH</div>
 
@@ -169,7 +172,7 @@ export default function ContactWindow() {
           <h1 style={{
             marginTop: '12px', fontFamily: INTER, fontWeight: 800,
             fontSize: 'clamp(2rem, 4vw, 3rem)', lineHeight: 1,
-            letterSpacing: '-0.03em', color: '#fff',
+            letterSpacing: '-0.03em', color: isDark ? '#fff' : '#0f172a',
           }}>
             {t('contact.heading', lang).replace('.', '')}<span style={{ color: ACCENT }}>.</span>
           </h1>
@@ -177,7 +180,7 @@ export default function ContactWindow() {
           {/* Subtitle */}
           <p style={{
             marginTop: '16px', fontFamily: INTER, fontSize: '14px',
-            lineHeight: 1.8, color: '#9ba3af', maxWidth: '280px',
+            lineHeight: 1.8, color: isDark ? '#9ba3af' : '#475569', maxWidth: '280px',
           }}>
             {t('contact.subheading', lang)}
           </p>
@@ -187,15 +190,15 @@ export default function ContactWindow() {
             {CONTACT_ITEMS.map((item, idx) => {
               const isLast = idx === CONTACT_ITEMS.length - 1;
               const inner = (
-                <div style={{ display: 'grid', gridTemplateColumns: '22px 1fr', gap: '14px', alignItems: 'center', padding: '14px 0', borderBottom: isLast ? 'none' : '1px solid rgba(255,255,255,0.05)' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '22px 1fr', gap: '14px', alignItems: 'center', padding: '14px 0', borderBottom: isLast ? 'none' : isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.07)' }}>
                   <span style={{ color: ACCENT, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {item.icon}
                   </span>
                   <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-                    <div style={{ fontFamily: MONO, fontSize: '9px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '3px', fontWeight: 600 }}>
+                    <div style={{ fontFamily: MONO, fontSize: '9px', color: isDark ? 'rgba(255,255,255,0.35)' : '#94a3b8', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '3px', fontWeight: 600 }}>
                       {item.label}
                     </div>
-                    <div className="contact-item-val" style={{ fontFamily: INTER, fontSize: '14px', color: '#fff', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', transition: 'color .2s ease' }}>
+                    <div className="contact-item-val" style={{ fontFamily: INTER, fontSize: '14px', color: isDark ? '#fff' : '#0f172a', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', transition: 'color .2s ease' }}>
                       {item.value}
                     </div>
                   </div>
@@ -235,7 +238,7 @@ export default function ContactWindow() {
             </span>
             <span style={{
               display: 'inline-flex', alignItems: 'center', gap: '9px',
-              fontFamily: MONO, fontSize: '10px', color: 'rgba(255,255,255,0.85)',
+              fontFamily: MONO, fontSize: '10px', color: isDark ? 'rgba(255,255,255,0.85)' : '#1e293b',
               fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase',
             }}>
               <span style={{
@@ -254,7 +257,7 @@ export default function ContactWindow() {
       <div style={{
         flex: 1, minWidth: 0,
         padding: '40px 36px',
-        background: 'rgba(255,255,255,0.01)',
+        background: 'transparent',
         position: 'relative',
         overflow: 'hidden',
         display: 'flex', flexDirection: 'column',
@@ -290,7 +293,7 @@ export default function ContactWindow() {
               { id: 'ct-subject', key: 'subject' as FormKey, type: 'text',  labelKey: 'contact.form.subject', phKey: 'contact.form.subjectPlaceholder' },
             ] as const).map(field => (
               <div key={field.id} style={{ marginBottom: '18px' }}>
-                <label htmlFor={field.id} style={{ display: 'block', fontFamily: MONO, fontSize: '10px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '8px', fontWeight: 600 }}>
+                <label htmlFor={field.id} style={{ display: 'block', fontFamily: MONO, fontSize: '10px', color: isDark ? 'rgba(255,255,255,0.4)' : '#64748b', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '8px', fontWeight: 600 }}>
                   {t(field.labelKey, lang)}
                 </label>
                 <input
@@ -299,7 +302,7 @@ export default function ContactWindow() {
                   placeholder={t(field.phKey, lang)}
                   value={form[field.key]}
                   onChange={e => setForm(f => ({ ...f, [field.key]: e.target.value }))}
-                  style={fieldInputStyle(errors.has(field.key))}
+                  style={fieldInputStyle(errors.has(field.key), isDark)}
                   onFocus={handleFocus}
                   onBlur={e => handleBlur(e, errors.has(field.key))}
                 />
@@ -307,7 +310,7 @@ export default function ContactWindow() {
             ))}
 
             <div style={{ marginBottom: '18px' }}>
-              <label htmlFor="ct-msg" style={{ display: 'block', fontFamily: MONO, fontSize: '10px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '8px', fontWeight: 600 }}>
+              <label htmlFor="ct-msg" style={{ display: 'block', fontFamily: MONO, fontSize: '10px', color: isDark ? 'rgba(255,255,255,0.4)' : '#64748b', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '8px', fontWeight: 600 }}>
                 {t('contact.form.message', lang)}
               </label>
               <textarea
@@ -316,7 +319,7 @@ export default function ContactWindow() {
                 value={form.message}
                 onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
                 rows={5}
-                style={{ ...fieldInputStyle(errors.has('message')), resize: 'vertical', minHeight: '88px', lineHeight: 1.55 }}
+                style={{ ...fieldInputStyle(errors.has('message'), isDark), resize: 'vertical', minHeight: '88px', lineHeight: 1.55 }}
                 onFocus={handleFocus}
                 onBlur={e => handleBlur(e, errors.has('message'))}
               />
