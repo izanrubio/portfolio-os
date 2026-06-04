@@ -3,8 +3,6 @@
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import MobileLockscreen from '@/components/MobileLockscreen';
-import MobileHomescreen from '@/components/MobileHomescreen';
 import { personal, projects, skills, filesystem, experience, education } from '@/data/content';
 import { FileNode } from '@/types/windows';
 import { useLanguage, type Lang } from '@/contexts/LanguageContext';
@@ -1217,13 +1215,6 @@ export default function MobilePortfolio() {
 
   const unlock = () => setAppState('home');
 
-  /* Called from new MobileHomescreen (no mouse event needed) */
-  const openAppById = (id: string) => {
-    const app = id as AppId;
-    setActiveApp(app);
-    setAppAccent(APP_ACCENTS[app] ?? '#00d4ff');
-  };
-
   const openApp = (app: AppId, e: React.MouseEvent) => {
     const icon = (e.currentTarget as HTMLElement).querySelector('.mob-icon') as HTMLElement | null;
     if (icon && screenRef.current) {
@@ -1323,19 +1314,41 @@ export default function MobilePortfolio() {
                 )}
               </AnimatePresence>
 
-              {/* Lock screen — new design */}
-              <MobileLockscreen
-                isLocked={appState === 'locked'}
-                isBooting={appState === 'booting'}
-                onUnlock={unlock}
-              />
+              {/* Lock screen */}
+              <div className={`mob-lock${appState === 'home' ? ' off' : ''}`}
+                style={appState === 'booting' ? { opacity: 0, pointerEvents: 'none' } : {}}
+                onClick={appState === 'locked' ? unlock : undefined}
+                onTouchStart={e => { touchStartY.current = e.touches[0].clientY; }}
+                onTouchMove={e => { if (touchStartY.current !== null && touchStartY.current - e.touches[0].clientY > 40) { unlock(); touchStartY.current = null; } }}>
+                <div style={{ marginTop: 80, width: 80, height: 80, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.9)', boxShadow: '0 0 0 1px rgba(255,255,255,0.15),0 0 24px rgba(255,255,255,0.18),0 8px 20px rgba(0,0,0,0.4)', overflow: 'hidden', position: 'relative', background: 'linear-gradient(135deg,#1a1d2e,#06080f)', flexShrink: 0 }}>
+                  <Image src={personal.photo} alt={personal.shortName} fill style={{ objectFit: 'cover' }} />
+                </div>
+                <div style={{ marginTop: 24, fontSize: 80, fontWeight: 300, color: '#fff', letterSpacing: -3, lineHeight: 1, fontFamily: INTER, textShadow: '0 4px 40px rgba(255,255,255,.15)' }}>{clock.time}</div>
+                <div style={{ marginTop: 6, fontSize: 16, fontWeight: 500, color: 'rgba(255,255,255,.85)', letterSpacing: '0.02em', fontFamily: INTER }}>{clock.date}</div>
+                <div style={{ marginTop: 'auto', marginBottom: 30, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, fontFamily: MONO, fontSize: 11, color: 'rgba(255,255,255,.5)', letterSpacing: '0.1em', animation: 'mob-floatup 2s ease-in-out infinite' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.6)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+                  <span>Swipe up to unlock</span>
+                </div>
+              </div>
 
-              {/* Home screen — new design */}
-              <MobileHomescreen
-                isVisible={appState === 'home'}
-                dimmed={!!activeApp}
-                onOpenApp={openAppById}
-              />
+              {/* Home screen */}
+              <div className={`mob-home${activeApp ? ' dim' : ''}`}>
+                <div className="mob-app-grid">
+                  {APPS.map(a => (
+                    <div key={a.id} className="mob-app" onClick={e => openApp(a.id, e)}>
+                      <div className="mob-icon" style={{ background: GRADS[a.id] }}><AppSvg app={a.id} /></div>
+                      <div className="mob-app-name">{appLabels[a.id] ?? a.label}</div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mob-dock">
+                  {(['browser', 'files', 'terminal'] as AppId[]).map(a => (
+                    <div key={a} className="mob-app" onClick={e => openApp(a, e)}>
+                      <div className="mob-icon" style={{ background: GRADS[a] }}><AppSvg app={a} /></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
               {/* App view */}
               <div className={`mob-appview${activeApp ? ' open' : ''}`}

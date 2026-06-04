@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { JetBrains_Mono, Inter, Outfit } from 'next/font/google';
+import { JetBrains_Mono, Inter } from 'next/font/google';
 import './globals.css';
 
 const jetbrainsMono = JetBrains_Mono({
@@ -14,13 +14,6 @@ const inter = Inter({
   display: 'swap',
 });
 
-const outfit = Outfit({
-  subsets: ['latin'],
-  variable: '--font-outfit',
-  weight: ['200', '300', '400', '500', '600', '700'],
-  display: 'swap',
-});
-
 export const metadata: Metadata = {
   title: 'IzanOS — Izan Rubio Portfolio',
   description: 'Full Stack Developer & Cybersecurity Specialist. Interactive OS-inspired portfolio.',
@@ -29,7 +22,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" data-theme="dark" className={`${jetbrainsMono.variable} ${inter.variable} ${outfit.variable} h-full`}>
+    <html lang="en" data-theme="dark" className={`${jetbrainsMono.variable} ${inter.variable} h-full`}>
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" href="/icons/logo.svg" type="image/svg+xml" />
