@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useState, useRef, useEffect } from 'react';
 import { filesystem } from '@/data/content';
 import { FileNode } from '@/types/windows';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const MONO  = 'var(--font-jetbrains), monospace';
 const INTER = 'var(--font-inter), Inter, sans-serif';
@@ -171,6 +172,7 @@ const SIDEBAR_CONFIG: { title: string; items: SidebarItem[] }[] = [
 
 /* ── Toolbar button ── */
 function TbBtn({ onClick, disabled, children, active }: { onClick?: () => void; disabled?: boolean; children: React.ReactNode; active?: boolean }) {
+  const { theme: _t } = useTheme(); const isDark = _t === 'dark';
   return (
     <button
       onClick={onClick}
@@ -179,11 +181,11 @@ function TbBtn({ onClick, disabled, children, active }: { onClick?: () => void; 
         width: '26px', height: '26px',
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
         borderRadius: '6px', background: active ? 'rgba(0,212,255,0.12)' : 'transparent',
-        border: 'none', color: disabled ? 'rgba(255,255,255,0.18)' : active ? ACCENT : 'rgba(255,255,255,0.5)',
+        border: 'none', color: disabled ? (isDark ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.2)') : active ? ACCENT : (isDark ? 'rgba(255,255,255,0.5)' : '#475569'),
         cursor: disabled ? 'default' : 'pointer', transition: 'background .15s, color .15s',
       }}
-      onMouseEnter={e => { if (!disabled && !active) { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = '#fff'; } }}
-      onMouseLeave={e => { if (!disabled && !active) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(255,255,255,0.5)'; } }}
+      onMouseEnter={e => { if (!disabled && !active) { e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'; e.currentTarget.style.color = isDark ? '#fff' : '#0f172a'; } }}
+      onMouseLeave={e => { if (!disabled && !active) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = isDark ? 'rgba(255,255,255,0.5)' : '#475569'; } }}
     >
       {children}
     </button>
@@ -195,6 +197,8 @@ interface FilesWindowProps {
 }
 
 export default function FilesWindow({ onOpenBrowser }: FilesWindowProps) {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const [nav,        setNav]        = useState({ stack: [['Documents', 'Projects']] as string[][], idx: 0 });
   const [selName,    setSelName]    = useState<string | null>(null);
   const [viewMode,   setViewMode]   = useState<'grid' | 'list'>('grid');
@@ -305,7 +309,7 @@ export default function FilesWindow({ onOpenBrowser }: FilesWindowProps) {
         }}
         onMouseEnter={e => {
           if (isSelected) return;
-          e.currentTarget.style.background   = 'rgba(255,255,255,0.06)';
+          e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)';
           e.currentTarget.style.borderColor  = 'rgba(255,255,255,0.1)';
           e.currentTarget.style.transform    = 'scale(1.03)';
           e.currentTarget.style.boxShadow    = `0 10px 24px -10px rgba(0,0,0,.6), 0 0 0 1px ${hexToRgba(accent,.30)}, 0 0 16px ${hexToRgba(accent,.25)}`;
@@ -325,7 +329,7 @@ export default function FilesWindow({ onOpenBrowser }: FilesWindowProps) {
         <div className="fi-iconwrap" style={{ width: '56px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'transform .25s ease' }}>
           {getFileIcon(node)}
         </div>
-        <div style={{ fontFamily: INTER, fontSize: '12px', fontWeight: 500, color: isSelected ? '#fff' : 'rgba(255,255,255,0.8)', lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const, overflow: 'hidden', wordBreak: 'break-word', maxWidth: '100%' }}>
+        <div style={{ fontFamily: INTER, fontSize: '12px', fontWeight: 500, color: isSelected ? (isDark ? '#fff' : '#0f172a') : (isDark ? 'rgba(255,255,255,0.8)' : '#475569'), lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const, overflow: 'hidden', wordBreak: 'break-word', maxWidth: '100%' }}>
           {node.name}
         </div>
       </div>
@@ -346,11 +350,11 @@ export default function FilesWindow({ onOpenBrowser }: FilesWindowProps) {
           background: isSelected ? 'rgba(0,212,255,0.08)' : 'transparent',
           transition: 'background .15s',
         }}
-        onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }}
+        onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)'; }}
         onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
       >
         <div style={{ width: '22px', height: '22px', flexShrink: 0 }}>{getFileIcon(node)}</div>
-        <span style={{ fontFamily: INTER, fontSize: '13px', color: isSelected ? '#fff' : 'rgba(255,255,255,0.8)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <span style={{ fontFamily: INTER, fontSize: '13px', color: isSelected ? (isDark ? '#fff' : '#0f172a') : (isDark ? 'rgba(255,255,255,0.8)' : '#475569'), flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {node.name}
         </span>
         <span style={{ fontFamily: MONO, fontSize: '10px', color: hexToRgba(accent, 0.65), textTransform: 'uppercase', letterSpacing: '0.1em' }}>
@@ -363,15 +367,15 @@ export default function FilesWindow({ onOpenBrowser }: FilesWindowProps) {
   return (
     <div
       className="h-full flex flex-col overflow-hidden"
-      style={{ background: 'rgba(8,8,12,0.92)', boxShadow: 'inset 0 0 0 1px rgba(0,212,255,0.08)', position: 'relative' }}
+      style={{ background: isDark ? 'rgba(8,8,12,0.92)' : 'transparent', boxShadow: 'inset 0 0 0 1px rgba(0,212,255,0.08)', position: 'relative' }}
     >
       {/* ── Toolbar ── */}
-      <div style={{ height: '40px', flexShrink: 0, background: 'rgba(0,0,0,0.4)', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', padding: '0 14px', gap: '6px' }}>
+      <div style={{ height: '40px', flexShrink: 0, background: isDark ? 'rgba(0,0,0,0.4)' : 'rgba(0,0,0,0.04)', borderBottom: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.08)', display: 'flex', alignItems: 'center', padding: '0 14px', gap: '6px' }}>
         <TbBtn onClick={goBack}    disabled={!canBack}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:'14px',height:'14px'}}><polyline points="15 18 9 12 15 6"/></svg></TbBtn>
         <TbBtn onClick={goForward} disabled={!canFwd}><svg  viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{width:'14px',height:'14px'}}><polyline points="9 18 15 12 9 6"/></svg></TbBtn>
 
         {/* Breadcrumb */}
-        <div style={{ flex: 1, minWidth: 0, marginLeft: '8px', padding: '4px 10px', borderRadius: '6px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.04)', fontFamily: MONO, fontSize: '11px', height: '26px', display: 'flex', alignItems: 'center', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+        <div style={{ flex: 1, minWidth: 0, marginLeft: '8px', padding: '4px 10px', borderRadius: '6px', background: isDark ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.04)', border: isDark ? '1px solid rgba(255,255,255,0.04)' : '1px solid rgba(0,0,0,0.08)', fontFamily: MONO, fontSize: '11px', height: '26px', display: 'flex', alignItems: 'center', overflow: 'hidden', whiteSpace: 'nowrap' }}>
           {['Home', ...currentPath].map((seg, i, arr) => {
             const isLast = i === arr.length - 1;
             const targetPath = currentPath.slice(0, i);
@@ -380,11 +384,11 @@ export default function FilesWindow({ onOpenBrowser }: FilesWindowProps) {
                 <span
                   onClick={() => !isLast && navigate(targetPath)}
                   className={isLast ? 'crumb-current' : 'crumb-seg'}
-                  style={{ color: isLast ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.4)', cursor: isLast ? 'default' : 'pointer', transition: 'color .15s' }}
-                  onMouseEnter={e => { if (!isLast) e.currentTarget.style.color = 'rgba(255,255,255,0.8)'; }}
-                  onMouseLeave={e => { if (!isLast) e.currentTarget.style.color = 'rgba(255,255,255,0.4)'; }}
+                  style={{ color: isLast ? (isDark ? 'rgba(255,255,255,0.85)' : '#0f172a') : (isDark ? 'rgba(255,255,255,0.4)' : '#64748b'), cursor: isLast ? 'default' : 'pointer', transition: 'color .15s' }}
+                  onMouseEnter={e => { if (!isLast) e.currentTarget.style.color = isDark ? 'rgba(255,255,255,0.8)' : '#0f172a'; }}
+                  onMouseLeave={e => { if (!isLast) e.currentTarget.style.color = isDark ? 'rgba(255,255,255,0.4)' : '#64748b'; }}
                 >{seg}</span>
-                {!isLast && <span style={{ color: 'rgba(255,255,255,0.2)', margin: '0 6px' }}>/</span>}
+                {!isLast && <span style={{ color: isDark ? 'rgba(255,255,255,0.2)' : '#94a3b8', margin: '0 6px' }}>/</span>}
               </span>
             );
           })}
@@ -407,11 +411,11 @@ export default function FilesWindow({ onOpenBrowser }: FilesWindowProps) {
       {/* ── Body ── */}
       <div style={{ flex: 1, minHeight: 0, display: 'flex' }}>
         {/* Sidebar */}
-        <aside style={{ width: '180px', flexShrink: 0, background: 'rgba(0,0,0,0.3)', borderRight: '1px solid rgba(255,255,255,0.06)', padding: '16px 0', overflowY: 'auto' }}>
+        <aside style={{ width: '180px', flexShrink: 0, background: isDark ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.04)', borderRight: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.08)', padding: '16px 0', overflowY: 'auto' }}>
           {SIDEBAR_CONFIG.map((group, gi) => (
             <div key={group.title} style={{ marginBottom: '14px' }}>
-              {gi === 1 && <div style={{ height: '1px', margin: '0 16px 10px', background: 'rgba(255,255,255,0.05)' }} />}
-              <div style={{ padding: '0 16px', marginBottom: '6px', fontFamily: MONO, fontSize: '9px', color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', letterSpacing: '0.2em' }}>
+              {gi === 1 && <div style={{ height: '1px', margin: '0 16px 10px', background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.07)' }} />}
+              <div style={{ padding: '0 16px', marginBottom: '6px', fontFamily: MONO, fontSize: '9px', color: isDark ? 'rgba(255,255,255,0.25)' : '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.2em' }}>
                 {group.title}
               </div>
               {group.items.map(item => {
@@ -424,15 +428,15 @@ export default function FilesWindow({ onOpenBrowser }: FilesWindowProps) {
                       display: 'flex', alignItems: 'center', gap: '9px',
                       margin: '0 8px', padding: '8px 10px', borderRadius: '6px',
                       borderLeft: `2px solid ${isActive ? ACCENT : 'transparent'}`,
-                      color: isActive ? '#fff' : 'rgba(255,255,255,0.6)',
+                      color: isActive ? (isDark ? '#fff' : '#0f172a') : (isDark ? 'rgba(255,255,255,0.6)' : '#475569'),
                       background: isActive ? 'rgba(0,212,255,0.10)' : 'transparent',
                       fontFamily: INTER, fontSize: '13px', cursor: 'pointer',
                       transition: 'background .15s, color .15s, border-color .15s',
                     }}
-                    onMouseEnter={e => { if (!isActive) { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = '#fff'; } }}
+                    onMouseEnter={e => { if (!isActive) { e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)'; e.currentTarget.style.color = isDark ? '#fff' : '#0f172a'; } }}
                     onMouseLeave={e => { if (!isActive) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'rgba(255,255,255,0.6)'; } }}
                   >
-                    <span style={{ width: '14px', flexShrink: 0, color: isActive ? ACCENT : 'rgba(255,255,255,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ width: '14px', flexShrink: 0, color: isActive ? ACCENT : (isDark ? 'rgba(255,255,255,0.55)' : '#94a3b8'), display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       {item.icon}
                     </span>
                     <span>{item.label}</span>
@@ -444,12 +448,12 @@ export default function FilesWindow({ onOpenBrowser }: FilesWindowProps) {
         </aside>
 
         {/* Content */}
-        <div style={{ flex: 1, minWidth: 0, background: 'rgba(255,255,255,0.01)', padding: '20px', overflowY: 'auto' }}>
+        <div style={{ flex: 1, minWidth: 0, background: 'transparent', padding: '20px', overflowY: 'auto' }}>
           {viewMode === 'grid' ? (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', alignContent: 'start', opacity: fading ? 0 : 1, transition: fading ? 'opacity .1s ease' : 'opacity .15s ease' }}>
               {children.length === 0 ? (
                 <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '60px 20px', color: 'rgba(255,255,255,0.3)', fontFamily: INTER, fontSize: '14px' }}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '48px', height: '48px', color: 'rgba(255,255,255,0.2)', display: 'block', margin: '0 auto 14px' }}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: '48px', height: '48px', color: isDark ? 'rgba(255,255,255,0.2)' : '#94a3b8', display: 'block', margin: '0 auto 14px' }}>
                     <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
                   </svg>
                   Esta carpeta está vacía
@@ -467,12 +471,12 @@ export default function FilesWindow({ onOpenBrowser }: FilesWindowProps) {
       </div>
 
       {/* ── Status bar ── */}
-      <div style={{ height: '32px', flexShrink: 0, background: 'rgba(0,0,0,0.3)', borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', fontFamily: MONO, fontSize: '11px' }}>
+      <div style={{ height: '32px', flexShrink: 0, background: isDark ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.04)', borderTop: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', fontFamily: MONO, fontSize: '11px' }}>
         <div style={{ color: 'rgba(255,255,255,0.3)' }}>
-          <b style={{ color: 'rgba(255,255,255,0.55)', fontWeight: 500 }}>{children.length}</b>
+          <b style={{ color: isDark ? 'rgba(255,255,255,0.55)' : '#64748b', fontWeight: 500 }}>{children.length}</b>
           {' '}{children.length === 1 ? 'elemento' : 'elementos'}
         </div>
-        <div style={{ color: 'rgba(255,255,255,0.2)' }}>{pathStr}</div>
+        <div style={{ color: isDark ? 'rgba(255,255,255,0.2)' : '#94a3b8' }}>{pathStr}</div>
       </div>
 
       {/* ── README modal ── */}
@@ -487,7 +491,7 @@ export default function FilesWindow({ onOpenBrowser }: FilesWindowProps) {
               En desarrollo
             </div>
             <h3 style={{ fontFamily: INTER, fontSize: '18px', fontWeight: 700, color: '#fff', letterSpacing: '-0.015em', marginBottom: '8px' }}>{readmeFile}</h3>
-            <p style={{ fontFamily: INTER, fontSize: '13.5px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.6, marginBottom: '22px' }}>
+            <p style={{ fontFamily: INTER, fontSize: '13.5px', color: isDark ? 'rgba(255,255,255,0.55)' : '#475569', lineHeight: 1.6, marginBottom: '22px' }}>
               Este proyecto está en desarrollo. Disponible próximamente.
             </p>
             <button
@@ -509,8 +513,8 @@ export default function FilesWindow({ onOpenBrowser }: FilesWindowProps) {
           style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}
         >
           <div style={{ background: 'rgba(15,15,25,0.96)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '14px', overflow: 'hidden', boxShadow: '0 30px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(124,58,237,0.18)', maxWidth: '480px', width: '100%' }}>
-            <div style={{ padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontFamily: MONO, fontSize: '11px', color: 'rgba(255,255,255,0.6)', letterSpacing: '0.04em', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ padding: '12px 16px', borderBottom: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontFamily: MONO, fontSize: '11px', color: isDark ? 'rgba(255,255,255,0.6)' : '#475569', letterSpacing: '0.04em', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#7c3aed', boxShadow: '0 0 6px #7c3aed', display: 'inline-block' }} />
                 {previewFile.name}
               </span>

@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { skills } from '@/data/content';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { t } from '@/data/translations';
 
 const MONO  = 'var(--font-jetbrains), monospace';
@@ -84,6 +85,8 @@ const ICONS: Record<string, React.ReactElement> = {
 
 export default function SkillsWindow() {
   const { lang } = useLanguage();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const [activeIdx,  setActiveIdx]  = useState(0);
   const [visibleIdx, setVisibleIdx] = useState(0);
   const [fading,     setFading]     = useState(false);
@@ -112,7 +115,7 @@ export default function SkillsWindow() {
     <div
       className="h-full flex overflow-hidden"
       style={{
-        background: 'rgba(8,8,12,0.92)',
+        background: isDark ? 'rgba(8,8,12,0.92)' : 'transparent',
         boxShadow: `inset 0 0 0 1px ${hexToRgba(accent, 0.08)}`,
         transition: 'box-shadow 0.6s cubic-bezier(.4,0,.2,1)',
       }}
@@ -122,8 +125,8 @@ export default function SkillsWindow() {
         style={{
           width: '260px',
           flexShrink: 0,
-          background: 'rgba(0,0,0,0.3)',
-          borderRight: '1px solid rgba(255,255,255,0.06)',
+          background: isDark ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.04)',
+          borderRight: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.08)',
           padding: '22px 0',
           display: 'flex',
           flexDirection: 'column',
@@ -134,7 +137,7 @@ export default function SkillsWindow() {
         <div
           style={{
             padding: '0 22px 14px',
-            borderBottom: '1px solid rgba(255,255,255,0.04)',
+            borderBottom: isDark ? '1px solid rgba(255,255,255,0.04)' : '1px solid rgba(0,0,0,0.06)',
             marginBottom: '8px',
             display: 'flex',
             justifyContent: 'space-between',
@@ -145,14 +148,14 @@ export default function SkillsWindow() {
             style={{
               fontFamily: MONO,
               fontSize: '10px',
-              color: 'rgba(255,255,255,0.4)',
+              color: isDark ? 'rgba(255,255,255,0.4)' : '#64748b',
               letterSpacing: '0.22em',
               textTransform: 'uppercase',
             }}
           >
             ▸ Categories
           </div>
-          <div style={{ fontFamily: MONO, fontSize: '10px', color: 'rgba(255,255,255,0.25)' }}>
+          <div style={{ fontFamily: MONO, fontSize: '10px', color: isDark ? 'rgba(255,255,255,0.25)' : '#94a3b8' }}>
             {total}
           </div>
         </div>
@@ -178,7 +181,7 @@ export default function SkillsWindow() {
                 alignItems: 'center',
                 gap: '12px',
               }}
-              onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'rgba(255,255,255,0.025)'; }}
+              onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.025)' : 'rgba(0,0,0,0.03)'; }}
               onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
             >
               {/* Icon */}
@@ -187,7 +190,7 @@ export default function SkillsWindow() {
                   width: '22px',
                   height: '22px',
                   flexShrink: 0,
-                  color: isActive ? cAccent : 'rgba(255,255,255,0.4)',
+                  color: isActive ? cAccent : (isDark ? 'rgba(255,255,255,0.4)' : '#94a3b8'),
                   transition: 'color 0.25s ease',
                   display: 'flex',
                   alignItems: 'center',
@@ -203,7 +206,7 @@ export default function SkillsWindow() {
                     fontFamily: INTER,
                     fontSize: '14.5px',
                     fontWeight: 700,
-                    color: isActive ? cAccent : 'rgba(255,255,255,0.65)',
+                    color: isActive ? cAccent : (isDark ? 'rgba(255,255,255,0.65)' : '#334155'),
                     letterSpacing: '-0.005em',
                     transition: 'color 0.25s ease',
                   }}
@@ -215,7 +218,7 @@ export default function SkillsWindow() {
                     marginTop: '3px',
                     fontFamily: MONO,
                     fontSize: '10px',
-                    color: isActive ? hexToRgba(cAccent, 0.70) : 'rgba(255,255,255,0.28)',
+                    color: isActive ? hexToRgba(cAccent, 0.70) : (isDark ? 'rgba(255,255,255,0.28)' : '#94a3b8'),
                     letterSpacing: '0.12em',
                     transition: 'color 0.25s ease',
                   }}
@@ -281,7 +284,7 @@ export default function SkillsWindow() {
               fontWeight: 900,
               fontSize: '200px',
               lineHeight: 1,
-              color: 'rgba(255,255,255,0.04)',
+              color: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.05)',
               letterSpacing: '-0.05em',
               textTransform: 'uppercase',
               pointerEvents: 'none',
@@ -361,8 +364,8 @@ export default function SkillsWindow() {
                 fontSize: 'clamp(2rem, 4vw, 3.5rem)',
                 letterSpacing: '-0.035em',
                 lineHeight: 0.95,
-                color: '#ffffff',
-                textShadow: `0 0 40px ${hexToRgba(accent, 0.45)}`,
+                color: isDark ? '#ffffff' : '#0f172a',
+                textShadow: isDark ? `0 0 40px ${hexToRgba(accent, 0.45)}` : 'none',
                 position: 'relative',
                 zIndex: 1,
                 margin: 0,
@@ -443,7 +446,7 @@ export default function SkillsWindow() {
               height: '36px',
               flexShrink: 0,
               padding: '0 40px',
-              borderTop: '1px solid rgba(255,255,255,0.05)',
+              borderTop: isDark ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(0,0,0,0.07)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
@@ -455,7 +458,7 @@ export default function SkillsWindow() {
               style={{
                 fontFamily: MONO,
                 fontSize: '11px',
-                color: 'rgba(255,255,255,0.35)',
+                color: isDark ? 'rgba(255,255,255,0.35)' : '#64748b',
                 letterSpacing: '0.04em',
               }}
             >
@@ -469,7 +472,7 @@ export default function SkillsWindow() {
               style={{
                 fontFamily: MONO,
                 fontSize: '11px',
-                color: 'rgba(255,255,255,0.25)',
+                color: isDark ? 'rgba(255,255,255,0.25)' : '#94a3b8',
                 letterSpacing: '0.12em',
                 fontWeight: 500,
               }}

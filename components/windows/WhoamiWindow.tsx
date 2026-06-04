@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { personal } from '@/data/content';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { tRoles } from '@/data/translations';
 
 const MONO   = 'var(--font-jetbrains), monospace';
@@ -40,6 +41,7 @@ const PHONE_ICON = (
 );
 
 function ContactItem({ icon, label, children }: { icon: React.ReactNode; label: string; children: React.ReactNode }) {
+  const { theme: _t } = useTheme(); const isDark = _t === 'dark';
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '18px 78px 1fr', alignItems: 'center', gap: '14px' }}>
       <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: ACCENT }}>
@@ -47,14 +49,14 @@ function ContactItem({ icon, label, children }: { icon: React.ReactNode; label: 
       </span>
       <span style={{
         fontFamily: MONO, fontSize: '9px',
-        color: 'rgba(255,255,255,0.35)', letterSpacing: '0.18em',
+        color: isDark ? 'rgba(255,255,255,0.35)' : '#94a3b8', letterSpacing: '0.18em',
         textTransform: 'uppercase', fontWeight: 600,
       }}>
         {label}
       </span>
       <span style={{
         fontFamily: INTER, fontSize: '13px',
-        color: '#fff', fontWeight: 500,
+        color: isDark ? '#fff' : '#0f172a', fontWeight: 500,
         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
       }}>
         {children}
@@ -86,6 +88,8 @@ function ContactLink({ href, children, target }: { href: string; children: React
 
 export default function WhoamiWindow() {
   const { lang } = useLanguage();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const [typed, setTyped] = useState('');
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
@@ -121,7 +125,7 @@ export default function WhoamiWindow() {
     <div
       className="h-full flex overflow-hidden"
       style={{
-        background: 'rgba(8,8,12,0.92)',
+        background: isDark ? 'rgba(8,8,12,0.92)' : 'transparent',
         boxShadow: 'inset 0 0 0 1px rgba(0,212,255,0.10)',
       }}
     >
@@ -179,7 +183,7 @@ export default function WhoamiWindow() {
         <div aria-hidden style={{
           position: 'absolute', bottom: '-60px', right: '-30px',
           fontFamily: INTER, fontWeight: 900, fontSize: '360px', lineHeight: 1,
-          color: 'rgba(255,255,255,0.025)', letterSpacing: '-0.08em',
+          color: isDark ? 'rgba(255,255,255,0.025)' : 'rgba(0,0,0,0.04)', letterSpacing: '-0.08em',
           pointerEvents: 'none', zIndex: 0, userSelect: 'none',
         }}>IR</div>
         {/* Accent blob */}
@@ -212,7 +216,7 @@ export default function WhoamiWindow() {
           <h1 style={{
             fontFamily: INTER, fontWeight: 800,
             fontSize: 'clamp(1.8rem, 3.5vw, 2.8rem)',
-            lineHeight: 1, letterSpacing: '-0.03em', color: '#fff', margin: 0,
+            lineHeight: 1, letterSpacing: '-0.03em', color: isDark ? '#fff' : '#0f172a', margin: 0,
           }}>
             {personal.name}<span style={{ color: ACCENT }}>.</span>
           </h1>
@@ -242,7 +246,7 @@ export default function WhoamiWindow() {
           }} />
 
           {/* Bio */}
-          <p style={{ fontFamily: INTER, fontSize: '14px', lineHeight: 1.85, color: '#9ba3af', maxWidth: '380px', margin: 0 }}>
+          <p style={{ fontFamily: INTER, fontSize: '14px', lineHeight: 1.85, color: isDark ? '#9ba3af' : '#475569', maxWidth: '380px', margin: 0 }}>
             {personal.shortBio}
           </p>
 
@@ -268,12 +272,12 @@ export default function WhoamiWindow() {
           {/* Status bar */}
           <div style={{
             marginTop: 'auto', paddingTop: '24px',
-            borderTop: '1px solid rgba(255,255,255,0.06)',
+            borderTop: isDark ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.08)',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: '9px',
-              fontFamily: MONO, fontSize: '10px', color: 'rgba(255,255,255,0.85)',
+              fontFamily: MONO, fontSize: '10px', color: isDark ? 'rgba(255,255,255,0.85)' : '#1e293b',
               fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase',
             }}>
               <span style={{
@@ -285,7 +289,7 @@ export default function WhoamiWindow() {
               }} />
               {personal.statusText}
             </div>
-            <div style={{ fontFamily: MONO, fontSize: '10px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em' }}>
+            <div style={{ fontFamily: MONO, fontSize: '10px', color: isDark ? 'rgba(255,255,255,0.3)' : '#94a3b8', letterSpacing: '0.1em' }}>
               {statusRight.split(' · ').map((part, i, arr) => (
                 <span key={part}>
                   {part}
