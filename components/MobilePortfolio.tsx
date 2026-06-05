@@ -1260,13 +1260,13 @@ export default function MobilePortfolio() {
         *{-webkit-tap-highlight-color:transparent;}
         .mob-screen{position:fixed;inset:0;background:#000;overflow:hidden;display:flex;flex-direction:column;}
         .mob-wallpaper{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,#0b1020,#05060c);overflow:hidden;}
-        .mob-wb{position:absolute;border-radius:50%;filter:blur(90px);mix-blend-mode:screen;}
-        .mob-wb1{width:80vw;height:80vw;top:-20vw;left:-20vw;background:radial-gradient(circle,rgba(0,255,136,.3),transparent 65%);animation:mob-drift1 24s ease-in-out infinite;}
-        .mob-wb2{width:90vw;height:90vw;bottom:-30vw;right:-25vw;background:radial-gradient(circle,rgba(0,102,255,.3),transparent 65%);animation:mob-drift2 30s ease-in-out infinite;}
-        .mob-wb3{width:60vw;height:60vw;top:35%;left:25%;background:radial-gradient(circle,rgba(124,58,237,.22),transparent 65%);animation:mob-pulse3 20s ease-in-out infinite;}
-        @keyframes mob-drift1{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(10vw,6vh) scale(1.1);}66%{transform:translate(-4vw,10vh) scale(.95);}}
-        @keyframes mob-drift2{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-12vw,-8vh) scale(1.15);}}
-        @keyframes mob-pulse3{0%,100%{opacity:.7;transform:scale(1);}50%{opacity:1;transform:scale(1.3);}}
+        .mob-wb{position:absolute;border-radius:50%;filter:blur(20px);mix-blend-mode:screen;will-change:transform;}
+        .mob-wb1{width:60vw;height:60vw;top:-10vw;left:-15vw;background:radial-gradient(circle,rgba(0,255,136,.35),transparent 65%);animation:mob-drift1 28s ease-in-out infinite;}
+        .mob-wb2{width:65vw;height:65vw;bottom:-20vw;right:-20vw;background:radial-gradient(circle,rgba(0,102,255,.35),transparent 65%);animation:mob-drift2 34s ease-in-out infinite;}
+        .mob-wb3{width:50vw;height:50vw;top:35%;left:20%;background:radial-gradient(circle,rgba(124,58,237,.28),transparent 65%);animation:mob-pulse3 24s ease-in-out infinite;}
+        @keyframes mob-drift1{0%,100%{transform:translate(0,0);}50%{transform:translate(8vw,5vh);}}
+        @keyframes mob-drift2{0%,100%{transform:translate(0,0);}50%{transform:translate(-8vw,-5vh);}}
+        @keyframes mob-pulse3{0%,100%{opacity:.5;}50%{opacity:.8;}}
         @keyframes mob-dotpulse{50%{opacity:.35;}}
         @keyframes mob-blink{0%,100%{opacity:1;}50%{opacity:0;}}
         @keyframes mob-shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}75%{transform:translateX(4px);}}
@@ -1281,7 +1281,7 @@ export default function MobilePortfolio() {
         .mob-icon{width:clamp(54px,14vw,68px);height:clamp(54px,14vw,68px);border-radius:15px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px -4px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.22),inset 0 -1px 0 rgba(0,0,0,.2);transition:transform .15s ease;flex-shrink:0;}
         .mob-app:active .mob-icon{transform:scale(.88);}
         .mob-app-name{font-size:11px;font-weight:500;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.7);}
-        .mob-dock{margin-top:auto;display:flex;justify-content:center;gap:18px;padding:12px 20px;padding-bottom:max(20px,env(safe-area-inset-bottom,20px));border-radius:30px 30px 0 0;background:rgba(255,255,255,.08);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);border-top:1px solid rgba(255,255,255,.1);}
+        .mob-dock{margin-top:auto;display:flex;justify-content:center;gap:18px;padding:12px 20px;padding-bottom:max(20px,env(safe-area-inset-bottom,20px));border-radius:30px 30px 0 0;background:rgba(255,255,255,.08);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid rgba(255,255,255,.1);}
         .mob-dock .mob-icon{width:56px;height:56px;}
         .mob-appview{position:absolute;inset:0;z-index:45;background:#06070d;display:flex;flex-direction:column;opacity:0;transform:translateY(100%);pointer-events:none;transition:opacity .3s ease,transform .35s cubic-bezier(.4,0,.2,1);overflow:hidden;}
         .mob-appview.open{opacity:1;transform:translateY(0);pointer-events:auto;}

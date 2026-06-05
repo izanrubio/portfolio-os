@@ -149,23 +149,9 @@ export default function MobileHomescreen({ isVisible, dimmed, onOpenApp }: Props
     >
       {/* ── Background + drift blobs ── */}
       <div style={{ position: 'absolute', inset: 0, background: bg, overflow: 'hidden' }}>
-        {/* Static aurora radials */}
-        <div style={{ position: 'absolute', width: 300, height: 300, top: -80, right: -90, borderRadius: '50%', background: `radial-gradient(circle,${blobs[0]},transparent 65%)`, filter: 'blur(70px)', opacity: blobOp, mixBlendMode: blobBlend, pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', width: 280, height: 280, bottom: -60, left: -100, borderRadius: '50%', background: `radial-gradient(circle,${blobs[1]},transparent 65%)`, filter: 'blur(70px)', opacity: blobOp, mixBlendMode: blobBlend, pointerEvents: 'none' }} />
-        {/* Grain */}
-        <div style={{ position: 'absolute', inset: 0, opacity: 0.03, pointerEvents: 'none', backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>")` }} />
-        {/* Drift blob 1 — purple top-right */}
-        <motion.div
-          animate={{ x: [0, 20, 0], y: [0, 25, 0] }}
-          transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }}
-          style={{ position: 'absolute', width: 280, height: 280, top: -60, right: -80, borderRadius: '50%', background: blobs[0], filter: 'blur(60px)', opacity: blobOp * 0.5, mixBlendMode: blobBlend, pointerEvents: 'none' }}
-        />
-        {/* Drift blob 2 — cyan bottom-left */}
-        <motion.div
-          animate={{ x: [0, 20, 0], y: [0, 25, 0] }}
-          transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut', delay: 3 }}
-          style={{ position: 'absolute', width: 200, height: 200, bottom: 40, left: -70, borderRadius: '50%', background: blobs[1], filter: 'blur(60px)', opacity: blobOp * 0.5, mixBlendMode: blobBlend, pointerEvents: 'none' }}
-        />
+        {/* Static aurora radials — lightweight, no animation */}
+        <div style={{ position: 'absolute', width: 260, height: 260, top: -70, right: -80, borderRadius: '50%', background: `radial-gradient(circle,${blobs[0]},transparent 65%)`, filter: 'blur(25px)', opacity: blobOp, mixBlendMode: blobBlend, pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', width: 240, height: 240, bottom: -50, left: -80, borderRadius: '50%', background: `radial-gradient(circle,${blobs[1]},transparent 65%)`, filter: 'blur(25px)', opacity: blobOp, mixBlendMode: blobBlend, pointerEvents: 'none' }} />
       </div>
 
       {/* ── Dynamic Island ── */}
@@ -237,7 +223,7 @@ export default function MobileHomescreen({ isVisible, dimmed, onOpenApp }: Props
           margin: '0 16px 10px', padding: '14px 20px',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)',
-          backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)',
+          backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
           border: isDark ? '1px solid rgba(255,255,255,0.10)' : '1px solid rgba(0,0,0,0.10)',
           borderRadius: 28, boxShadow: '0 8px 32px rgba(0,0,0,.4)',
         }}>

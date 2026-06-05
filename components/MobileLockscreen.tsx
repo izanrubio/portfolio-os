@@ -120,9 +120,9 @@ export default function MobileLockscreen({ isLocked, isBooting, onUnlock }: Prop
           {/* ── Background ── */}
           <div style={{ position: 'absolute', inset: 0, background: bg, overflow: 'hidden' }}>
             {/* Aurora radials — respond to wallpaper and theme */}
-            <div style={{ position: 'absolute', width: 300, height: 300, top: -80, right: -90, borderRadius: '50%', background: `radial-gradient(circle,${blobs[0]},transparent 65%)`, filter: 'blur(70px)', opacity: blobOpac, mixBlendMode: blobBlend, pointerEvents: 'none' }} />
-            <div style={{ position: 'absolute', width: 280, height: 280, bottom: -60, left: -100, borderRadius: '50%', background: `radial-gradient(circle,${blobs[1]},transparent 65%)`, filter: 'blur(70px)', opacity: blobOpac, mixBlendMode: blobBlend, pointerEvents: 'none' }} />
-            <div style={{ position: 'absolute', width: 240, height: 240, bottom: -40, right: -70, borderRadius: '50%', background: `radial-gradient(circle,${blobs[2]},transparent 65%)`, filter: 'blur(70px)', opacity: blobOpac, mixBlendMode: blobBlend, pointerEvents: 'none' }} />
+            <div style={{ position: 'absolute', width: 300, height: 300, top: -80, right: -90, borderRadius: '50%', background: `radial-gradient(circle,${blobs[0]},transparent 65%)`, filter: 'blur(25px)', opacity: blobOpac, mixBlendMode: blobBlend, pointerEvents: 'none' }} />
+            <div style={{ position: 'absolute', width: 280, height: 280, bottom: -60, left: -100, borderRadius: '50%', background: `radial-gradient(circle,${blobs[1]},transparent 65%)`, filter: 'blur(25px)', opacity: blobOpac, mixBlendMode: blobBlend, pointerEvents: 'none' }} />
+            <div style={{ position: 'absolute', width: 240, height: 240, bottom: -40, right: -70, borderRadius: '50%', background: `radial-gradient(circle,${blobs[2]},transparent 65%)`, filter: 'blur(25px)', opacity: blobOpac, mixBlendMode: blobBlend, pointerEvents: 'none' }} />
             {/* SVG grain noise 3% */}
             <div style={{ position: 'absolute', inset: 0, opacity: 0.03, pointerEvents: 'none', backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>")` }} />
           </div>
@@ -179,7 +179,7 @@ export default function MobileLockscreen({ isLocked, isBooting, onUnlock }: Prop
             {/* Widgets 2×2 */}
             <div style={{ marginTop: 26, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               {/* Stack */}
-              <div style={{ background: widgetBg, backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: `1px solid ${widgetBdr}`, borderRadius: 18, padding: '14px 16px' }}>
+              <div style={{ background: widgetBg, backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', border: `1px solid ${widgetBdr}`, borderRadius: 18, padding: '14px 16px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 7, fontFamily: MONO, fontSize: 9.5, letterSpacing: '0.12em', color: wLabelCol, textTransform: 'uppercase' }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
                   {t('mobile.ls.stack', lang)}
@@ -188,7 +188,7 @@ export default function MobileLockscreen({ isLocked, isBooting, onUnlock }: Prop
               </div>
 
               {/* Projects */}
-              <div style={{ background: widgetBg, backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: `1px solid ${widgetBdr}`, borderRadius: 18, padding: '14px 16px' }}>
+              <div style={{ background: widgetBg, backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', border: `1px solid ${widgetBdr}`, borderRadius: 18, padding: '14px 16px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 7, fontFamily: MONO, fontSize: 9.5, letterSpacing: '0.12em', color: wLabelCol, textTransform: 'uppercase' }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
                   {t('mobile.ls.projects', lang)}
@@ -198,7 +198,7 @@ export default function MobileLockscreen({ isLocked, isBooting, onUnlock }: Prop
               </div>
 
               {/* Location */}
-              <div style={{ background: widgetBg, backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: `1px solid ${widgetBdr}`, borderRadius: 18, padding: '14px 16px' }}>
+              <div style={{ background: widgetBg, backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', border: `1px solid ${widgetBdr}`, borderRadius: 18, padding: '14px 16px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 7, fontFamily: MONO, fontSize: 9.5, letterSpacing: '0.12em', color: wLabelCol, textTransform: 'uppercase' }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22d3a5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.2" y1="4.2" x2="5.6" y2="5.6"/><line x1="18.4" y1="18.4" x2="19.8" y2="19.8"/></svg>
                   {t('mobile.ls.location', lang)}
@@ -208,7 +208,7 @@ export default function MobileLockscreen({ isLocked, isBooting, onUnlock }: Prop
               </div>
 
               {/* Dev */}
-              <div style={{ background: widgetBg, backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: `1px solid ${widgetBdr}`, borderRadius: 18, padding: '14px 16px' }}>
+              <div style={{ background: widgetBg, backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', border: `1px solid ${widgetBdr}`, borderRadius: 18, padding: '14px 16px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 7, fontFamily: MONO, fontSize: 9.5, letterSpacing: '0.12em', color: wLabelCol, textTransform: 'uppercase' }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a13 13 0 0 1 0 18M12 3a13 13 0 0 0 0 18"/></svg>
                   {t('mobile.ls.dev', lang)}
