@@ -17,7 +17,8 @@ export async function POST(req: NextRequest) {
   const chatId = process.env.TELEGRAM_CHAT_ID;
 
   if (!token || !chatId) {
-    return NextResponse.json({ ok: false, error: 'Not configured' }, { status: 500 });
+    console.error('[send-message] Missing env vars — TELEGRAM_BOT_TOKEN:', !!token, 'TELEGRAM_CHAT_ID:', !!chatId);
+    return NextResponse.json({ ok: false, error: 'Server not configured' }, { status: 500 });
   }
 
   const timestamp = new Date().toLocaleString('ca-ES', { timeZone: 'Europe/Madrid' });
@@ -31,10 +32,12 @@ export async function POST(req: NextRequest) {
     });
     const data = await res.json();
     if (!data.ok) {
+      console.error('[send-message] Telegram API error:', data);
       return NextResponse.json({ ok: false, error: 'Telegram error' }, { status: 502 });
     }
     return NextResponse.json({ ok: true });
-  } catch {
+  } catch (err) {
+    console.error('[send-message] Fetch failed:', err);
     return NextResponse.json({ ok: false, error: 'Network error' }, { status: 502 });
   }
 }
