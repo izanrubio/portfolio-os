@@ -9,11 +9,40 @@ interface Message {
   id: number;
   text: string;
   time: string;
-  status: 'sending' | 'sent';
+  side: 'sent' | 'received';
+  status?: 'sending' | 'sent'; // only for sent side
 }
 
 interface Props {
   onClose: () => void;
+}
+
+function TypingIndicator() {
+  return (
+    <div style={{
+      position: 'relative',
+      background: 'rgba(255,255,255,0.08)',
+      borderRadius: '7.5px 7.5px 7.5px 0',
+      padding: '10px 14px',
+      display: 'inline-flex', alignItems: 'center', gap: 4,
+    }}>
+      {/* Bottom-left tail */}
+      <div style={{
+        position: 'absolute', bottom: 0, left: -8,
+        width: 0, height: 0,
+        borderRight: '8px solid rgba(255,255,255,0.08)',
+        borderTop: '8px solid transparent',
+      }} />
+      {[0, 1, 2].map(i => (
+        <motion.div
+          key={i}
+          style={{ width: 6, height: 6, borderRadius: '50%', background: '#8696a0', flexShrink: 0 }}
+          animate={{ scale: [1, 1.5, 1] }}
+          transition={{ duration: 0.8, delay: i * 0.2, repeat: Infinity, ease: 'easeInOut' }}
+        />
+      ))}
+    </div>
+  );
 }
 
 export default function MobileChat({ onClose }: Props) {
@@ -23,16 +52,21 @@ export default function MobileChat({ onClose }: Props) {
   const [sending, setSending] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [showTyping, setShowTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const confirmTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const errorTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const typingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const nextId = useRef(0);
+  const isMounted = useRef(true);
 
   useEffect(() => {
     return () => {
+      isMounted.current = false;
       if (confirmTimerRef.current) clearTimeout(confirmTimerRef.current);
       if (errorTimerRef.current) clearTimeout(errorTimerRef.current);
+      if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
     };
   }, []);
 
@@ -47,6 +81,29 @@ export default function MobileChat({ onClose }: Props) {
     return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
   };
 
+  const fetchAiReply = async (userMessage: string) => {
+    try {
+      const aiRes = await fetch('/api/chat-reply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userMessage }),
+      });
+      const aiData = await aiRes.json();
+
+      if (!isMounted.current) return;
+      setShowTyping(false);
+
+      if (aiData.ok && aiData.reply) {
+        const replyId = nextId.current++;
+        const replyTime = getTime();
+        setMessages(prev => [...prev, { id: replyId, text: aiData.reply, time: replyTime, side: 'received' }]);
+        scrollToBottom();
+      }
+    } catch {
+      if (isMounted.current) setShowTyping(false);
+    }
+  };
+
   const handleSend = async () => {
     const text = input.trim();
     if (!text || sending) return;
@@ -59,7 +116,7 @@ export default function MobileChat({ onClose }: Props) {
       textareaRef.current.style.height = 'auto';
     }
 
-    setMessages(prev => [...prev, { id, text, time, status: 'sending' }]);
+    setMessages(prev => [...prev, { id, text, time, side: 'sent', status: 'sending' }]);
     setSending(true);
     scrollToBottom();
 
@@ -72,19 +129,31 @@ export default function MobileChat({ onClose }: Props) {
       const data = await res.json();
 
       if (data.ok) {
+        if (!isMounted.current) return;
         setMessages(prev => prev.map(m => m.id === id ? { ...m, status: 'sent' } : m));
         setShowConfirm(true);
         confirmTimerRef.current = setTimeout(() => {
+          if (!isMounted.current) return;
           setShowConfirm(false);
           setSending(false);
         }, 2500);
+
+        // Start AI reply flow: 600ms delay then typing indicator + API call
+        typingTimerRef.current = setTimeout(() => {
+          if (!isMounted.current) return;
+          setShowTyping(true);
+          scrollToBottom();
+          fetchAiReply(text);
+        }, 600);
       } else {
         throw new Error(data.error ?? 'Error');
       }
     } catch {
+      if (!isMounted.current) return;
       setMessages(prev => prev.map(m => m.id === id ? { ...m, status: 'sent' } : m));
       setErrorMsg(t('chat.error', lang));
       errorTimerRef.current = setTimeout(() => {
+        if (!isMounted.current) return;
         setErrorMsg(null);
         setSending(false);
       }, 3000);
@@ -186,6 +255,7 @@ export default function MobileChat({ onClose }: Props) {
         {/* Messages */}
         {messages.length > 0 && (
           <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', zIndex: 1 }}>
+            {/* Date separator */}
             <div style={{
               alignSelf: 'center', marginBottom: 12,
               background: 'rgba(255,255,255,0.08)',
@@ -201,46 +271,91 @@ export default function MobileChat({ onClose }: Props) {
                 key={msg.id}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.18 }}
-                style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 4 }}
+                transition={{ duration: msg.side === 'received' ? 0.3 : 0.18 }}
+                style={{
+                  display: 'flex',
+                  justifyContent: msg.side === 'sent' ? 'flex-end' : 'flex-start',
+                  marginBottom: 4,
+                }}
               >
-                <div style={{
-                  position: 'relative',
-                  maxWidth: '78%',
-                  background: '#005c4b',
-                  color: '#e9edef',
-                  fontSize: 14.2, lineHeight: '19px',
-                  padding: '6px 9px 8px',
-                  borderRadius: '7.5px 7.5px 0 7.5px',
-                  boxShadow: '0 1px .5px rgba(0,0,0,.13)',
-                  marginRight: 8,
-                }}>
-                  {/* Bubble tail */}
+                {msg.side === 'sent' ? (
+                  /* ── Sent bubble (right, green) ── */
                   <div style={{
-                    position: 'absolute', top: 0, right: -8,
-                    width: 0, height: 0,
-                    borderLeft: '8px solid #005c4b',
-                    borderBottom: '8px solid transparent',
-                  }} />
-                  {/* Text — padded right so it never overlaps the timestamp */}
-                  <span style={{ paddingRight: 64, display: 'block' }}>{msg.text}</span>
-                  {/* Meta */}
-                  <div style={{
-                    position: 'absolute', right: 9, bottom: 6,
-                    display: 'inline-flex', alignItems: 'center', gap: 3,
-                    fontSize: 11, color: '#8696a0',
+                    position: 'relative', maxWidth: '78%',
+                    background: '#005c4b', color: '#e9edef',
+                    fontSize: 14.2, lineHeight: '19px',
+                    padding: '6px 9px 8px',
+                    borderRadius: '7.5px 7.5px 0 7.5px',
+                    boxShadow: '0 1px .5px rgba(0,0,0,.13)',
+                    marginRight: 8,
                   }}>
-                    {msg.time}
-                    {msg.status === 'sent' && (
-                      <svg viewBox="0 0 24 24" fill="none" stroke="#53bdeb" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 16, height: 16 }}>
-                        <polyline points="2 13 7 18 14 9" />
-                        <polyline points="10 18 17 9" />
-                      </svg>
-                    )}
+                    {/* Right tail */}
+                    <div style={{
+                      position: 'absolute', top: 0, right: -8,
+                      width: 0, height: 0,
+                      borderLeft: '8px solid #005c4b',
+                      borderBottom: '8px solid transparent',
+                    }} />
+                    <span style={{ paddingRight: 64, display: 'block' }}>{msg.text}</span>
+                    <div style={{
+                      position: 'absolute', right: 9, bottom: 6,
+                      display: 'inline-flex', alignItems: 'center', gap: 3,
+                      fontSize: 11, color: '#8696a0',
+                    }}>
+                      {msg.time}
+                      {msg.status === 'sent' && (
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#53bdeb" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 16, height: 16 }}>
+                          <polyline points="2 13 7 18 14 9" />
+                          <polyline points="10 18 17 9" />
+                        </svg>
+                      )}
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  /* ── Received bubble (left, dark) ── */
+                  <div style={{
+                    position: 'relative', maxWidth: '78%',
+                    background: '#202c33', color: '#e9edef',
+                    fontSize: 14, lineHeight: '19px',
+                    padding: '6px 10px 8px 10px',
+                    borderRadius: '7.5px 7.5px 7.5px 0',
+                    boxShadow: '0 1px .5px rgba(0,0,0,.13)',
+                    marginLeft: 8,
+                  }}>
+                    {/* Bottom-left tail */}
+                    <div style={{
+                      position: 'absolute', bottom: 0, left: -8,
+                      width: 0, height: 0,
+                      borderRight: '8px solid #202c33',
+                      borderTop: '8px solid transparent',
+                    }} />
+                    <span style={{ paddingRight: 46, display: 'block' }}>{msg.text}</span>
+                    <div style={{
+                      position: 'absolute', right: 9, bottom: 6,
+                      fontSize: 11, color: '#8696a0',
+                    }}>
+                      {msg.time}
+                    </div>
+                  </div>
+                )}
               </motion.div>
             ))}
+
+            {/* Typing indicator */}
+            <AnimatePresence>
+              {showTyping && (
+                <motion.div
+                  key="typing"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 4 }}
+                  transition={{ duration: 0.2 }}
+                  style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 4, marginLeft: 0 }}
+                >
+                  <TypingIndicator />
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Confirmation pill */}
             <AnimatePresence>
