@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import MobileLockscreen from '@/components/MobileLockscreen';
 import MobileHomescreen from '@/components/MobileHomescreen';
+import MobileChat from '@/components/MobileChat';
 import { personal, projects, skills, filesystem, experience, education } from '@/data/content';
 import { FileNode } from '@/types/windows';
 import { useLanguage, type Lang } from '@/contexts/LanguageContext';
@@ -1164,6 +1165,7 @@ export default function MobilePortfolio() {
   const [bootMsgs,   setBootMsgs]   = useState<string[]>([]);
   const [bootProg,   setBootProg]   = useState(0);
   const [activeApp,  setActiveApp]  = useState<AppId | null>(null);
+  const [chatOpen,   setChatOpen]   = useState(false);
   const [appOrigin,  setAppOrigin]  = useState('center center');
   const [appAccent,  setAppAccent]  = useState('#00d4ff');
   const [clock,      setClock]      = useState({ time: '9:41', date: 'Thursday, 29 May' });
@@ -1219,6 +1221,7 @@ export default function MobilePortfolio() {
 
   /* Used by MobileHomescreen — no mouse event needed (slide-up transition) */
   const openAppById = (id: string) => {
+    if (id === 'chat') { setChatOpen(true); return; }
     const app = id as AppId;
     setActiveApp(app);
     setAppAccent(APP_ACCENTS[app] ?? '#00d4ff');
@@ -1282,6 +1285,8 @@ export default function MobilePortfolio() {
         .mob-dock .mob-icon{width:56px;height:56px;}
         .mob-appview{position:absolute;inset:0;z-index:45;background:#06070d;display:flex;flex-direction:column;opacity:0;transform:translateY(100%);pointer-events:none;transition:opacity .3s ease,transform .35s cubic-bezier(.4,0,.2,1);overflow:hidden;}
         .mob-appview.open{opacity:1;transform:translateY(0);pointer-events:auto;}
+        .mob-chatview{position:absolute;inset:0;z-index:47;display:flex;flex-direction:column;opacity:0;transform:translateY(100%);pointer-events:none;transition:opacity .3s ease,transform .35s cubic-bezier(.4,0,.2,1);overflow:hidden;}
+        .mob-chatview.open{opacity:1;transform:translateY(0);pointer-events:auto;}
         .mob-appnav{flex-shrink:0;height:88px;padding:46px 20px 0;display:flex;align-items:center;gap:8px;background:rgba(8,10,18,.92);border-bottom:1px solid rgba(255,255,255,.06);position:relative;z-index:2;}
         .mob-back{display:inline-flex;align-items:center;gap:3px;color:var(--app-accent,#00d4ff);font-size:16px;font-weight:500;cursor:pointer;background:none;border:none;padding:0;}
         .mob-nav-title{position:absolute;left:50%;transform:translateX(-50%);font-family:var(--font-jetbrains),monospace;font-size:13px;color:rgba(255,255,255,.7);white-space:nowrap;}
@@ -1352,8 +1357,13 @@ export default function MobilePortfolio() {
                 </div>
               </div>
 
+              {/* Chat overlay */}
+              <div className={`mob-chatview${chatOpen ? ' open' : ''}`}>
+                {chatOpen && <MobileChat onClose={() => setChatOpen(false)} />}
+              </div>
+
               {/* Home indicator */}
-              <div className="mob-home-ind" onClick={activeApp ? closeApp : undefined} />
+              <div className="mob-home-ind" onClick={activeApp ? closeApp : chatOpen ? () => setChatOpen(false) : undefined} />
             </div>
   </>
   );

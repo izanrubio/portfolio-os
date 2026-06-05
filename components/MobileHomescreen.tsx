@@ -36,6 +36,7 @@ const GRID_APPS: AppDef[] = [
   { id: 'settings',   labelKey: 'dock.settings',   grad: 'linear-gradient(145deg,#94a3b8,#475569)' },
   { id: 'experience', labelKey: 'dock.experience', grad: 'linear-gradient(145deg,#818cf8,#4f46e5)' },
   { id: 'education',  labelKey: 'dock.education',  grad: 'linear-gradient(145deg,#34d399,#059669)' },
+  { id: 'chat',       labelKey: 'dock.chat',       grad: 'linear-gradient(145deg,#25d366,#128c7e)' },
 ];
 
 const DOCK_APPS: AppDef[] = [
@@ -64,6 +65,7 @@ function AppIcon({ app, size, onOpen }: { app: AppDef; size: number; onOpen: (id
       case 'settings':   return <><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></>;
       case 'experience': return <><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></>;
       case 'education':  return <><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1 2.5 2.5 6 2.5s6-1.5 6-2.5v-5"/></>;
+      case 'chat':       return <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>;
       default: return null;
     }
   };

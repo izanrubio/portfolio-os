@@ -14,6 +14,14 @@ const translations: Record<Lang, Record<string, string>> = {
     'dock.experience': 'Experiencia',
     'dock.education':  'Educación',
     'dock.settings':   'Ajustes',
+    'dock.chat':       'Missatges',
+    // Chat
+    'chat.encrypted':  'Los mensajes están cifrados de extremo a extremo',
+    'chat.sendMessage':'Envíame un mensaje 👋',
+    'chat.today':      'HOY',
+    'chat.placeholder':'Escribe un mensaje...',
+    'chat.sent':       'Mensaje enviado',
+    'chat.error':      'Error al enviar, inténtalo de nuevo',
     // Mobile lockscreen / homescreen
     'mobile.ls.available':  'Disponible',
     'mobile.ls.swipeUp':    'DESLIZA PARA DESBLOQUEAR',
@@ -147,6 +155,14 @@ const translations: Record<Lang, Record<string, string>> = {
     'dock.experience': 'Experiència',
     'dock.education':  'Educació',
     'dock.settings':   'Ajustos',
+    'dock.chat':       'Missatges',
+    // Chat
+    'chat.encrypted':  "Els missatges estan xifrats d'extrem a extrem",
+    'chat.sendMessage':"Envia'm un missatge 👋",
+    'chat.today':      'AVUI',
+    'chat.placeholder':"Escriu un missatge...",
+    'chat.sent':       'Missatge enviat',
+    'chat.error':      "Error en enviar, torna-ho a intentar",
     // Mobile lockscreen / homescreen
     'mobile.ls.available':  'Disponible',
     'mobile.ls.swipeUp':    'LLISCA PER DESBLOQUEJAR',
@@ -280,6 +296,14 @@ const translations: Record<Lang, Record<string, string>> = {
     'dock.experience': 'Experience',
     'dock.education':  'Education',
     'dock.settings':   'Settings',
+    'dock.chat':       'Messages',
+    // Chat
+    'chat.encrypted':  'Messages are end-to-end encrypted',
+    'chat.sendMessage':'Send me a message 👋',
+    'chat.today':      'TODAY',
+    'chat.placeholder':'Type a message...',
+    'chat.sent':       'Message sent',
+    'chat.error':      'Failed to send, please try again',
     // Mobile lockscreen / homescreen
     'mobile.ls.available':  'Available',
     'mobile.ls.swipeUp':    'SWIPE UP TO UNLOCK',
