@@ -45,6 +45,8 @@ function TypingIndicator() {
   );
 }
 
+const STORAGE_KEY = 'izanos-chat-messages';
+
 export default function MobileChat({ onClose }: Props) {
   const { lang } = useLanguage();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -62,6 +64,16 @@ export default function MobileChat({ onClose }: Props) {
   const isMounted = useRef(true);
 
   useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setMessages(parsed);
+          scrollToBottom();
+        }
+      }
+    } catch {}
     return () => {
       isMounted.current = false;
       if (confirmTimerRef.current) clearTimeout(confirmTimerRef.current);
@@ -69,6 +81,12 @@ export default function MobileChat({ onClose }: Props) {
       if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
     };
   }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+    } catch {}
+  }, [messages]);
 
   const scrollToBottom = () => {
     setTimeout(() => {

@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { personal, projects } from '@/data/content';
@@ -63,6 +62,7 @@ export default function MobileLockscreen({ isLocked, isBooting, onUnlock }: Prop
 
   const [time, setTime] = useState('');
   const [date, setDate] = useState('');
+  const [photoFailed, setPhotoFailed] = useState(false);
   const touchStartY = useRef<number | null>(null);
 
   useEffect(() => {
@@ -154,11 +154,24 @@ export default function MobileLockscreen({ isLocked, isBooting, onUnlock }: Prop
             {/* Photo */}
             <div style={{
               width: 110, height: 110, borderRadius: '50%',
-              margin: '30px auto 0', position: 'relative',
+              margin: '30px auto 0', flexShrink: 0,
               boxShadow: '0 0 0 2px rgba(255,255,255,.15), 0 0 30px rgba(168,85,247,.4), 0 0 50px rgba(0,229,255,.2)',
-              overflow: 'hidden', flexShrink: 0,
             }}>
-              <Image src={personal.photo} alt={personal.name} fill style={{ objectFit: 'cover', objectPosition: 'top' }} />
+              {photoFailed ? (
+                <div style={{
+                  width: 110, height: 110, borderRadius: '50%',
+                  background: 'linear-gradient(145deg,#a855f7,#00e5ff)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 36, fontWeight: 700, color: '#fff', fontFamily: OUTFIT,
+                }}>IZ</div>
+              ) : (
+                <img
+                  src={personal.photo}
+                  alt={personal.name}
+                  onError={() => setPhotoFailed(true)}
+                  style={{ width: 110, height: 110, borderRadius: '50%', objectFit: 'cover', objectPosition: 'top' }}
+                />
+              )}
             </div>
 
             {/* Clock */}

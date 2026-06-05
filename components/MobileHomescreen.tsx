@@ -29,21 +29,17 @@ const GRID_APPS: AppDef[] = [
   { id: 'about',      labelKey: 'dock.about',      grad: 'linear-gradient(145deg,#b06af7,#7c3aed)' },
   { id: 'skills',     labelKey: 'dock.skills',     grad: 'linear-gradient(145deg,#38bdf8,#0284c7)' },
   { id: 'contact',    labelKey: 'dock.contact',    grad: 'linear-gradient(145deg,#fb923c,#ea580c)' },
-  { id: 'browser',    labelKey: 'dock.browser',    grad: 'linear-gradient(145deg,#60a5fa,#2563eb)' },
   { id: 'files',      labelKey: 'dock.files',      grad: 'linear-gradient(145deg,#2dd4bf,#0d9488)' },
-  { id: 'terminal',   labelKey: 'dock.terminal',   grad: 'linear-gradient(145deg,#1e2a1e,#0f1a0f)', term: true },
   { id: 'game',       labelKey: 'dock.game',       grad: 'linear-gradient(145deg,#f87171,#dc2626)' },
-  { id: 'settings',   labelKey: 'dock.settings',   grad: 'linear-gradient(145deg,#94a3b8,#475569)' },
   { id: 'experience', labelKey: 'dock.experience', grad: 'linear-gradient(145deg,#818cf8,#4f46e5)' },
   { id: 'education',  labelKey: 'dock.education',  grad: 'linear-gradient(145deg,#34d399,#059669)' },
-  { id: 'chat',       labelKey: 'dock.chat',       grad: 'linear-gradient(145deg,#25d366,#128c7e)' },
 ];
 
 const DOCK_APPS: AppDef[] = [
-  GRID_APPS.find(a => a.id === 'browser')!,
-  GRID_APPS.find(a => a.id === 'files')!,
-  GRID_APPS.find(a => a.id === 'terminal')!,
-  GRID_APPS.find(a => a.id === 'about')!,
+  { id: 'chat',     labelKey: 'dock.chat',     grad: 'linear-gradient(145deg,#25d366,#128c7e)' },
+  { id: 'settings', labelKey: 'dock.settings', grad: 'linear-gradient(145deg,#94a3b8,#475569)' },
+  { id: 'browser',  labelKey: 'dock.browser',  grad: 'linear-gradient(145deg,#60a5fa,#2563eb)' },
+  { id: 'terminal', labelKey: 'dock.terminal', grad: 'linear-gradient(145deg,#1e2a1e,#0f1a0f)', term: true },
 ];
 
 /* ── SVG icon paths (React nodes, no dangerouslySetInnerHTML) ── */
@@ -134,8 +130,10 @@ export default function MobileHomescreen({ isVisible, dimmed, onOpenApp }: Props
   const now  = new Date();
   const time = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
-  const grid1 = GRID_APPS.slice(0, 8);  // 4×2
-  const grid2 = GRID_APPS.slice(8);     // last 3, centered
+  const COLS = 4;
+  const remainder = GRID_APPS.length % COLS;
+  const fullRows = remainder === 0 ? GRID_APPS : GRID_APPS.slice(0, GRID_APPS.length - remainder);
+  const lastRow = remainder !== 0 ? GRID_APPS.slice(GRID_APPS.length - remainder) : [];
 
   if (!isVisible) return null;
 
@@ -183,9 +181,9 @@ export default function MobileHomescreen({ isVisible, dimmed, onOpenApp }: Props
 
         {/* App grid — stagger entrance */}
         <motion.div variants={containerVars} initial="hidden" animate="show" style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
-          {/* 4×2 grid */}
+          {/* Full rows */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '20px 12px', padding: '4px 20px 0' }}>
-            {grid1.map(app => (
+            {fullRows.map(app => (
               <motion.div key={app.id} variants={itemVars} whileTap={{ scale: 0.88 }} style={{ display: 'flex', justifyContent: 'center' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7 }}>
                   <AppIcon app={app} size={64} onOpen={onOpenApp} />
@@ -197,19 +195,21 @@ export default function MobileHomescreen({ isVisible, dimmed, onOpenApp }: Props
             ))}
           </div>
 
-          {/* Last row — same grid as above */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '20px 12px', padding: '20px 20px 0' }}>
-            {grid2.map(app => (
-              <motion.div key={app.id} variants={itemVars} whileTap={{ scale: 0.88 }} style={{ display: 'flex', justifyContent: 'center' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7 }}>
-                  <AppIcon app={app} size={64} onOpen={onOpenApp} />
-                  <span style={{ fontSize: 11, color: isDark ? 'rgba(255,255,255,.85)' : 'rgba(0,0,0,.75)', textShadow: isDark ? '0 1px 3px rgba(0,0,0,.6)' : 'none', textAlign: 'center', fontFamily: OUTFIT, lineHeight: 1.2 }}>
-                    {t(app.labelKey, lang)}
-                  </span>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+          {/* Last row — centered if incomplete */}
+          {lastRow.length > 0 && (
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 12, padding: '20px 20px 0' }}>
+              {lastRow.map(app => (
+                <motion.div key={app.id} variants={itemVars} whileTap={{ scale: 0.88 }} style={{ width: `calc((100% - ${(COLS - 1) * 12}px) / ${COLS})`, maxWidth: 80, display: 'flex', justifyContent: 'center' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7 }}>
+                    <AppIcon app={app} size={64} onOpen={onOpenApp} />
+                    <span style={{ fontSize: 11, color: isDark ? 'rgba(255,255,255,.85)' : 'rgba(0,0,0,.75)', textShadow: isDark ? '0 1px 3px rgba(0,0,0,.6)' : 'none', textAlign: 'center', fontFamily: OUTFIT, lineHeight: 1.2 }}>
+                      {t(app.labelKey, lang)}
+                    </span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </motion.div>
 
         {/* Page dots */}
