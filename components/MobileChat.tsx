@@ -81,12 +81,14 @@ export default function MobileChat({ onClose }: Props) {
     return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
   };
 
+  const langCode = lang === 'CAS' ? 'es' : lang === 'CAT' ? 'ca' : 'en';
+
   const fetchAiReply = async (userMessage: string) => {
     try {
       const aiRes = await fetch('/api/chat-reply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userMessage }),
+        body: JSON.stringify({ message: userMessage, lang: langCode }),
       });
       const aiData = await aiRes.json();
 
