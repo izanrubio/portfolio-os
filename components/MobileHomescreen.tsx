@@ -211,10 +211,10 @@ export default function MobileHomescreen({ isVisible, dimmed, onOpenApp }: Props
             ))}
           </div>
 
-          {/* Last 3 — centered */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 12, padding: '20px 20px 0' }}>
+          {/* Last row — same grid as above */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '20px 12px', padding: '20px 20px 0' }}>
             {grid2.map(app => (
-              <motion.div key={app.id} variants={itemVars} whileTap={{ scale: 0.88 }}>
+              <motion.div key={app.id} variants={itemVars} whileTap={{ scale: 0.88 }} style={{ display: 'flex', justifyContent: 'center' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7 }}>
                   <AppIcon app={app} size={64} onOpen={onOpenApp} />
                   <span style={{ fontSize: 11, color: isDark ? 'rgba(255,255,255,.85)' : 'rgba(0,0,0,.75)', textShadow: isDark ? '0 1px 3px rgba(0,0,0,.6)' : 'none', textAlign: 'center', fontFamily: OUTFIT, lineHeight: 1.2 }}>
