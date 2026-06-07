@@ -55,9 +55,8 @@ function getIcon(degree: string) {
   return <IconBook />;
 }
 
-function getAccent(idx: number, current: boolean) {
-  if (current) return CYAN;
-  if (idx === 0) return GREEN; // Ciberseguridad — most recent finished
+function getAccent(idx: number, _current: boolean) {
+  if (idx <= 1) return GREEN; // Ciberseguridad + DAW — recent finished
   return SLATE;
 }
 
