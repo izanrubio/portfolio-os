@@ -17,11 +17,18 @@ export async function POST(req: NextRequest) {
 
   try {
     await resend.emails.send({
-      from: 'IzanOS Portfolio <noreply@izanrubio.info>',
+      from: 'onboarding@izanrubio.info',
       to: 'izanrubiocerezo@gmail.com',
       replyTo: email,
       subject: `[IzanOS Contact] ${subject} — de ${name}`,
-      text: `Nombre: ${name}\nEmail: ${email}\nAsunto: ${subject}\n\nMensaje:\n${message}`,
+      html: `
+        <h2>Nuevo mensaje desde IzanOS Portfolio</h2>
+        <p><strong>Nombre:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Asunto:</strong> ${subject}</p>
+        <p><strong>Mensaje:</strong></p>
+        <p>${message}</p>
+      `,
     });
     return NextResponse.json({ success: true });
   } catch {
