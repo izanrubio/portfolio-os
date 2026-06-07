@@ -71,58 +71,118 @@ const FLAG_TEXT = `████████████████████�
 Congratulations. You found the real Izan.
 Execute ./check_flag to claim your certificate.`;
 
-/* ── Certificate Component ── */
+/* ── Certificate Component (faithful to certificate-template.html) ── */
 function Certificate({ name, date }: { name: string; date: string }) {
+  const STM  = "'Share Tech Mono', monospace";
+  const ORB  = "'Orbitron', sans-serif";
+  const RAJ  = "'Rajdhani', sans-serif";
+  const NOISE = `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`;
+
   return (
     <div id="cert-preview" style={{
-      width: 800, height: 500, background: '#050a0f', position: 'relative',
-      fontFamily: MONO, overflow: 'hidden', padding: '32px 40px',
-      backgroundImage: 'linear-gradient(rgba(0,245,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,245,255,.04) 1px, transparent 1px)',
-      backgroundSize: '24px 24px',
+      width: 900, height: 560,
+      background: '#050a0f',
+      position: 'relative',
+      overflow: 'hidden',
+      padding: '52px 64px 48px',
+      fontFamily: STM,
     }}>
-      {/* Scan line animation */}
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg, transparent, rgba(0,245,255,.6), transparent)', zIndex: 10, animation: 'scanline 3s linear infinite' }} />
+      {/* Grid background */}
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', backgroundImage: 'linear-gradient(rgba(0,245,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,245,255,.03) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+
+      {/* Blob purple top-right */}
+      <div style={{ position: 'absolute', width: 400, height: 400, top: -100, right: -100, borderRadius: '50%', background: 'radial-gradient(circle, rgba(180,0,255,.12), transparent 70%)', filter: 'blur(80px)', pointerEvents: 'none' }} />
+      {/* Blob cyan bottom-left */}
+      <div style={{ position: 'absolute', width: 300, height: 300, bottom: -80, left: -80, borderRadius: '50%', background: 'radial-gradient(circle, rgba(0,245,255,.10), transparent 70%)', filter: 'blur(80px)', pointerEvents: 'none' }} />
+
+      {/* Noise */}
+      <div style={{ position: 'absolute', inset: 0, opacity: 0.025, pointerEvents: 'none', zIndex: 2, backgroundImage: NOISE }} />
+
       {/* Corner brackets */}
-      {[{ t:8,l:8 },{ t:8,r:8 },{ b:8,l:8 },{ b:8,r:8 }].map((pos, i) => (
-        <div key={i} style={{ position: 'absolute', width: 20, height: 20, border: '2px solid rgba(0,245,255,.5)', ...(pos.t !== undefined ? { top: pos.t } : { bottom: pos.b }), ...(pos.l !== undefined ? { left: pos.l } : { right: pos.r }), borderRadius: 2, ...(i === 0 ? { borderRight:'none', borderBottom:'none' } : i === 1 ? { borderLeft:'none', borderBottom:'none' } : i === 2 ? { borderRight:'none', borderTop:'none' } : { borderLeft:'none', borderTop:'none' }) }} />
-      ))}
-      {/* Logo top-left */}
-      <div style={{ position: 'absolute', top: 20, left: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
-        <svg width="28" height="28" viewBox="0 0 100 100">
-          <defs><linearGradient id="cg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#00f5ff"/><stop offset="100%" stopColor="#a855f7"/></linearGradient></defs>
-          <polygon points="50,8 86,29 86,71 50,92 14,71 14,29" stroke="url(#cg)" strokeWidth="5" fill="none"/>
-          <text x="50" y="66" textAnchor="middle" fill="url(#cg)" fontSize="32" fontWeight="bold">IZ</text>
+      <div style={{ position: 'absolute', top: 16, left: 16, width: 24, height: 24, borderTop: '2px solid rgba(0,245,255,.8)', borderLeft: '2px solid rgba(0,245,255,.8)' }} />
+      <div style={{ position: 'absolute', top: 16, right: 16, width: 24, height: 24, borderTop: '2px solid rgba(0,245,255,.8)', borderRight: '2px solid rgba(0,245,255,.8)' }} />
+      <div style={{ position: 'absolute', bottom: 16, left: 16, width: 24, height: 24, borderBottom: '2px solid rgba(0,245,255,.8)', borderLeft: '2px solid rgba(0,245,255,.8)' }} />
+      <div style={{ position: 'absolute', bottom: 16, right: 16, width: 24, height: 24, borderBottom: '2px solid rgba(0,245,255,.8)', borderRight: '2px solid rgba(0,245,255,.8)' }} />
+
+      {/* ── Header ── */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28, position: 'relative', zIndex: 1 }}>
+        {/* Hex logo */}
+        <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ filter: 'drop-shadow(0 0 12px rgba(0,245,255,.6))', flexShrink: 0 }}>
+          <defs>
+            <linearGradient id="cHexGrad" x1="0" y1="0" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stopColor="#00f5ff"/><stop offset="100%" stopColor="#b400ff"/>
+            </linearGradient>
+          </defs>
+          <polygon points="28,2 52,15 52,41 28,54 4,41 4,15" fill="none" stroke="url(#cHexGrad)" strokeWidth="1.5"/>
+          <text x="28" y="33" textAnchor="middle" fontFamily="Orbitron, sans-serif" fontSize="13" fontWeight="900" fill="url(#cHexGrad)">IZ</text>
         </svg>
-        <span style={{ fontSize: 11, color: 'rgba(0,245,255,.7)', letterSpacing: '0.15em' }}>IZANOS AURORA</span>
+
+        {/* Center labels */}
+        <div style={{ textAlign: 'center', flex: 1 }}>
+          <div style={{ fontFamily: STM, fontSize: 10, letterSpacing: 4, color: 'rgba(0,245,255,.7)', textTransform: 'uppercase', marginBottom: 4 }}>IzanOS Aurora 0.3</div>
+          <div style={{ fontFamily: ORB, fontSize: 11, fontWeight: 400, letterSpacing: 6, color: 'rgba(255,255,255,.3)', textTransform: 'uppercase' }}>Security Certification</div>
+        </div>
+
+        {/* Verified badge */}
+        <div style={{ background: 'rgba(0,255,136,.10)', border: '1px solid rgba(0,255,136,.3)', color: '#00ff88', fontFamily: STM, fontSize: 9, letterSpacing: 2, padding: '4px 10px', textTransform: 'uppercase', flexShrink: 0 }}>✓ Verified</div>
       </div>
-      {/* Verified badge */}
-      <div style={{ position: 'absolute', top: 20, right: 20, display: 'flex', alignItems: 'center', gap: 5, padding: '4px 10px', border: '1px solid rgba(0,255,65,.4)', borderRadius: 999, color: '#00ff41', fontSize: 10, letterSpacing: '0.1em' }}>
-        <span>✓</span> Verified
+
+      {/* Divider */}
+      <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, #00f5ff, rgba(180,0,255,.6), transparent)', marginBottom: 24, position: 'relative', zIndex: 1 }} />
+
+      {/* ── Body ── */}
+      <div style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
+        <div style={{ fontFamily: STM, fontSize: 10, letterSpacing: 5, color: 'rgba(255,255,255,.35)', textTransform: 'uppercase', marginBottom: 8 }}>this certifies that</div>
+
+        <div style={{ fontFamily: ORB, fontSize: 36, fontWeight: 900, lineHeight: 1, marginBottom: 6, background: 'linear-gradient(135deg,#ffffff 0%,#00f5ff 50%,#b400ff 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>CERTIFICATE</div>
+        <div style={{ fontFamily: RAJ, fontSize: 12, fontWeight: 300, letterSpacing: 8, color: 'rgba(255,255,255,.25)', textTransform: 'uppercase', marginBottom: 18 }}>of completion</div>
+
+        <div style={{ fontFamily: STM, fontSize: 10, letterSpacing: 4, color: 'rgba(255,255,255,.3)', textTransform: 'uppercase', marginBottom: 8 }}>// awarded to</div>
+        <div style={{ fontFamily: RAJ, fontSize: 44, fontWeight: 700, color: '#ffffff', letterSpacing: 2, lineHeight: 1, marginBottom: 12, textShadow: '0 0 30px rgba(0,245,255,.2)' }}>{name}</div>
+
+        <div style={{ fontFamily: RAJ, fontSize: 14, fontWeight: 300, color: 'rgba(255,255,255,.5)', letterSpacing: 1, lineHeight: 1.65, maxWidth: 520, margin: '0 auto 16px' }}>
+          {'has successfully breached '}
+          <span style={{ color: 'rgba(255,255,255,.85)', fontWeight: 600 }}>IzanOS-Vulnerable-v1.0</span>
+          {', navigated through its defenses, and captured the flag — demonstrating real skill in '}
+          <span style={{ color: 'rgba(255,255,255,.85)', fontWeight: 600 }}>Linux enumeration</span>
+          {', '}
+          <span style={{ color: 'rgba(255,255,255,.85)', fontWeight: 600 }}>cryptographic analysis</span>
+          {', and '}
+          <span style={{ color: 'rgba(255,255,255,.85)', fontWeight: 600 }}>privilege escalation</span>
+          {'.'}</div>
+
+        {/* Flag box */}
+        <div style={{ display: 'inline-block', background: 'rgba(0,245,255,.05)', border: '1px solid rgba(0,245,255,.25)', padding: '12px 28px', marginBottom: 16 }}>
+          <div style={{ fontFamily: STM, fontSize: 16, color: '#00f5ff', letterSpacing: 2, textShadow: '0 0 20px rgba(0,245,255,.5)' }}>
+            IzanCTF&#123;y0u_found_th3_r34l_1z4n&#125;
+          </div>
+        </div>
+
+        {/* Thin divider */}
+        <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,.08), transparent)', marginBottom: 14 }} />
+
+        {/* Footer 3 cols */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div style={{ flex: 1, textAlign: 'center' }}>
+            <div style={{ fontFamily: STM, fontSize: 8, letterSpacing: 3, color: 'rgba(255,255,255,.25)', textTransform: 'uppercase', marginBottom: 8 }}>issued by</div>
+            <div style={{ width: 120, height: 1, background: 'rgba(255,255,255,.2)', margin: '0 auto 6px' }} />
+            <div style={{ fontFamily: RAJ, fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,.7)', letterSpacing: 1 }}>Izan Rubio Cerezo</div>
+          </div>
+          <div style={{ flex: 1, textAlign: 'center' }}>
+            <div style={{ fontFamily: STM, fontSize: 8, letterSpacing: 3, color: 'rgba(255,255,255,.25)', textTransform: 'uppercase', marginBottom: 8 }}>completion date</div>
+            <div style={{ fontFamily: STM, fontSize: 12, color: '#00ff88', letterSpacing: 0.5 }}>{date}</div>
+          </div>
+          <div style={{ flex: 1, textAlign: 'center' }}>
+            <div style={{ fontFamily: STM, fontSize: 8, letterSpacing: 3, color: 'rgba(255,255,255,.25)', textTransform: 'uppercase', marginBottom: 8 }}>difficulty</div>
+            <div style={{ fontFamily: RAJ, fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,.7)', letterSpacing: 1 }}>MEDIUM</div>
+          </div>
+        </div>
       </div>
-      {/* Content */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', textAlign: 'center', paddingTop: 20 }}>
-        <div style={{ fontSize: 11, color: 'rgba(255,255,255,.4)', letterSpacing: '0.3em', textTransform: 'uppercase', marginBottom: 6 }}>CERTIFICATE of completion</div>
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,.5)', marginBottom: 14 }}>This certifies that</div>
-        <div style={{ fontSize: 42, fontWeight: 700, background: 'linear-gradient(135deg,#fff,#00f5ff,#a855f7)', WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent', lineHeight: 1.1, marginBottom: 16 }}>
-          {name || 'Hacker'}
-        </div>
-        <div style={{ fontSize: 12, color: 'rgba(255,255,255,.6)', maxWidth: 580, lineHeight: 1.7, marginBottom: 20 }}>
-          has successfully breached IzanOS-Vulnerable-v1.0, navegando a través de sus defensas y capturando
-          la flag — demostrando habilidad real en Linux enumeration, cryptographic analysis y privilege escalation.
-        </div>
-        <div style={{ padding: '8px 24px', border: '1px solid rgba(0,245,255,.5)', borderRadius: 8, fontFamily: MONO, color: CYAN, fontSize: 13, letterSpacing: '0.05em', marginBottom: 24, background: 'rgba(0,245,255,.06)' }}>
-          IzanCTF&#123;y0u_found_th3_r34l_1z4n&#125;
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 24, color: 'rgba(255,255,255,.35)', fontSize: 10, letterSpacing: '0.1em' }}>
-          <span>Issued by Izan Rubio Cerezo</span>
-          <span style={{ width: 1, height: 12, background: 'rgba(255,255,255,.2)' }} />
-          <span>{date}</span>
-          <span style={{ width: 1, height: 12, background: 'rgba(255,255,255,.2)' }} />
-          <span style={{ color: 'rgba(255,149,0,.8)' }}>MEDIUM</span>
-        </div>
-        <div style={{ marginTop: 10, color: 'rgba(255,255,255,.2)', fontSize: 10 }}>izanrubio.info · IzanOS Aurora CTF Challenge</div>
+
+      {/* Bottom tag */}
+      <div style={{ position: 'absolute', bottom: 22, left: 0, right: 0, textAlign: 'center', fontFamily: STM, fontSize: 8, letterSpacing: 3, color: 'rgba(255,255,255,.10)', textTransform: 'uppercase', zIndex: 1 }}>
+        izanrubio.info · IzanOS Aurora CTF Challenge · SHA-256 verified
       </div>
-      <style>{`@keyframes scanline { from { top: 0 } to { top: 100% } }`}</style>
     </div>
   );
 }
@@ -306,7 +366,9 @@ export default function VMRunningWindow({ shutdownPending, onCancelShutdown, onC
         } else {
           addBlank();
           setShowCertModal(true);
-          setCertDate(new Date().toLocaleString('es-ES', { timeZone: 'Europe/Madrid' }));
+          const d = new Date();
+          const pad = (n: number) => String(n).padStart(2, '0');
+          setCertDate(`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} · ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`);
         }
         addBlank(); return;
       default:
@@ -339,17 +401,37 @@ export default function VMRunningWindow({ shutdownPending, onCancelShutdown, onC
     if (!certName.trim() || generating) return;
     setGenerating(true);
     try {
+      /* Inject Google Fonts if not already present */
+      const FONTS_ID = 'cert-gfonts';
+      if (!document.getElementById(FONTS_ID)) {
+        const link = document.createElement('link');
+        link.id = FONTS_ID;
+        link.rel = 'stylesheet';
+        link.href = 'https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;600;700&family=Share+Tech+Mono&display=swap';
+        document.head.appendChild(link);
+      }
+      /* Wait for fonts to load + extra render time */
+      await document.fonts.ready;
+      await new Promise(r => setTimeout(r, 1500));
+
       const [html2canvas, { default: jsPDF }] = await Promise.all([
         import('html2canvas').then(m => m.default),
         import('jspdf'),
       ]);
       const el = document.getElementById('cert-preview');
       if (!el) return;
-      const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#050a0f' });
+      const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: '#050a0f', logging: false });
       const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [canvas.width / 2, canvas.height / 2] });
-      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 2, canvas.height / 2);
-      pdf.save(`IzanOS-CTF-Certificate-${certName.replace(/\s+/g, '-')}.pdf`);
+
+      /* A4 landscape — scale image to fill page */
+      const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+      const pdfW = pdf.internal.pageSize.getWidth();
+      const pdfH = pdf.internal.pageSize.getHeight();
+      const imgAspect = canvas.width / canvas.height;
+      let imgW = pdfW, imgH = pdfW / imgAspect;
+      if (imgH > pdfH) { imgH = pdfH; imgW = pdfH * imgAspect; }
+      pdf.addImage(imgData, 'PNG', (pdfW - imgW) / 2, (pdfH - imgH) / 2, imgW, imgH);
+      pdf.save(`IzanOS-CTF-${certName.replace(/\s+/g, '-')}.pdf`);
       setCertGenerated(true);
       /* Telegram notification */
       try {
@@ -526,7 +608,7 @@ export default function VMRunningWindow({ shutdownPending, onCancelShutdown, onC
             </button>
             {certGenerated && (
               <div style={{ marginTop: 12, padding: 10, borderRadius: 8, background: 'rgba(0,255,65,.08)', border: '1px solid rgba(0,255,65,.2)', color: TERM, fontSize: 12, textAlign: 'center', fontFamily: MONO }}>
-                ✓ Certificado descargado: IzanOS-CTF-Certificate-{certName}.pdf
+                ✓ Certificado descargado: IzanOS-CTF-{certName}.pdf
               </div>
             )}
           </div>
