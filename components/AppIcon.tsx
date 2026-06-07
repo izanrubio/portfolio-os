@@ -20,7 +20,7 @@ const ICON_CONFIG: Record<string, IconConfig> = {
   chat: {
     bg: '#fff',
     shadowColor: 'rgba(22,163,74,.4)',
-    image: '/icons/WhatsApp_icon.png',
+    image: '/icons/app-missatges.png',
   },
 
   /* ── Projectes ── */
@@ -89,7 +89,7 @@ const ICON_CONFIG: Record<string, IconConfig> = {
   files: {
     bg: '#fff',
     shadowColor: 'rgba(0,122,255,.4)',
-    image: '/icons/archivos.png',
+    image: '/icons/app-arxius.png',
   },
 
   /* ── Terminal ── */
@@ -134,7 +134,7 @@ const ICON_CONFIG: Record<string, IconConfig> = {
   settings: {
     bg: '#e5e5ea',
     shadowColor: 'rgba(100,116,139,.4)',
-    image: '/icons/Settings_(iOS).png',
+    image: '/icons/app-ajustos.png',
   },
 
   /* ── Experiència ── */
@@ -169,7 +169,7 @@ const ICON_CONFIG: Record<string, IconConfig> = {
   browser: {
     bg: '#fff',
     shadowColor: 'rgba(0,122,255,.4)',
-    image: '/icons/safari-icon.png',
+    image: '/icons/app-navegador.png',
   },
 };
 
@@ -212,6 +212,7 @@ export default function AppIcon({ app, size = 60 }: Props) {
         <img
           src={config.image}
           alt={app}
+          onError={(e) => { e.currentTarget.style.display = 'none'; }}
           style={{
             width: '100%', height: '100%',
             objectFit: 'contain',
