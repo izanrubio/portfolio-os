@@ -8,7 +8,6 @@ import ProjectsIcon from './icons/ProjectsIcon';
 import AboutIcon    from './icons/AboutIcon';
 import SkillsIcon   from './icons/SkillsIcon';
 import ContactIcon  from './icons/ContactIcon';
-import BrowserIcon  from './icons/BrowserIcon';
 import FilesIcon    from './icons/FilesIcon';
 import TerminalIcon from './icons/TerminalIcon';
 import GameIcon        from './icons/GameIcon';
@@ -32,14 +31,13 @@ const DOCK_ITEMS: DockItem[] = [
   { id: 'contact',    labelKey: 'dock.contact',    Icon: ContactIcon    },
   { id: 'experience', labelKey: 'dock.experience', Icon: ExperienceIcon },
   { id: 'education',  labelKey: 'dock.education',  Icon: EducationIcon  },
-  { id: 'browser',    labelKey: 'dock.browser',    Icon: BrowserIcon    },
   { id: 'files',      labelKey: 'dock.files',      Icon: FilesIcon      },
   { id: 'terminal',   labelKey: 'dock.terminal',   Icon: TerminalIcon   },
   { id: 'game',        labelKey: 'dock.game',        Icon: GameIcon        },
   { id: 'virtualbox',  labelKey: 'dock.virtualbox',  Icon: VirtualBoxIcon  },
 ];
 
-const SEPARATOR_BEFORE = 6; // vertical rule before browser/files/terminal/game/virtualbox
+const SEPARATOR_BEFORE = 6; // vertical rule before files/terminal/game/virtualbox
 
 interface TaskbarProps {
   windows: WindowState[];

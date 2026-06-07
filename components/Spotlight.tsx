@@ -23,7 +23,6 @@ const APP_LABEL_KEY: Record<string, string> = {
   whoami:   'dock.about',
   skills:   'dock.skills',
   contact:  'dock.contact',
-  browser:  'dock.browser',
   files:    'dock.files',
   terminal: 'dock.terminal',
   game:     'dock.game',
@@ -60,10 +59,6 @@ const APP_ICON: Record<string, IconMeta> = {
   contact: {
     gradient: 'linear-gradient(135deg,#ff6b00,#ff9500)',
     icon: <><path d="M21 12.5A8.5 8.5 0 1 1 12.5 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/><path d="M21 4v6h-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/><path d="M3.5 9.5 12 14l8.5-4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/></>,
-  },
-  browser: {
-    gradient: 'linear-gradient(135deg,#0066ff,#7b2ff7)',
-    icon: <><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" fill="none"/><path d="M3 12h18M12 3a13 13 0 0 1 0 18M12 3a13 13 0 0 0 0 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none"/></>,
   },
   files: {
     gradient: 'linear-gradient(135deg,#00c97a,#0066ff)',
@@ -272,7 +267,7 @@ export default function Spotlight({ onOpenWindow, onNavigate }: SpotlightProps) 
   const rows = useMemo((): Row[] => {
     const q = query.trim().toLowerCase();
 
-    const appRows: AppRow[] = ['projects','whoami','skills','contact','browser','files','terminal'].map(id => ({
+    const appRows: AppRow[] = ['projects','whoami','skills','contact','files','terminal'].map(id => ({
       kind: 'app', id: id as WindowId,
       name: t(APP_LABEL_KEY[id] ?? `dock.${id}`, lang),
     }));

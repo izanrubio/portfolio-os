@@ -54,16 +54,6 @@ const DEFAULT_WINDOWS: WindowState[] = [
     size: { width: 560, height: 580 },
   },
   {
-    id: 'browser',
-    title: 'browser.exe',
-    icon: '🌐',
-    isOpen: false, isMinimized: false, isMaximized: false,
-    zIndex: 10,
-    position: { x: 120, y: 60 },
-    size: { width: 900, height: 620 },
-    browserUrl: 'izanrubio.dev',
-  },
-  {
     id: 'files',
     title: 'files.exe',
     icon: '📁',

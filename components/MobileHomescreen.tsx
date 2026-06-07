@@ -39,7 +39,6 @@ const GRID_APPS: AppDef[] = [
 const DOCK_APPS: AppDef[] = [
   { id: 'chat',     labelKey: 'dock.chat',     grad: 'linear-gradient(145deg,#25d366,#128c7e)' },
   { id: 'settings', labelKey: 'dock.settings', grad: 'linear-gradient(145deg,#94a3b8,#475569)' },
-  { id: 'browser',  labelKey: 'dock.browser',  grad: 'linear-gradient(145deg,#60a5fa,#2563eb)' },
   { id: 'terminal', labelKey: 'dock.terminal', grad: 'linear-gradient(145deg,#1e2a1e,#0f1a0f)', term: true },
 ];
 

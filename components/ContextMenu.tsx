@@ -157,8 +157,7 @@ export default function ContextMenu({
 
       <Item label={cm.viewGitHub} dark={dark} onClick={() => {
         onClose();
-        onOpenWindow('browser');
-        onNavigate('https://github.com/izanrubio');
+        window.open('https://github.com/izanrubio', '_blank');
       }} />
     </motion.div>
   );

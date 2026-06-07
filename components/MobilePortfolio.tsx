@@ -32,14 +32,13 @@ const ACCENT: Record<string, string> = {
   barbercompte: '#ff4757',
 };
 
-type AppId = 'projects' | 'about' | 'skills' | 'contact' | 'browser' | 'files' | 'terminal' | 'game' | 'settings' | 'experience' | 'education';
+type AppId = 'projects' | 'about' | 'skills' | 'contact' | 'files' | 'terminal' | 'game' | 'settings' | 'experience' | 'education';
 
 const GRADS: Record<AppId, string> = {
   projects: 'linear-gradient(135deg,#00c97a,#00ff9d)',
   about:    'linear-gradient(135deg,#7b2ff7,#a855f7)',
   skills:   'linear-gradient(135deg,#0066ff,#00d4ff)',
   contact:  'linear-gradient(135deg,#ff6b00,#ff9500)',
-  browser:  'linear-gradient(135deg,#0066ff,#7b2ff7)',
   files:    'linear-gradient(135deg,#00c97a,#0066ff)',
   terminal: 'linear-gradient(135deg,#1a1a1a,#2a2a2a)',
   game:     'linear-gradient(135deg,#ff4757,#ff6b35)',
@@ -50,14 +49,14 @@ const GRADS: Record<AppId, string> = {
 
 const APP_TITLES: Record<AppId, string> = {
   projects: 'projects.exe', about: 'whoami.exe',   skills:    'skills.exe',
-  contact:  'contact.exe',  browser: 'browser.exe', files:    'files.exe',
+  contact:  'contact.exe',  files:    'files.exe',
   terminal:   'terminal.exe', game:    'game.exe',  settings:   'settings.exe',
   experience: 'experience.exe',                    education:  'education.exe',
 };
 
 const APP_ACCENTS: Record<AppId, string> = {
   projects: '#00ff88', about: '#7c3aed', skills: '#00d4ff', contact: '#ff9500',
-  browser:  '#7c3aed', files: '#00d4ff', terminal: '#00ff88', game: '#ff4757',
+  files: '#00d4ff', terminal: '#00ff88', game: '#ff4757',
   settings:   '#00d4ff',
   experience: '#00d4ff',
   education:  '#7c3aed',
@@ -92,7 +91,6 @@ function AppSvg({ app }: { app: AppId }) {
     about:    <><circle cx="12" cy="8" r="4" /><path d="M4 21c1-4.5 4.5-7 8-7s7 2.5 8 7" /></>,
     skills:   <path d="M13 2 4 14h7l-1 8 9-12h-7z" />,
     contact:  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />,
-    browser:  <><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a13 13 0 0 1 0 18M12 3a13 13 0 0 0 0 18" /></>,
     files:    <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />,
     game:       <><rect x="3" y="8" width="18" height="10" rx="4" /><path d="M8 12v3M6.5 13.5h3" /><circle cx="15.5" cy="12.5" r=".8" fill="white" /><circle cx="17" cy="14" r=".8" fill="white" /></>,
     settings:   <><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" /></>,
@@ -145,7 +143,10 @@ function ProjectsApp() {
               </div>
             )}
             {!wip && isExp && p.demo && (
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, marginTop: 14, fontFamily: MONO, fontSize: 11, fontWeight: 600, color }}>
+              <div
+                onClick={e => { e.stopPropagation(); window.open(p.demo!, '_blank'); }}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 5, marginTop: 14, fontFamily: MONO, fontSize: 11, fontWeight: 600, color, cursor: 'pointer' }}
+              >
                 {t('projects.openDemo', lang)} →
               </div>
             )}
@@ -1178,7 +1179,7 @@ function StubApp({ app }: { app: AppId }) {
 const APPS: { id: AppId; label: string }[] = [
   { id: 'projects', label: 'Projects' }, { id: 'about',    label: 'About'    },
   { id: 'skills',   label: 'Skills'   }, { id: 'contact',  label: 'Contact'  },
-  { id: 'browser',  label: 'Browser'  }, { id: 'files',    label: 'Files'    },
+  { id: 'files',    label: 'Files'    },
   { id: 'terminal',   label: 'Terminal'   }, { id: 'game',       label: 'Game'       },
   { id: 'settings',   label: 'Settings'   },
   { id: 'experience', label: 'Experience' }, { id: 'education',  label: 'Education'  },
@@ -1277,7 +1278,6 @@ export default function MobilePortfolio() {
     contact:  <ContactApp />,
     terminal: <TerminalApp />,
     files:    <FilesApp />,
-    browser:  <StubApp app="browser" />,
     game:     <GameApp />,
     settings:   <SettingsApp />,
     experience: <ExperienceApp />,
