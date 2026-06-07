@@ -3,12 +3,15 @@
 import { useState } from 'react';
 import { experience } from '@/data/content';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { t } from '@/data/translations';
 
 const MONO  = 'var(--font-jetbrains), monospace';
 const INTER = 'var(--font-inter), Inter, sans-serif';
 
 export default function ExperienceWindow() {
   const { theme } = useTheme();
+  const { lang } = useLanguage();
   const isDark = theme === 'dark';
 
   const [selected, setSelected] = useState(0);
@@ -76,7 +79,7 @@ export default function ExperienceWindow() {
             {j.current && (
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, marginTop: 8, fontFamily: MONO, fontSize: 8.5, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#00ff88' }}>
                 <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#00ff88', boxShadow: '0 0 6px #00ff88', animation: 'exp-pulse 1.5s ease-in-out infinite', display: 'inline-block' }} />
-                Actual
+                {t('exp.current', lang)}
               </div>
             )}
           </div>
@@ -93,7 +96,7 @@ export default function ExperienceWindow() {
         {/* Fading content */}
         <div style={{ opacity: fading ? 0 : 1, transition: 'opacity .18s ease', position: 'relative', zIndex: 1 }}>
           <div style={{ fontFamily: MONO, fontSize: 10.5, color: T.crumb, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 12 }}>
-            POSICIÓN · <b style={{ color: '#00d4ff', fontWeight: 600 }}>{String(selected + 1).padStart(2, '0')}</b> · {job.current ? 'FULL TIME' : 'PRÁCTICAS'}
+            {t('exp.position', lang)} · <b style={{ color: '#00d4ff', fontWeight: 600 }}>{String(selected + 1).padStart(2, '0')}</b> · {job.current ? t('exp.fullTime', lang) : t('exp.intern', lang)}
           </div>
 
           <h1 style={{
@@ -124,7 +127,7 @@ export default function ExperienceWindow() {
         {job.current && (
           <div style={{ position: 'absolute', left: 38, bottom: 28, zIndex: 1, display: 'inline-flex', alignItems: 'center', gap: 9, fontFamily: MONO, fontSize: 10, color: T.statusText, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#00ff88', boxShadow: '0 0 8px #00ff88, 0 0 16px #00ff88', animation: 'exp-pulse 1.5s ease-in-out infinite', display: 'inline-block' }} />
-            En activo · <b style={{ color: '#00ff88', fontWeight: 700 }}>disponible para proyectos</b>
+            {t('exp.active', lang)} · <b style={{ color: '#00ff88', fontWeight: 700 }}>{t('exp.available', lang)}</b>
           </div>
         )}
       </div>

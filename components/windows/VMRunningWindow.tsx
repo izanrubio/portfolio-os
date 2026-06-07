@@ -10,7 +10,7 @@ const DIM    = '#00aa2a';
 
 /* ── mild password obfuscation ── */
 const _p = (s: string) => s;
-const PASS = _p(['iz','an','20','24'].join(''));
+const PASS = _p('root');
 
 /* ── boot sequence ── */
 interface BootLine { text: string; type?: 'ok' | 'warn' | 'dim' | 'plain'; delay: number; }
@@ -104,8 +104,11 @@ function Certificate({ name, date }: { name: string; date: string }) {
       <div style={{ position: 'absolute', bottom: 16, left: 16, width: 24, height: 24, borderBottom: '2px solid rgba(0,245,255,.8)', borderLeft: '2px solid rgba(0,245,255,.8)' }} />
       <div style={{ position: 'absolute', bottom: 16, right: 16, width: 24, height: 24, borderBottom: '2px solid rgba(0,245,255,.8)', borderRight: '2px solid rgba(0,245,255,.8)' }} />
 
+      {/* Verified badge — absolute top-right */}
+      <div style={{ position: 'absolute', top: 20, right: 20, zIndex: 3, background: 'rgba(0,255,136,0.10)', border: '1px solid rgba(0,255,136,0.40)', color: '#00ff88', fontFamily: STM, fontSize: 9, letterSpacing: '2px', padding: '4px 12px', textTransform: 'uppercase', borderRadius: 0 }}>✓ VERIFIED</div>
+
       {/* ── Header ── */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28, position: 'relative', zIndex: 1 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 28, position: 'relative', zIndex: 1 }}>
         {/* Hex logo */}
         <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ filter: 'drop-shadow(0 0 12px rgba(0,245,255,.6))', flexShrink: 0 }}>
           <defs>
@@ -118,13 +121,10 @@ function Certificate({ name, date }: { name: string; date: string }) {
         </svg>
 
         {/* Center labels */}
-        <div style={{ textAlign: 'center', flex: 1 }}>
+        <div style={{ textAlign: 'left' }}>
           <div style={{ fontFamily: STM, fontSize: 10, letterSpacing: 4, color: 'rgba(0,245,255,.7)', textTransform: 'uppercase', marginBottom: 4 }}>IzanOS Aurora 0.3</div>
           <div style={{ fontFamily: ORB, fontSize: 11, fontWeight: 400, letterSpacing: 6, color: 'rgba(255,255,255,.3)', textTransform: 'uppercase' }}>Security Certification</div>
         </div>
-
-        {/* Verified badge */}
-        <div style={{ background: 'rgba(0,255,136,.10)', border: '1px solid rgba(0,255,136,.3)', color: '#00ff88', fontFamily: STM, fontSize: 9, letterSpacing: 2, padding: '4px 10px', textTransform: 'uppercase', flexShrink: 0 }}>✓ Verified</div>
       </div>
 
       {/* Divider */}
@@ -339,7 +339,7 @@ export default function VMRunningWindow({ shutdownPending, onCancelShutdown, onC
         const file = parts.slice(1).join(' ');
         if (file === 'README.txt')              { addOut(README); addBlank(); return; }
         if (file === 'notes.enc')               { addLine(mkLine('b64', B64_ENCODED)); addBlank(); return; }
-        if (file === '/opt/.hidden/hint.txt')   { addOut('La password de root tiene exactamente 8 caracteres.\nEstá compuesta por: nombre del autor + año de creación del portfolio.\nFormato: [nombre][año]'); addBlank(); return; }
+        if (file === '/opt/.hidden/hint.txt')   { addOut('El usuario más poderoso de cualquier sistema Linux\ntiene una contraseña igual a su nombre.'); addBlank(); return; }
         if (file === '/opt/.hidden/pass.txt')   { addLine(mkLine('b64', 'aGFzaGVkOiBub3QgdGhhdCBlYXN5IDsp')); addBlank(); return; }
         if (file === '/root/flag.txt')          { addOut('cat: /root/flag.txt: Permission denied', 'error'); addBlank(); return; }
         addOut(`cat: ${file}: No such file or directory`, 'error'); addBlank(); return;

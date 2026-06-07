@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { personal } from '@/data/content';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
-import { tRoles } from '@/data/translations';
+import { t, tRoles } from '@/data/translations';
 
 const MONO   = 'var(--font-jetbrains), monospace';
 const INTER  = 'var(--font-inter), Inter, sans-serif';
@@ -135,6 +135,8 @@ export default function WhoamiWindow() {
           src={personal.photo}
           alt={personal.name}
           fill
+          priority
+          sizes="40vw"
           style={{ objectFit: 'cover', objectPosition: 'center top' }}
         />
         {/* Duotone */}
@@ -247,12 +249,12 @@ export default function WhoamiWindow() {
 
           {/* Bio */}
           <p style={{ fontFamily: INTER, fontSize: '14px', lineHeight: 1.85, color: isDark ? '#9ba3af' : '#475569', maxWidth: '380px', margin: 0 }}>
-            {personal.shortBio}
+            {t('whoami.bio', lang)}
           </p>
 
           {/* Contact items */}
           <div style={{ marginTop: '28px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <ContactItem icon={EMAIL_ICON} label="Email">
+            <ContactItem icon={EMAIL_ICON} label={t('contact.label.email', lang)}>
               <ContactLink href={`mailto:${personal.contact.email}`}>{personal.contact.email}</ContactLink>
             </ContactItem>
             <ContactItem icon={GITHUB_ICON} label="GitHub">
@@ -261,10 +263,10 @@ export default function WhoamiWindow() {
             <ContactItem icon={LINKEDIN_ICON} label="LinkedIn">
               <ContactLink href={personal.contact.linkedin} target="_blank">{personal.contact.linkedin.replace('https://', '')}</ContactLink>
             </ContactItem>
-            <ContactItem icon={LOCATION_ICON} label="Location">
+            <ContactItem icon={LOCATION_ICON} label={t('contact.label.location', lang)}>
               {personal.location}
             </ContactItem>
-            <ContactItem icon={PHONE_ICON} label="Phone">
+            <ContactItem icon={PHONE_ICON} label={t('contact.label.phone', lang)}>
               <ContactLink href={`tel:+34${personal.contact.phone}`}>{phoneFormatted}</ContactLink>
             </ContactItem>
           </div>
@@ -287,7 +289,7 @@ export default function WhoamiWindow() {
                 animation: 'whoamiPulseDot 1.6s ease-in-out infinite',
                 flexShrink: 0, display: 'inline-block',
               }} />
-              {personal.statusText}
+              {t('whoami.status', lang)}
             </div>
             <div style={{ fontFamily: MONO, fontSize: '10px', color: isDark ? 'rgba(255,255,255,0.3)' : '#94a3b8', letterSpacing: '0.1em' }}>
               {statusRight.split(' · ').map((part, i, arr) => (

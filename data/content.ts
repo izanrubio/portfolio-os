@@ -370,7 +370,7 @@ export const education = [
     fullDegree: 'Curso de Especialización en Ciberseguridad',
     institute: 'IES Nicolau Copèrnic, Terrassa',
     period: 'Sep 2025 — May 2026',
-    current: true,
+    current: false,
     description: 'Especialización en seguridad ofensiva, análisis de vulnerabilidades y herramientas de ciberseguridad.',
     tags: ['Kali Linux', 'OWASP', 'Pentesting', 'CTF'],
   },

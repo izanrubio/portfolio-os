@@ -302,18 +302,37 @@ function SkillsApp() {
 ════════════════════════════════════════ */
 function ContactApp() {
   const [form, setForm] = useState({ name: '', email: '', msg: '' });
-  const [sent, setSent]   = useState(false);
-  const [errs, setErrs]   = useState<Set<string>>(new Set());
+  const [sent, setSent]         = useState(false);
+  const [loading, setLoading]   = useState(false);
+  const [apiError, setApiError] = useState(false);
+  const [errs, setErrs]         = useState<Set<string>>(new Set());
   const { theme } = useTheme();
   const { lang } = useLanguage();
   const isDark = theme === 'dark';
   const accent = APP_ACCENTS.contact;
 
-  const submit = () => {
+  const submit = async () => {
     const empty = Object.entries(form).filter(([, v]) => !v.trim()).map(([k]) => k);
     if (empty.length) { setErrs(new Set(empty)); setTimeout(() => setErrs(new Set()), 400); return; }
-    setSent(true); setForm({ name: '', email: '', msg: '' });
-    setTimeout(() => setSent(false), 2600);
+    setLoading(true);
+    setApiError(false);
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: form.name, email: form.email, message: form.msg, subject: `Portfolio contact from ${form.name}` }),
+      });
+      if (res.ok) {
+        setSent(true); setForm({ name: '', email: '', msg: '' });
+        setTimeout(() => setSent(false), 4000);
+      } else {
+        setApiError(true); setTimeout(() => setApiError(false), 3500);
+      }
+    } catch {
+      setApiError(true); setTimeout(() => setApiError(false), 3500);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const iStyle = (k: string): React.CSSProperties => ({
@@ -374,15 +393,24 @@ function ContactApp() {
           <label style={{ display: 'block', fontFamily: MONO, fontSize: 9, color: isDark ? 'rgba(255,255,255,.4)' : '#94a3b8', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 6 }}>{t('contact.form.message', lang)}</label>
           <textarea placeholder={t('contact.form.msgPlaceholder', lang)} value={form.msg} onChange={e => setForm(p => ({ ...p, msg: e.target.value }))} rows={3} style={{ ...iStyle('msg'), resize: 'none', lineHeight: 1.5 }} />
         </div>
-        <button onClick={submit} style={{
-          width: '100%', padding: 14, border: 'none', borderRadius: 12, cursor: 'pointer',
+        <button onClick={submit} disabled={loading || sent} style={{
+          width: '100%', padding: 14, border: 'none', borderRadius: 12, cursor: loading || sent ? 'default' : 'pointer',
           background: sent ? 'linear-gradient(135deg,#00c97a,#00ff9d)' : `linear-gradient(135deg,#ff6b00,${accent})`,
           color: sent ? '#00220f' : '#1a0c00', fontFamily: INTER, fontSize: 14, fontWeight: 700,
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-          transition: 'transform .15s, background .35s',
+          transition: 'transform .15s, background .35s', opacity: loading ? 0.7 : 1,
         }}>
-          {sent ? t('mobile.contact.sent', lang) : <>{t('contact.form.send', lang)} <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg></>}
+          {loading
+            ? <><span style={{ width: 14, height: 14, border: '2px solid rgba(0,0,0,0.25)', borderTopColor: '#000', borderRadius: '50%', animation: 'mob-spin .7s linear infinite', display: 'inline-block' }} /><span>{{ CAS: 'Enviando...', CAT: 'Enviant...', ENG: 'Sending...' }[lang] ?? 'Sending...'}</span></>
+            : sent ? t('mobile.contact.sent', lang)
+            : <>{t('contact.form.send', lang)} <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg></>
+          }
         </button>
+        {apiError && (
+          <div style={{ marginTop: 10, padding: '10px 14px', borderRadius: 8, background: 'rgba(255,71,87,0.10)', border: '1px solid rgba(255,71,87,0.30)', color: '#ff4757', fontFamily: INTER, fontSize: 13, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span>✕</span><span>{{ CAS: 'Error al enviar, inténtalo de nuevo', CAT: 'Error en enviar, torna-ho a provar', ENG: 'Error sending, please try again' }[lang] ?? 'Error sending, please try again'}</span>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -1270,6 +1298,7 @@ export default function MobilePortfolio() {
         @keyframes mob-dotpulse{50%{opacity:.35;}}
         @keyframes mob-blink{0%,100%{opacity:1;}50%{opacity:0;}}
         @keyframes mob-shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}75%{transform:translateX(4px);}}
+        @keyframes mob-spin{to{transform:rotate(360deg);}}
         @keyframes mob-floatup{0%,100%{transform:translateY(0);opacity:.5;}50%{transform:translateY(-6px);opacity:.9;}}
         @keyframes mob-tlrise{to{opacity:1;transform:translateY(0);}}
         .mob-lock{position:absolute;inset:0;z-index:50;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);display:flex;flex-direction:column;align-items:center;transition:transform .5s cubic-bezier(.4,0,.2,1),opacity .4s ease;}
