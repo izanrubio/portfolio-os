@@ -68,13 +68,12 @@ export default function EducationWindow() {
   return (
     <div
       style={{
-        height: '100%',
+        position: 'absolute',
+        inset: 0,
         display: 'flex',
         flexDirection: 'column',
-        boxSizing: 'border-box',
         padding: '28px 32px 24px',
         background: bg,
-        position: 'relative',
         overflow: 'hidden',
       }}
     >

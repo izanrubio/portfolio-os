@@ -112,7 +112,9 @@ export default function ExperienceWindow() {
 
           <div style={{ width: 40, height: 3, background: '#00d4ff', borderRadius: 2, margin: '20px 0', boxShadow: '0 0 10px rgba(0,212,255,.45)' }} />
 
-          <div style={{ fontSize: 14, lineHeight: 1.8, color: T.desc, maxWidth: 440, fontFamily: INTER }}>{job.description}</div>
+          <div style={{ fontSize: 14, lineHeight: 1.8, color: T.desc, maxWidth: 440, fontFamily: INTER }}>
+            {t(job.company === 'VideoAtención' ? 'exp.desc.videoatencion' : 'exp.desc.duoly', lang)}
+          </div>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 22 }}>
             {job.stack.map(s => (

@@ -379,7 +379,7 @@ export const education = [
     fullDegree: 'CFGS DAW — Desarrollo de Aplicaciones Web',
     institute: 'IES Nicolau Copèrnic, Terrassa',
     period: 'Sep 2023 — May 2025',
-    current: false,
+    current: true,
     description: '',
     tags: ['HTML', 'CSS', 'JavaScript', 'PHP', 'MySQL', 'Laravel'],
   },

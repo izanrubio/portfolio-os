@@ -138,10 +138,12 @@ export function useWindowManager() {
     return topZRef.current;
   };
 
+  const clampY = (y: number) => Math.max(28, Math.min((globalThis.innerHeight ?? 800) - 150, y));
+
   const openWindow = useCallback((id: WindowId) => {
     const z = bumpZ();
     setWindows(prev => prev.map(w =>
-      w.id === id ? { ...w, isOpen: true, isMinimized: false, zIndex: z } : w
+      w.id === id ? { ...w, isOpen: true, isMinimized: false, zIndex: z, position: { ...w.position, y: clampY(w.position.y) } } : w
     ));
   }, []);
 
@@ -184,9 +186,11 @@ export function useWindowManager() {
 
   const toggleWindow = useCallback((id: WindowId) => {
     const z = bumpZ();
-    setWindows(prev => prev.map(w =>
-      w.id === id ? { ...w, isMinimized: !w.isMinimized, zIndex: w.isMinimized ? z : w.zIndex } : w
-    ));
+    setWindows(prev => prev.map(w => {
+      if (w.id !== id) return w;
+      if (!w.isMinimized) return { ...w, isMinimized: true };
+      return { ...w, isMinimized: false, zIndex: z, position: { ...w.position, y: clampY(w.position.y) } };
+    }));
   }, []);
 
   const navigateBrowser = useCallback((url: string) => {

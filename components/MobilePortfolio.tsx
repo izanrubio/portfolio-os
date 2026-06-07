@@ -192,7 +192,7 @@ function AboutApp() {
             <span style={{ fontFamily: INTER, fontWeight: 800, fontSize: 32, color: '#fff', letterSpacing: '0.05em' }}>IR</span>
           </div>
         ) : (
-          <Image src={personal.photo} alt={personal.name} fill
+          <Image src={personal.photo} alt={personal.name} fill sizes="100vw"
             style={{ objectFit: 'cover', objectPosition: 'top' }}
             onError={() => setPhotoErr(true)} />
         )}
@@ -1052,6 +1052,7 @@ function Badge({ type, label }: { type: 'live' | 'cur' | 'done'; label: string }
 ════════════════════════════════════════ */
 function ExperienceApp() {
   const { theme } = useTheme();
+  const { lang }  = useLanguage();
   const isDark = theme === 'dark';
   const accent = '#00d4ff';
   const COL   = isDark ? '#fff' : '#0f172a';
@@ -1069,8 +1070,8 @@ function ExperienceApp() {
 
   return (
     <div style={{ flex: 1, overflowY: 'auto', paddingBottom: 40 }}>
-      <VHero eyebrow="Experiencia Laboral" title="Work Experience" deco="JOB" accent={accent}
-        sub={`${experience.length} posiciones`} />
+      <VHero eyebrow={t('exp.eyebrow', lang)} title="Work Experience" deco="JOB" accent={accent}
+        sub={t('exp.positions', lang)} />
       <div style={{ position: 'relative', padding: '8px 22px 40px 40px' }}>
         {/* Timeline vertical line */}
         <div style={{ position: 'absolute', left: 28, top: 14, bottom: 40, width: 2, background: `linear-gradient(180deg, ${accent}, rgba(255,255,255,0.08))`, borderRadius: 2 }} />
@@ -1085,9 +1086,9 @@ function ExperienceApp() {
                   <div style={{ fontSize: 14, fontWeight: 500, marginTop: 3, color: e.current ? accent : MUTED }}>{e.role}</div>
                   <div style={{ fontFamily: MONO, fontSize: 11, color: DATE, marginTop: 6 }}>{e.period}</div>
                 </div>
-                {e.current && <Badge type="live" label="Actual" />}
+                {e.current && <Badge type="live" label={t('exp.current', lang)} />}
               </div>
-              {e.description && <div style={{ fontSize: 13, color: MUTED, lineHeight: 1.6, marginTop: 10 }}>{e.description}</div>}
+              {e.description && <div style={{ fontSize: 13, color: MUTED, lineHeight: 1.6, marginTop: 10 }}>{t(e.company === 'VideoAtención' ? 'exp.desc.videoatencion' : 'exp.desc.duoly', lang)}</div>}
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 12 }}>
                 {e.stack.map(s => <span key={s} style={e.current ? CHIP_HL : CHIP_BASE}>{s}</span>)}
               </div>
@@ -1104,6 +1105,7 @@ function ExperienceApp() {
 ════════════════════════════════════════ */
 function EducationApp() {
   const { theme } = useTheme();
+  const { lang }  = useLanguage();
   const isDark = theme === 'dark';
   const accent = '#7c3aed';
   const COL   = isDark ? '#fff' : '#0f172a';
@@ -1121,7 +1123,7 @@ function EducationApp() {
 
   return (
     <div style={{ flex: 1, overflowY: 'auto', paddingBottom: 40 }}>
-      <VHero eyebrow="Formación Académica" title="Education" deco="EDU" accent={accent}
+      <VHero eyebrow={t('edu.eyebrow', lang)} title="Education" deco="EDU" accent={accent}
         sub="IES Nicolau Copèrnic · Terrassa" />
       <div style={{ position: 'relative', padding: '8px 22px 40px 40px' }}>
         <div style={{ position: 'absolute', left: 28, top: 14, bottom: 40, width: 2, background: `linear-gradient(180deg, ${accent}, rgba(255,255,255,0.08))`, borderRadius: 2 }} />
@@ -1136,9 +1138,9 @@ function EducationApp() {
                   {e.fullDegree !== e.degree && <div style={{ fontSize: 12, color: MUTED, marginTop: 1 }}>{e.institute}</div>}
                   <div style={{ fontFamily: MONO, fontSize: 11, color: DATE, marginTop: 6 }}>{e.period}</div>
                 </div>
-                {e.current ? <Badge type="cur" label="En curso" /> : <Badge type="done" label="Completado" />}
+                {e.current ? <Badge type="cur" label={t('edu.inProgress', lang)} /> : <Badge type="done" label={t('edu.finished', lang)} />}
               </div>
-              {e.description && <div style={{ fontSize: 13, color: MUTED, lineHeight: 1.6, marginTop: 10 }}>{e.description}</div>}
+              {e.description && <div style={{ fontSize: 13, color: MUTED, lineHeight: 1.6, marginTop: 10 }}>{t('edu.desc.ciberseguridad', lang)}</div>}
               {e.tags.length > 0 && (
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 12 }}>
                   {e.tags.map(tag => <span key={tag} style={e.current ? CHIP_HL : CHIP_BASE}>{tag}</span>)}

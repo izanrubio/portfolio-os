@@ -115,6 +115,7 @@ const translations: Record<Lang, Record<string, string>> = {
     'edu.eyebrow':          'FORMACIÓN ACADÉMICA',
     'edu.inProgress':       'EN CURSO',
     'edu.finished':         'FINALIZADO',
+    'edu.desc.ciberseguridad': 'Especialización en seguridad ofensiva, análisis de vulnerabilidades y herramientas de ciberseguridad.',
     // Experience window
     'exp.current':   'Actual',
     'exp.fullTime':  'FULL TIME',
@@ -122,6 +123,10 @@ const translations: Record<Lang, Record<string, string>> = {
     'exp.position':  'POSICIÓN',
     'exp.active':    'En activo',
     'exp.available': 'disponible para proyectos',
+    'exp.eyebrow':   'EXPERIENCIA LABORAL',
+    'exp.positions': '2 posiciones',
+    'exp.desc.videoatencion': 'Desarrollo y mantenimiento de aplicaciones web. Trabajo con tecnologías modernas en un entorno profesional real.',
+    'exp.desc.duoly':         'Prácticas de desarrollo web. Creación de maquetas, scripts automatizados para SEO e Instagram.',
     // Project categories
     'proj.stastarat.category':    'WEB · ASOCIACIÓN CULTURAL',
     'proj.laraveles.category':    'EDUCACIÓN · CONTENIDO',
@@ -268,6 +273,7 @@ const translations: Record<Lang, Record<string, string>> = {
     'edu.eyebrow':          'FORMACIÓ ACADÈMICA',
     'edu.inProgress':       'EN CURS',
     'edu.finished':         'FINALITZAT',
+    'edu.desc.ciberseguridad': 'Especialització en seguretat ofensiva, anàlisi de vulnerabilitats i eines de ciberseguretat.',
     // Experience window
     'exp.current':   'Actual',
     'exp.fullTime':  'JORNADA COMPLETA',
@@ -275,6 +281,10 @@ const translations: Record<Lang, Record<string, string>> = {
     'exp.position':  'POSICIÓ',
     'exp.active':    'En actiu',
     'exp.available': 'disponible per a projectes',
+    'exp.eyebrow':   'EXPERIÈNCIA LABORAL',
+    'exp.positions': '2 posicions',
+    'exp.desc.videoatencion': "Desenvolupament i manteniment d'aplicacions web. Treball amb tecnologies modernes en un entorn professional real.",
+    'exp.desc.duoly':         "Pràctiques de desenvolupament web. Creació de maquetes, scripts automatitzats per a SEO i Instagram.",
     // Project categories
     'proj.stastarat.category':    "WEB · ASSOCIACIÓ CULTURAL",
     'proj.laraveles.category':    'EDUCACIÓ · CONTINGUT',
@@ -421,6 +431,7 @@ const translations: Record<Lang, Record<string, string>> = {
     'edu.eyebrow':          'ACADEMIC BACKGROUND',
     'edu.inProgress':       'IN PROGRESS',
     'edu.finished':         'FINISHED',
+    'edu.desc.ciberseguridad': 'Specialisation in offensive security, vulnerability analysis and cybersecurity tools.',
     // Experience window
     'exp.current':   'Current',
     'exp.fullTime':  'FULL TIME',
@@ -428,6 +439,10 @@ const translations: Record<Lang, Record<string, string>> = {
     'exp.position':  'POSITION',
     'exp.active':    'Active',
     'exp.available': 'available for projects',
+    'exp.eyebrow':   'WORK EXPERIENCE',
+    'exp.positions': '2 positions',
+    'exp.desc.videoatencion': 'Web application development and maintenance. Working with modern technologies in a real professional environment.',
+    'exp.desc.duoly':         'Web development internship. Mockup creation, automated scripts for SEO and Instagram.',
     // Project categories
     'proj.stastarat.category':    'WEB · CULTURAL ASSOCIATION',
     'proj.laraveles.category':    'EDUCATION · CONTENT',
