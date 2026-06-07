@@ -95,6 +95,118 @@ export default function Taskbar({ windows, onWindowFocus, onWindowToggle, onOpen
   const isOpen     = (id: WindowId) => windows.find(w => w.id === id)?.isOpen ?? false;
   const isHovering = mouseX !== null;
 
+  const vmWin       = windows.find(w => w.id === 'vm-running');
+  const vmIsRunning = vmWin?.isOpen ?? false;
+  const vmIdx       = DOCK_ITEMS.length; // extra slot after static items
+
+  const handleVmClick = () => {
+    if (!vmWin?.isOpen) return;
+    if (vmWin.isMinimized) {
+      onWindowToggle('vm-running');
+    } else {
+      onWindowFocus('vm-running');
+    }
+  };
+
+  const renderDockItem = (item: DockItem, idx: number) => {
+    const scale      = getScale(idx);
+    const lift       = (scale - 1) * 20;
+    const open       = isOpen(item.id);
+    const isHov      = hoveredIdx === idx;
+    const isPressed  = pressedIdx === idx;
+    const pressScale = isPressed ? 0.92 : 1;
+
+    return (
+      <div key={item.id} style={{ display: 'contents' }}>
+        {idx === SEPARATOR_BEFORE && (
+          <div
+            style={{
+              width: '1px', height: '44px',
+              background: 'rgba(255,255,255,0.15)',
+              margin: '0 6px 8px',
+              flexShrink: 0,
+              alignSelf: 'flex-end',
+            }}
+            aria-hidden="true"
+          />
+        )}
+
+        <div
+          className="flex flex-col items-center"
+          style={{ position: 'relative', overflow: 'visible' }}
+        >
+          {/* Tooltip */}
+          <div
+            style={{
+              position: 'absolute',
+              bottom: 'calc(100% + 12px)',
+              left: '50%',
+              transform: `translateX(-50%) translateY(${isHov ? '0px' : '4px'})`,
+              padding: '6px 12px',
+              background: 'var(--tip-bg)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              border: '1px solid var(--tip-bd)',
+              borderRadius: '8px',
+              fontFamily: 'var(--font-jetbrains), monospace',
+              fontSize: '11px',
+              fontWeight: 500,
+              color: 'var(--tip-text)',
+              whiteSpace: 'nowrap',
+              pointerEvents: 'none',
+              opacity: isHov ? 1 : 0,
+              transition: 'opacity 0.15s ease, transform 0.15s ease',
+              zIndex: 9999,
+            }}
+          >
+            {t(item.labelKey, lang)}
+            <div
+              style={{
+                position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)',
+                width: 0, height: 0,
+                borderLeft: '5px solid transparent',
+                borderRight: '5px solid transparent',
+                borderTop: '5px solid var(--tip-bg)',
+              }}
+            />
+          </div>
+
+          {/* Icon */}
+          <div
+            ref={el => { iconRefs.current[idx] = el; }}
+            style={{
+              transformOrigin: 'bottom center',
+              transform: `translateY(${-lift}px) scale(${scale * pressScale})`,
+              transition: isHovering
+                ? 'transform .12s cubic-bezier(.2,.8,.2,1)'
+                : 'transform .35s cubic-bezier(.34,1.56,.64,1)',
+              willChange: 'transform',
+              cursor: 'pointer',
+            }}
+            onClick={() => handleItemClick(item)}
+            onMouseDown={() => setPressedIdx(idx)}
+            onMouseUp={() => setPressedIdx(null)}
+            onMouseLeave={() => setPressedIdx(null)}
+          >
+            <item.Icon />
+          </div>
+
+          {/* Open indicator dot */}
+          <div
+            style={{
+              width: '4px', height: '4px', borderRadius: '50%',
+              marginTop: '8px',
+              background: open ? 'var(--open-dot)' : 'transparent',
+              boxShadow: open ? '0 0 6px rgba(255,255,255,.5)' : 'none',
+              opacity: open ? 1 : 0,
+              transition: 'opacity .25s ease',
+            }}
+          />
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div
       className="fixed z-50"
@@ -117,28 +229,28 @@ export default function Taskbar({ windows, onWindowFocus, onWindowToggle, onOpen
         onMouseMove={handleDockMouseMove}
         onMouseLeave={handleDockMouseLeave}
       >
-        {DOCK_ITEMS.map((item, idx) => {
-          const scale      = getScale(idx);
-          const lift       = (scale - 1) * 20;
-          const open       = isOpen(item.id);
-          const isHov      = hoveredIdx === idx;
-          const isPressed  = pressedIdx === idx;
-          const pressScale = isPressed ? 0.92 : 1;
+        {DOCK_ITEMS.map((item, idx) => renderDockItem(item, idx))}
 
+        {/* VM Running icon — only visible when vm-running window is open */}
+        {vmIsRunning && (() => {
+          const scale      = getScale(vmIdx);
+          const lift       = (scale - 1) * 20;
+          const isHov      = hoveredIdx === vmIdx;
+          const isPressed  = pressedIdx === vmIdx;
+          const pressScale = isPressed ? 0.92 : 1;
           return (
-            <div key={item.id} style={{ display: 'contents' }}>
-              {idx === SEPARATOR_BEFORE && (
-                <div
-                  style={{
-                    width: '1px', height: '44px',
-                    background: 'rgba(255,255,255,0.15)',
-                    margin: '0 6px 8px',
-                    flexShrink: 0,
-                    alignSelf: 'flex-end',
-                  }}
-                  aria-hidden="true"
-                />
-              )}
+            <div key="vm-running-dock" style={{ display: 'contents' }}>
+              {/* separator before VM icon */}
+              <div
+                style={{
+                  width: '1px', height: '44px',
+                  background: 'rgba(255,255,255,0.15)',
+                  margin: '0 6px 8px',
+                  flexShrink: 0,
+                  alignSelf: 'flex-end',
+                }}
+                aria-hidden="true"
+              />
 
               <div
                 className="flex flex-col items-center"
@@ -168,7 +280,7 @@ export default function Taskbar({ windows, onWindowFocus, onWindowToggle, onOpen
                     zIndex: 9999,
                   }}
                 >
-                  {t(item.labelKey, lang)}
+                  IzanOS-Vulnerable-v1.0
                   <div
                     style={{
                       position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)',
@@ -180,9 +292,9 @@ export default function Taskbar({ windows, onWindowFocus, onWindowToggle, onOpen
                   />
                 </div>
 
-                {/* Icon */}
+                {/* Icon — VirtualBoxIcon with green Running badge */}
                 <div
-                  ref={el => { iconRefs.current[idx] = el; }}
+                  ref={el => { iconRefs.current[vmIdx] = el; }}
                   style={{
                     transformOrigin: 'bottom center',
                     transform: `translateY(${-lift}px) scale(${scale * pressScale})`,
@@ -191,30 +303,44 @@ export default function Taskbar({ windows, onWindowFocus, onWindowToggle, onOpen
                       : 'transform .35s cubic-bezier(.34,1.56,.64,1)',
                     willChange: 'transform',
                     cursor: 'pointer',
+                    position: 'relative',
                   }}
-                  onClick={() => handleItemClick(item)}
-                  onMouseDown={() => setPressedIdx(idx)}
+                  onClick={handleVmClick}
+                  onMouseDown={() => setPressedIdx(vmIdx)}
                   onMouseUp={() => setPressedIdx(null)}
                   onMouseLeave={() => setPressedIdx(null)}
                 >
-                  <item.Icon />
+                  <VirtualBoxIcon />
+                  {/* Running badge — cyan outline + Kali logo */}
+                  <div style={{
+                    position: 'absolute', bottom: 2, right: 2,
+                    width: 16, height: 16, borderRadius: '50%',
+                    background: '#000',
+                    border: '1.5px solid #28c840',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    boxShadow: '0 0 6px rgba(40,200,64,.7)',
+                  }}>
+                    <svg viewBox="0 0 10 10" style={{ width: 8, height: 8 }}>
+                      <circle cx="5" cy="5" r="4" fill="none" stroke="#28c840" strokeWidth="1.2"/>
+                      <path d="M3.5 5 4.8 6.2 6.5 3.8" stroke="#28c840" strokeWidth="1" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
                 </div>
 
-                {/* Open indicator dot */}
+                {/* Green dot — always on since icon only shows when running */}
                 <div
                   style={{
                     width: '4px', height: '4px', borderRadius: '50%',
                     marginTop: '8px',
-                    background: open ? 'var(--open-dot)' : 'transparent',
-                    boxShadow: open ? '0 0 6px rgba(255,255,255,.5)' : 'none',
-                    opacity: open ? 1 : 0,
+                    background: '#28c840',
+                    boxShadow: '0 0 6px rgba(40,200,64,.7)',
                     transition: 'opacity .25s ease',
                   }}
                 />
               </div>
             </div>
           );
-        })}
+        })()}
       </div>
     </div>
   );
