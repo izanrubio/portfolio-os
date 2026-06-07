@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import AppIcon from '@/components/AppIcon';
 import { personal } from '@/data/content';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -41,54 +42,6 @@ const DOCK_APPS: AppDef[] = [
   { id: 'browser',  labelKey: 'dock.browser',  grad: 'linear-gradient(145deg,#60a5fa,#2563eb)' },
   { id: 'terminal', labelKey: 'dock.terminal', grad: 'linear-gradient(145deg,#1e2a1e,#0f1a0f)', term: true },
 ];
-
-/* ── SVG icon paths (React nodes, no dangerouslySetInnerHTML) ── */
-function AppIcon({ app, size, onOpen }: { app: AppDef; size: number; onOpen: (id: string) => void }) {
-  const radius = size <= 56 ? 15 : 18;
-  const iconSize = size <= 56 ? 25 : 29;
-  const iconColor = app.term ? 'rgba(34,211,165,.9)' : '#fff';
-
-  const IconPath = () => {
-    switch (app.id) {
-      case 'projects':   return <><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M8 13h8M8 17h5"/></>;
-      case 'about':      return <><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.5 4.5-7 8-7s7 2.5 8 7"/></>;
-      case 'skills':     return <path d="M13 2 4 14h7l-1 8 9-12h-7z"/>;
-      case 'contact':    return <path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.5 8.6 8.6 0 0 1-3.8-.9L3 21l1.9-5.7A8.4 8.4 0 0 1 4 11.5 8.5 8.5 0 0 1 21 11.5z"/>;
-      case 'browser':    return <><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a13 13 0 0 1 0 18M12 3a13 13 0 0 0 0 18"/></>;
-      case 'files':      return <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>;
-      case 'terminal':   return <><path d="M5 8l4 4-4 4"/><path d="M12 17h7"/></>;
-      case 'game':       return <><rect x="2" y="7" width="20" height="10" rx="4"/><line x1="7" y1="11" x2="7" y2="13"/><line x1="6" y1="12" x2="8" y2="12"/><circle cx="16" cy="11.5" r="1" fill="currentColor"/><circle cx="18" cy="13.5" r="1" fill="currentColor"/></>;
-      case 'settings':   return <><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></>;
-      case 'experience': return <><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></>;
-      case 'education':  return <><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1 2.5 2.5 6 2.5s6-1.5 6-2.5v-5"/></>;
-      case 'chat':       return <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>;
-      default: return null;
-    }
-  };
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7, cursor: 'pointer' }} onClick={() => onOpen(app.id)}>
-      <div style={{
-        width: size, height: size, borderRadius: radius, background: app.grad,
-        border: app.term ? '1px solid rgba(34,211,165,.3)' : 'none',
-        position: 'relative', overflow: 'hidden',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        boxShadow: '0 8px 18px -6px rgba(0,0,0,.6)', flexShrink: 0,
-      }}>
-        {/* Top shimmer line */}
-        <div style={{ position: 'absolute', top: 0, left: '12%', right: '12%', height: 1, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent)' }} />
-        <svg viewBox="0 0 24 24" fill="none" stroke={iconColor} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ width: iconSize, height: iconSize }}>
-          <IconPath />
-        </svg>
-      </div>
-      {size > 56 && (
-        <span style={{ fontSize: 11, color: 'rgba(255,255,255,.85)', textShadow: '0 1px 3px rgba(0,0,0,.6)', textAlign: 'center', fontFamily: OUTFIT, lineHeight: 1.2 }}>
-          {/* label provided by parent */}
-        </span>
-      )}
-    </div>
-  );
-}
 
 /* ── Status bar icons ── */
 function StatusIcons({ color = '#fff' }: { color?: string }) {
@@ -185,8 +138,8 @@ export default function MobileHomescreen({ isVisible, dimmed, onOpenApp }: Props
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '20px 12px', padding: '4px 20px 0' }}>
             {fullRows.map(app => (
               <motion.div key={app.id} variants={itemVars} whileTap={{ scale: 0.88 }} style={{ display: 'flex', justifyContent: 'center' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7 }}>
-                  <AppIcon app={app} size={64} onOpen={onOpenApp} />
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7, cursor: 'pointer' }} onClick={() => onOpenApp(app.id)}>
+                  <AppIcon app={app.id} size={64} />
                   <span style={{ fontSize: 11, color: isDark ? 'rgba(255,255,255,.85)' : 'rgba(0,0,0,.75)', textShadow: isDark ? '0 1px 3px rgba(0,0,0,.6)' : 'none', textAlign: 'center', fontFamily: OUTFIT, lineHeight: 1.2 }}>
                     {t(app.labelKey, lang)}
                   </span>
@@ -200,8 +153,8 @@ export default function MobileHomescreen({ isVisible, dimmed, onOpenApp }: Props
             <div style={{ display: 'flex', justifyContent: 'center', gap: 12, padding: '20px 20px 0' }}>
               {lastRow.map(app => (
                 <motion.div key={app.id} variants={itemVars} whileTap={{ scale: 0.88 }} style={{ width: `calc((100% - ${(COLS - 1) * 12}px) / ${COLS})`, maxWidth: 80, display: 'flex', justifyContent: 'center' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7 }}>
-                    <AppIcon app={app} size={64} onOpen={onOpenApp} />
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7, cursor: 'pointer' }} onClick={() => onOpenApp(app.id)}>
+                    <AppIcon app={app.id} size={64} />
                     <span style={{ fontSize: 11, color: isDark ? 'rgba(255,255,255,.85)' : 'rgba(0,0,0,.75)', textShadow: isDark ? '0 1px 3px rgba(0,0,0,.6)' : 'none', textAlign: 'center', fontFamily: OUTFIT, lineHeight: 1.2 }}>
                       {t(app.labelKey, lang)}
                     </span>
@@ -228,8 +181,8 @@ export default function MobileHomescreen({ isVisible, dimmed, onOpenApp }: Props
           borderRadius: 28, boxShadow: '0 8px 32px rgba(0,0,0,.4)',
         }}>
           {DOCK_APPS.map(app => (
-            <motion.div key={app.id} whileTap={{ scale: 0.88 }}>
-              <AppIcon app={app} size={56} onOpen={onOpenApp} />
+            <motion.div key={app.id} whileTap={{ scale: 0.88 }} style={{ cursor: 'pointer' }} onClick={() => onOpenApp(app.id)}>
+              <AppIcon app={app.id} size={56} />
             </motion.div>
           ))}
         </div>
