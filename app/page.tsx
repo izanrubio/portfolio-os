@@ -67,6 +67,7 @@ function HomeContent() {
   const {
     windows, openWindow, closeWindow, minimizeWindow, maximizeWindow,
     focusWindow, moveWindow, resizeWindow, toggleWindow, navigateBrowser,
+    openVM, vmShutdownPending, requestVmShutdown, cancelVmShutdown, confirmVmShutdown,
   } = useWindowManager();
 
   const idleTimerRef       = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -139,6 +140,11 @@ function HomeContent() {
               moveWindow={moveWindow}
               resizeWindow={resizeWindow}
               navigateBrowser={navigateBrowser}
+              openVM={openVM}
+              vmShutdownPending={vmShutdownPending}
+              requestVmShutdown={requestVmShutdown}
+              cancelVmShutdown={cancelVmShutdown}
+              confirmVmShutdown={confirmVmShutdown}
             />
           </Desktop>
 
