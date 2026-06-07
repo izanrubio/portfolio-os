@@ -111,6 +111,10 @@ const translations: Record<Lang, Record<string, string>> = {
     'skills.cat.databases': 'Bases de datos',
     'skills.cat.other':     'Otros',
     'projects.inDev':       'EN DESARROLLO',
+    // Education window
+    'edu.eyebrow':          'FORMACIÓN ACADÉMICA',
+    'edu.inProgress':       'EN CURSO',
+    'edu.finished':         'FINALIZADO',
     // Project categories
     'proj.stastarat.category':    'WEB · ASOCIACIÓN CULTURAL',
     'proj.laraveles.category':    'EDUCACIÓN · CONTENIDO',
@@ -253,6 +257,10 @@ const translations: Record<Lang, Record<string, string>> = {
     'skills.cat.databases': 'Bases de dades',
     'skills.cat.other':     'Altres',
     'projects.inDev':       'EN DESENVOLUPAMENT',
+    // Education window
+    'edu.eyebrow':          'FORMACIÓ ACADÈMICA',
+    'edu.inProgress':       'EN CURS',
+    'edu.finished':         'FINALITZAT',
     // Project categories
     'proj.stastarat.category':    "WEB · ASSOCIACIÓ CULTURAL",
     'proj.laraveles.category':    'EDUCACIÓ · CONTINGUT',
@@ -395,6 +403,10 @@ const translations: Record<Lang, Record<string, string>> = {
     'skills.cat.databases': 'Databases',
     'skills.cat.other':     'Other',
     'projects.inDev':       'IN DEV',
+    // Education window
+    'edu.eyebrow':          'ACADEMIC BACKGROUND',
+    'edu.inProgress':       'IN PROGRESS',
+    'edu.finished':         'FINISHED',
     // Project categories
     'proj.stastarat.category':    'WEB · CULTURAL ASSOCIATION',
     'proj.laraveles.category':    'EDUCATION · CONTENT',
