@@ -165,11 +165,19 @@ const ICON_CONFIG: Record<string, IconConfig> = {
     ),
   },
 
-  /* ── Navegador / Browser — real icon ── */
+  /* ── Navegador / Browser — globe orb ── */
   browser: {
-    bg: '#fff',
-    shadowColor: 'rgba(0,122,255,.4)',
-    image: '/icons/app-navegador.png',
+    bg: 'radial-gradient(circle at 36% 30%,#93c5fd,#2563eb 55%,#1e3a8a 100%)',
+    shadowColor: 'rgba(37,99,235,.4)',
+    svgProps: { fill: 'none', stroke: 'rgba(255,255,255,.85)', strokeWidth: '1.4' },
+    icon: (
+      <>
+        <circle cx="21" cy="21" r="13"/>
+        <ellipse cx="21" cy="21" rx="5.5" ry="13"/>
+        <line x1="8" y1="21" x2="34" y2="21"/>
+        <path d="M10 15.5h22M10 26.5h22" opacity=".6"/>
+      </>
+    ),
   },
 };
 
