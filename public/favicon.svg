@@ -1,0 +1,10 @@
+<svg width="32" height="32" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="favGrad" x1="0" y1="0" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#00f5ff"/>
+      <stop offset="100%" stop-color="#b400ff"/>
+    </linearGradient>
+  </defs>
+  <polygon points="28,2 52,15 52,41 28,54 4,41 4,15" stroke="url(#favGrad)" stroke-width="1.5" stroke-linejoin="round"/>
+  <text x="28" y="33" text-anchor="middle" font-family="Orbitron, sans-serif" font-size="13" font-weight="900" fill="url(#favGrad)">IZ</text>
+</svg>
