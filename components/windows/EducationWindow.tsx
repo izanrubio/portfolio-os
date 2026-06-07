@@ -55,9 +55,8 @@ function getIcon(degree: string) {
   return <IconBook />;
 }
 
-function getAccent(idx: number, _current: boolean) {
-  if (idx <= 1) return GREEN; // Ciberseguridad + DAW — recent finished
-  return SLATE;
+function getAccent(_idx: number, current: boolean) {
+  return current ? CYAN : GREEN;
 }
 
 export default function EducationWindow() {
