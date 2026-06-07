@@ -1,221 +1,32 @@
-@AGENTS.md
+# IzanOS Aurora — Claude Code Instructions
 
-# IzanOS — Aurora Portfolio
+## Graphify
+Este proyecto tiene Graphify instalado para análisis del codebase.
+Grafo en `graphify-out/graph.json` (373 nodos, 626 edges, 22 comunidades).
 
-Interactive OS-style portfolio for Izan Rubio Cerezo. macOS-inspired desktop with aurora animated background, glassmorphism windows, boot sequence, file explorer, embedded browser, and real terminal.
+Antes de leer archivos individuales, consulta siempre el grafo:
+- `graphify query "..."` → buscar componentes por concepto
+- `graphify explain "..."` → entender qué hace un componente
+- `graphify path "A" "B"` → trazar conexión entre dos componentes
 
-Stack: **Next.js 16 (App Router)**, React 19, TypeScript, Tailwind CSS v4. Deployed on Vercel.
+## Stack
+Next.js 15, React 19, TypeScript, Tailwind v4, Framer Motion.
+Deployment: VPS con PM2. Rama main = producción.
 
-## Run locally
+## Reglas
+- Trabajar siempre en rama dev, nunca pushear directo a main
+- Nunca romper el sistema de idiomas (CAS/CAT/ENG) ni el de temas
+- El sistema de ventanas es el núcleo — consultar grafo antes de modificarlo
+- Assets estáticos en /public/ — rutas sin prefijo /public en el código
+- .env.local solo existe en el VPS, nunca en el repo
 
-```bash
-npm install
-npm run dev     # http://localhost:3000
-npm run build   # production build
-```
+## Integraciones activas
+- Telegram Bot API → notificaciones y mensajes reales
+- Claude API (claude-sonnet) → auto-reply en Missatges
+- html2canvas + jsPDF → generación de certificado CTF
 
-## Folder structure
-
-```
-/app
-  layout.tsx         — fonts (JetBrains Mono, Inter), metadata
-  page.tsx           — boot → desktop orchestration; `HomeOrMobile` component uses `useMobileDetect()` to render `<MobilePortfolio />` on ≤768px or full desktop OS otherwise
-  globals.css        — CSS theme vars (dark/light), aurora blob classes, reset, scrollbars
-/components
-  LockScreen.tsx     — aurora bg + frosted glass, IzanOS logo (32px white 40% opacity) above clock, clock, profile, breathe hint, Framer Motion unlock fade
-  NotificationSystem.tsx — context + hook + stack UI; NotificationProvider, useNotifications, default export
-  Spotlight.tsx          — Cmd/Ctrl+K search overlay; apps, skills, projects, quick actions
-  BootScreen.tsx     — 4s boot: IzanOS logo SVG (80px, cyan pulse glow animation), progress bar, system messages
-  Desktop.tsx        — #000 bg + ParticleNetwork canvas (hero) + 3 aurora CSS blobs at reduced opacity, no desktop icons; manages wallpaper state + context menu
-  ParticleNetwork.tsx — canvas RAF animation: 45 nodes, velocity bounce, mouse proximity lighting, connection lines, data pulses; reads data-wallpaper for node colors; listens for particle-reset custom event
-  ContextMenu.tsx    — right-click desktop menu: 9 items, separators, smart edge-avoidance positioning, Framer Motion entrance
-  WallpaperPicker.tsx — floating modal 320px, 2×3 grid of 6 wallpapers; exports WALLPAPERS constant + WallpaperId type used by Desktop
-  AboutIzanOS.tsx    — centered glassmorphism modal: IzanOS logo SVG (64px, cyan glow), version, uptime counter, status dot
-  Screensaver.tsx    — Glitch Clock screensaver: 2min idle (5s with ?screensaver=1), HH:MM:SS Inter weight 100, RGB split + scan lines + jitter glitch every 3-8s, fade-in/out 1000ms/400ms
-  Menubar.tsx        — fixed top 28px: IzanOS logo SVG (20px white inline) left, lang switcher (CAS·CAT·ENG) + wifi+battery+clock right, blur bg
-  Taskbar.tsx        — floating dock (8 icons, all apps), centered bottom-18px
-  Window.tsx         — draggable, resizable, glassmorphism shell (TASKBAR_H = 110)
-  WindowManager.tsx  — useWindowManager hook + 8-window renderer
-  /icons
-    ProjectsIcon.tsx — 60×60, green gradient #00c97a→#00ff9d + folder SVG
-    AboutIcon.tsx    — 60×60, purple gradient #7b2ff7→#a855f7 + person SVG
-    SkillsIcon.tsx   — 60×60, blue gradient #0066ff→#00d4ff + lightning SVG
-    ContactIcon.tsx  — 60×60, orange gradient #ff6b00→#ff9500 + mail SVG
-    BrowserIcon.tsx  — 60×60, blue-purple gradient + globe SVG
-    FilesIcon.tsx    — 60×60, green-blue gradient + folder SVG
-    GameIcon.tsx     — 60×60, red gradient #ff4757→#ff6b35 + game controller SVG
-    TerminalIcon.tsx — 60×60, dark gradient + green >_ SVG
-  /windows
-    ProjectsWindow.tsx  — sidebar (250px) with per-project accent color + animated content area; hexToRgba helper; fade transition 150ms out / 160ms in; accent blob, large decorative numeral, WIP pulsing badge, project counter bottom-right; ACCENT map: ciberchurros #00ff88, laraveles #00d4ff, stastarat #7c3aed, docflow #ff9500, barbercompte #ff4757
-    WhoamiWindow.tsx    — two-col layout: photo (38%) with duotone+vignette+grain+scanlines+corner crop marks (no grayscale — full color) + info (62%) with ~/WHOAMI path, name+cyan dot, role typer (tRoles 0-2, useEffect), 40px accent line, bio, contact grid (email/github/linkedin/location/phone), status bar with green pulsing dot; decorative IR monogram + cyan blob top-right; window inner glow rgba(0,212,255,0.10)
-    SkillsWindow.tsx    — sidebar (260px) with 7 categories, per-category accent color + SVG icon + tech count + active gradient left-border; right panel: accent blob, 200px decorative bg text, heading (white + accent glow), skills as tags with stagger entrance animation (30ms/tag via --skill-i CSS var + .izanos-skill-tag class); gridKey remount trick restarts animations on category switch; fade transition 150ms out / 200ms in; counter bottom-right; CAT_ACCENT map: languages/devops #00d4ff, frontend #7c3aed, backend #00ff88, databases #ff9500, security #ff4757, other #a855f7
-    ContactWindow.tsx   — left col (340px): ~/CONTACT path, "Let's talk." title, subtitle, 5 contact items (email/github/linkedin/phone/location) in 22px 1fr grid with cyan hover, response time pill (green), pulsing status dot; decorative "GET IN TOUCH" rotated -90deg. Right col: form (name/email/subject/message) with cyan focus glow, red shake on empty submit, green success state 2s; blob + hairline top; all text from translations; contactPulseDot/contactShake/contactSendPop keyframes
-    BrowserWindow.tsx   — simulated browser: internal portfolio or iframe
-    FilesWindow.tsx     — toolbar (back/forward nav history, breadcrumb, grid/list toggle, search), sidebar 180px (Places: Home/Documents/Pictures/Downloads + Bookmarks: Projects/CV), grid 4-col file cards with per-type SVG icons (folder/url/pdf/png/readme), 3D tilt hover, double-click open behavior (folder→navigate, url→browser, pdf→download, png→preview modal, readme→WIP modal), list view, image preview modal (Next.js Image + duotone overlay), readme WIP modal, toast slide-up notifications, status bar (item count + path); nav history: `nav:{stack,idx}` state, Escape closes modals; keyframes: fiWipDot, fiSlideUp
-    TerminalWindow.tsx  — #0a0d0a bg + CRT scanlines + vignette; green inner glow rgba(0,255,136,0.12); ALL prompt elements green #00ff88 (not cyan); scroll area (output) + fixed bottom input area with block cursor █ blinking green; welcome typewriter on mount (3 lines, 750ms total); commands: help/whoami/ls projects/cat <slug>/skills/ping izan/sudo hire-me/theme --switch/clear; easter eggs: nmap localhost/exploit/sudo rm -rf / (async deletion sequence 400ms×4 + 2s "Just kidding."); arrow up/down history via histRef/histIdxRef (useRef); timersRef cleanup on unmount; keyframes: term-blink, term-dot
-    GameWindow.tsx      — Firewall Breaker breakout game; canvas + useRef game loop, 3 levels, RAF cleanup
-    ExperienceWindow.tsx — two-col sidebar+main; sidebar lists companies with active cyan highlight + pulsing "Actual" badge; main: large gradient company h1, role, period, 40px cyan accent line, description, stack tags, EN ACTIVO green status bar (absolute bottom-left); fade transition 160ms between items; window inner glow cyan; uses experience[] from content.ts
-    EducationWindow.tsx  — hero (EDU deco watermark, eyebrow, h1 with purple dot, sub) + scrollable timeline; vertical purple gradient line; 4 cards from education[]; current card: purple border/bg/chips + pulsing "En curso" badge; past cards: muted + "Completado" badge; last card 85% opacity; window inner glow purple; uses education[] from content.ts
-    PortfolioSite.tsx   — internal website rendered inside BrowserWindow
-  MobilePortfolio.tsx — full iPhone 15 Pro shell for ≤768px viewports; lock screen (swipe/click unlock), home screen (4×2 app grid + dock), app open animation (slide-up translateY, 350ms), Dynamic Island (expands on notification via useNotifications), 11 apps: Projects (tap-to-expand cards), About (photo+role-typer+contact), Skills (category pills + tags), Contact (contact list + form), Terminal (touch command buttons), Files (filesystem tree nav), Game (canvas Breakout, touch/mouse), Browser (stub), Settings (theme toggle, wallpaper picker, lang switcher, sistema/contacto/créditos sections), Experience (timeline with VideoAtención+Duoly), Education (timeline with 4 academic entries); timeline pattern uses mob-tlrise stagger animation + accent-colored dot/line/card; fullscreen responsive — no iPhone frame/shell, fills viewport; `.mob-screen` is `position:fixed;inset:0`; status bar shows time left + IzanOS right, 44px, rgba(0,0,0,.5)+blur; dock pinned to bottom with safe-area padding; all content from data/content.ts; `--app-accent` CSS variable per app; `VHero` shared hero header component
-/hooks
-  useMobileDetect.ts  — returns boolean, true when window.innerWidth ≤ breakpoint (default 768); re-checks on resize; SSR-safe (defaults false)
-/contexts
-  LanguageContext.tsx — Lang type ('CAS'|'CAT'|'ENG'), LanguageProvider, useLanguage(); persists to localStorage key 'izanos-lang'; default 'CAS'
-  ThemeContext.tsx   — Theme type ('dark'|'light'), ThemeProvider, useTheme(); persists to localStorage key 'izanos-theme'; default 'dark'
-/data
-  content.ts         — ALL content: personal, projects, skills, filesystem, terminal, browser
-  translations.ts    — All UI strings in 3 languages + t(key, lang) helper + tRoles(lang) for the WhoamiWindow typing animation
-/types
-  windows.ts         — WindowId, WindowState (with browserUrl), FileNode, DesktopIcon
-/public
-  /icons
-    logo.svg       — IzanOS logo: cyan #00d4ff, pointy-top hexagon + "iz" monogram (dot+stem + Z), transparent bg
-    logo-white.svg — same logo, white stroke, transparent bg
-    logo-dark.svg  — same logo, cyan stroke, #0a0f1a bg
-  favicon.ico      — multi-size ICO (16/32/48px) generated from logo
-  /images
-    foto-portafolio.png  — profile photo (full color, no filter)
-  cv.pdf                 — CV download (referenced in files.exe)
-```
-
-## Dark / Light theme
-
-- **Toggle button**: sun/moon icon in Menubar, between lang switcher and wifi. Calls `toggleTheme()`. CSS crossfade animation defined in `globals.css` via `.theme-toggle .moon/.sun`.
-- **ThemeProvider**: wraps entire app in `page.tsx` (outermost). `useTheme()` → `{ theme, toggleTheme }`
-- **Persistence**: `localStorage.setItem('izanos-theme', theme)`. Anti-flash inline script in `layout.tsx` sets `data-theme` before React hydrates.
-- **CSS vars**: `globals.css` defines full variable sets under `html[data-theme="dark"]` and `html[data-theme="light"]` — `--bg`, `--menubar-bg/bd/text`, `--dock-bg/bd`, `--tip-bg/text/bd`, `--win-body/bd`, `--titlebar-bg/bd`, `--title-text`, `--b1/b2/b3-color`, `--aurora-blend`, `--grain-opacity/blend`, etc.
-- **Components**: Desktop uses CSS classes `.aurora-blob-1/2/3`, `.aurora-grain`, `.desktop-bg`. Menubar uses `.menubar-bar` class. Dock uses `.dock-pill`. Window chrome uses `.win-chrome`, `.win-titlebar`, `.win-title-text`.
-- **Terminal always dark**: terminal window gets `.w-term` class on its chrome div — overrides theme vars with hardcoded dark values via `!important`.
-- **Terminal command**: `theme --switch` toggles theme and prints confirmation.
-- Transitions: `background-color 400ms ease, border-color 400ms ease, color 400ms ease` on shell elements.
-
-## i18n / Language switcher
-
-- Languages: **CAS** (Castellano, default), **CAT** (Català), **ENG** (English)
-- Provider: `LanguageProvider` wraps entire app in `page.tsx` (outside NotificationProvider). `useLanguage()` → `{ lang, setLang }`
-- All UI strings: `t(key, lang)` from `data/translations.ts`. Roles array: `tRoles(lang)`
-- Switcher: inline in `Menubar.tsx`, right group, left of wifi icon. Active lang = bordered pill; inactive = 40% opacity + hover 70%
-- Adding a new translatable string: add key+value for all 3 langs in `data/translations.ts`; call `t('your.key', lang)` in the component after importing `useLanguage` + `t`
-
-## Editing content
-
-All content in `/data/content.ts`. No hardcoded strings elsewhere.
-
-- **Personal**: `personal` — name, shortName, role, roles[], bio, email, github, linkedin, location, photo
-- **Lock screen**: `lockScreen` — version string (e.g. `'Aurora 0.3'`)
-- **Notifications**: `notifications` — all notification copy
-- **Spotlight**: `spotlight` — apps list and quick actions copy (`{ apps[], actions[] }`): `welcome`, `projectsOpened`, `contactOpened`, `terminalOpened`, `idleHire`, `intrusionDetected`
-- **Projects**: `projects[]` — slug, name, category, description, longDescription, stack, demo, repo, repoShort, launched, status
-- **Skills**: `skills: SkillCategory[]` — array of `{key, label, proficiency, items[]}`. `ProficiencyLevel = 'Expert' | 'Advanced' | 'Proficient'`
-- **File system**: `filesystem` — nested `FileNode` tree. Files have `action: { type, payload }` — types: `browser` (open URL), `download`, `preview`
-- **Terminal**: `terminal.commands`, `terminal.easterEggs`, `terminal.projectDetails`
-- **Browser**: `browser.homepage`, `browser.bookmarks`
-
-## Window system
-
-- `useWindowManager()` in WindowManager.tsx manages all state
-- `windowState.browserUrl` controls BrowserWindow navigation (updated via `navigateBrowser()`)
-- FilesWindow receives `onOpenBrowser` callback to trigger browser navigation
-
-## Window snap
-
-Implemented in `Window.tsx`. All snap state is local (`useState`) — no changes to WindowManager needed.
-
-- **Left snap**: drag title bar to x < 20px → snaps to `{ x:0, y:28, width:50vw, height:100vh-28-48 }`
-- **Right snap**: drag to x > innerWidth-20px → snaps to `{ x:50vw, y:28, width:50vw, height:100vh-28-48 }`
-- **Top snap**: drag to y < 20px → calls `onMaximize` (toggle)
-- **Preview**: `rgba(0,212,255,0.1)` fixed overlay with cyan border, rendered as React fragment sibling to `<AnimatePresence>` (avoids transform inheritance from `motion.div`)
-- **Animation**: CSS transition `250ms cubic-bezier(0.16,1,0.3,1)` on left/top/width/height (transition is disabled during drag, re-enabled on mouseup → smooth snap)
-- **`savedPreSnap`**: tracks last cursor position NOT near any edge, so restore always targets a sensible previous position (never a clamped-to-zero coordinate)
-- **Un-snap via double-click**: restores `preSnap` state; if window is maximized (top-snap), calls `onMaximize` first then sets position/size
-- **Un-snap via drag**: detects `preSnap !== null` on mousedown, restores original size with cursor position proportional to title bar width, clears preSnap
-
-## Adding a new window
-
-1. Add `WindowId` to `types/windows.ts`
-2. Add to `DEFAULT_WINDOWS` in `WindowManager.tsx` with default position/size
-3. Create `components/windows/YourWindow.tsx`
-4. Add to `CONTENT` map in `WindowManager.tsx`
-5. Add icon component to `components/icons/` and add to `DOCK_ITEMS` in `Taskbar.tsx`
-
-## Spotlight
-
-- Trigger: `Cmd+K` / `Ctrl+K` toggles; `Escape` or click-outside closes
-- Mounted inside `appState === 'desktop'` in `page.tsx` with `onOpenWindow` and `onNavigate` props
-- `z-index: 500`; overlay `rgba(0,0,0,0.5) + blur(8px)`; panel `640px` centered at `top: 20vh`
-- Sections: **Applications** (7 apps) → **Quick Actions** (CV download, Send email, View GitHub) → **Search Results** (skills + projects, query-filtered)
-- Arrow keys navigate, Enter commits, mouse hover updates active row
-- Query highlights matched text in cyan (`#00d4ff`)
-- Quick actions: CV downloads `/cv.pdf`, email opens `contact`, GitHub calls `navigateBrowser('https://github.com/izanrubio')`
-- All app/action copy in `data/content.ts` under `spotlight`; skills/projects sourced from existing exports
-
-## Notification system
-
-- `NotificationProvider` wraps the entire app in `page.tsx`; `<NotificationSystem />` is a sibling inside the provider
-- `useNotifications()` → `{ notify }` — call from any client component
-- `notify({ type, app, title, body })` — types: `message` | `system` | `alert` | `achievement`
-- Stack: `fixed top:44px right:16px`, `width:320px`, `z-index:9999`, newest on top
-- Enter: `x:110%→0 + opacity 0→1`, 400ms spring. Exit: `x:0→110% + opacity 1→0`, 300ms ease-in
-- Auto-dismiss: 5s; progress bar at bottom of each card
-- Triggers: welcome 3s after desktop, per-window on first open (projects/contact/terminal), idle 60s, intrusion on `nmap localhost`/`exploit` in terminal
-- Notification text sourced via `t('notif.X.title/body', lang)` at call site — lang-aware at fire time via `langRef`
-- All copy in `data/translations.ts` under `notif.*` keys
-
-## App state flow
-
-`page.tsx` manages a `AppState = 'booting' | 'locked' | 'desktop'` enum:
-1. **booting** — `BootScreen` renders (4s boot sequence)
-2. **locked** — `LockScreen` renders; click or any keypress triggers Framer Motion fade-out (600ms)
-3. **desktop** — Menubar + Desktop + Taskbar render; `useWindowManager` state active
-
-## Taskbar / Menubar architecture
-
-- **Menubar** (`top: 0`) — fixed 28px bar: IzanOS logo left, lang switcher + theme toggle + wifi+battery+clock right. `z-index: 100`.
-- **Dock** (`bottom: 18px`, centered) — floating pill with ALL 7 icons. `z-index: 50`.
-  - Icons: projects / whoami / skills / contact | separator | browser / files / terminal
-  - Magnification: cosine falloff, `SCALE_MAX=1.40`, `RANGE=130px`
-  - Tooltip: appears on nearest icon within 60px, `position:absolute bottom:calc(100%+12px)`
-  - Open indicator: white `#fff` dot below each icon, opacity 0→1 when window open
-  - Press feedback: `scale(0.92)` on mousedown
-  - No desktop icons — all apps via dock only
-
-## Design system
-
-- Background: `#000` + ParticleNetwork canvas (hero, z-index 0) + aurora blobs (z-index 1) at reduced opacity as ambient glow
-- ParticleNetwork: 45 nodes, velocity ±0.4, mouse-proximity lighting (120px radius), connections within 150px, RAF loop, reads `data-theme` + `data-wallpaper` DOM attrs each frame. No React state in loop — all refs. Custom event `particle-reset` triggers fade-out → re-randomize → fade-in
-- Aurora blobs (dark): blob colors come from active wallpaper (`WALLPAPERS[id].blobs`) — default aurora: green `rgba(0,255,102,0.06)`, blue `rgba(0,102,255,0.05)`, cyan `rgba(0,255,255,0.04)`
-- Aurora blobs (light): mint `rgba(0,201,122,0.04)`, lavender `rgba(124,58,237,0.03)`, sky `rgba(0,102,255,0.02)`
-- Aurora keyframes in `app/globals.css`: `aurora-drift-1` (20s), `aurora-drift-2` (25s), `aurora-pulse-3` (15s)
-- Dock glass: `rgba(255,255,255,0.08)` + `backdrop-filter:blur(40px) saturate(180%)`, border `rgba(255,255,255,0.12)`
-- Window glass: `rgba(10,15,30,0.92)` + `backdrop-filter: blur(20px) saturate(180%)`
-- Window border: `1px solid rgba(0,212,255,0.2)`
-- Title bar: `rgba(8,12,24,0.95)`, traffic lights: `#ff4757` / `#ffd32a` / `#00ff88`
-- Text: primary `#f0f4ff`, secondary `#8892a4`, muted `#4a5568`
-
-## Context menu
-
-- Trigger: right-click on desktop background. Window/Taskbar/Menubar all call `e.stopPropagation()` on `onContextMenu` to block it
-- Component: `ContextMenu.tsx` — receives `{ x, y }` cursor position, renders at smart-adjusted position (flips left/up if near edges), `AnimatePresence` in Desktop.tsx
-- Items: Change Wallpaper → opens `WallpaperPicker`; New Terminal → `openWindow('terminal')`; Search → dispatches `Cmd+K` keydown event; About Me → `openWindow('whoami')`; Open Files → `openWindow('files')`; Switch Theme → `toggleTheme()`; About IzanOS → opens `AboutIzanOS` modal; Refresh Desktop → dispatches `particle-reset` event
-- Copy: all labels in `data/content.ts` under `contextMenu` key
-
-## Wallpaper system
-
-- 6 wallpapers: `aurora` (default), `sunset`, `ocean`, `cyberpunk`, `midnight`, `forest`
-- Definitions exported from `WallpaperPicker.tsx` as `WALLPAPERS` array + `WallpaperId` type
-- Each entry: `{ id, name, thumbnail (CSS gradient), darkBg, blobs[3], nodeColor (RGB triple) }`
-- Desktop.tsx: manages `wallpaperId` state; on change sets `localStorage` + `document.documentElement.setAttribute('data-wallpaper', id)` + updates inline blob colors
-- ParticleNetwork reads `data-wallpaper` each frame from `WALLPAPER_COLORS` map → applies to node/connection/pulse stroke colors in dark mode
-- Light mode node color is always `'0,100,200'` regardless of wallpaper
-- Picker: `WallpaperPicker.tsx` — 2×3 thumbnail grid, selected = cyan 2px border + checkmark; positioned centered via `position:fixed top:50% left:50%`
-- `AboutIzanOS.tsx` — centered modal with backdrop, dragon SVG (same as BootScreen), live uptime counter via `setInterval`
-
-## Code conventions
-
-- `'use client'` on all interactive components
-- Inline styles for colors/design values — Tailwind for layout/spacing
-- `useCallback` + `useRef` for performance-sensitive handlers
-- Window drag/resize: manual `mousemove` events, `dragging` state disables CSS transitions during drag
-- Mobile: windows open fullscreen (no drag/resize), single-click opens
-- No comments unless WHY is non-obvious
+## Workflow
+1. graphify query antes de tocar cualquier componente existente
+2. rama dev para cada feature
+3. build limpio antes de mergear a main
+4. pm2 restart portfolio-os tras cada deploy en el VPS
