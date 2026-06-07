@@ -3,6 +3,8 @@
 interface IconConfig {
   bg: string;
   shadowColor: string;
+  /** Path under /public (e.g. '/icons/foo.png'). When set, renders <img> instead of SVG. */
+  image?: string;
   extra?: React.ReactNode;
   svgProps?: {
     fill?: string; stroke?: string; strokeWidth?: string;
@@ -10,23 +12,15 @@ interface IconConfig {
     strokeLinejoin?: 'round' | 'miter' | 'bevel';
     style?: React.CSSProperties;
   };
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
 }
 
 const ICON_CONFIG: Record<string, IconConfig> = {
-  /* ── Missatges / Chat ── */
+  /* ── Missatges / Chat — real icon ── */
   chat: {
-    bg: 'linear-gradient(150deg,#34e57a 0%,#16a34a 55%,#0c7a37 100%)',
+    bg: '#fff',
     shadowColor: 'rgba(22,163,74,.4)',
-    extra: (
-      <div style={{ position:'absolute', zIndex:2, left:'10%', right:'10%', top:'7%', height:'42%', borderRadius:'50% / 50%', background:'linear-gradient(180deg,rgba(255,255,255,.4),transparent)', filter:'blur(3px)' }} />
-    ),
-    icon: (
-      <>
-        <path d="M21 8C13.3 8 7 13.5 7 20.3c0 3.6 1.8 6.8 4.7 9L10 36l7-2.5c1.2.4 2.6.6 4 .6 7.7 0 14-5.5 14-12.4S28.7 8 21 8Z" fill="#fff"/>
-        <path d="M17 16c-.3-.7-.6-.7-.9-.7l-.8 0c-.3 0-.8.1-1.1.5-.4.4-1.4 1.4-1.4 3.3 0 2 1.5 3.9 1.7 4.2.2.3 2.8 4.4 6.9 6 3.4 1.3 4.1 1.1 4.8 1 .7-.1 2.4-1 2.7-1.9.3-.9.3-1.7.2-1.9-.1-.2-.4-.3-.9-.5-.5-.2-2.7-1.3-3.1-1.5-.4-.1-.7-.2-1 .2-.3.4-1.1 1.4-1.4 1.6-.2.3-.5.3-.9.1-.5-.2-2-.7-3.7-2.3-1.4-1.2-2.3-2.7-2.5-3.1-.3-.4 0-.7.2-.9.2-.2.5-.5.7-.8.2-.2.3-.4.4-.7.1-.3.1-.6 0-.8-.2-.3-1-2.4-1.4-3.3Z" fill="#16a34a"/>
-      </>
-    ),
+    image: '/icons/WhatsApp_icon.png',
   },
 
   /* ── Projectes ── */
@@ -91,17 +85,11 @@ const ICON_CONFIG: Record<string, IconConfig> = {
     ),
   },
 
-  /* ── Arxius ── */
+  /* ── Arxius — real icon ── */
   files: {
-    bg: 'linear-gradient(150deg,#5eead4,#0d9488 60%,#0f5f57)',
-    shadowColor: 'rgba(13,148,136,.4)',
-    icon: (
-      <>
-        <path d="M8 14a2 2 0 0 1 2-2h6l2.5 3H32a2 2 0 0 1 2 2v3H8V14Z" fill="rgba(255,255,255,.5)"/>
-        <path d="M9 19h24l-2.2 12.2a2 2 0 0 1-2 1.6H13.2a2 2 0 0 1-2-1.6L9 19Z" fill="#fff"/>
-        <path d="M9 19h24l-.4 2.2H9.4L9 19Z" fill="rgba(13,148,136,.3)"/>
-      </>
-    ),
+    bg: '#fff',
+    shadowColor: 'rgba(0,122,255,.4)',
+    image: '/icons/archivos.png',
   },
 
   /* ── Terminal ── */
@@ -142,25 +130,11 @@ const ICON_CONFIG: Record<string, IconConfig> = {
     ),
   },
 
-  /* ── Ajustos ── */
+  /* ── Ajustos — real icon ── */
   settings: {
-    bg: 'conic-gradient(from 200deg at 50% 50%,#cbd5e1,#64748b,#334155,#cbd5e1)',
+    bg: '#e5e5ea',
     shadowColor: 'rgba(100,116,139,.4)',
-    extra: (
-      <div style={{ position:'absolute', zIndex:2, inset:14, borderRadius:'50%', border:'1px dashed rgba(255,255,255,.25)', pointerEvents:'none' }} />
-    ),
-    icon: (
-      <>
-        <circle cx="21" cy="21" r="6.5" fill="none" stroke="#fff" strokeWidth="2"/>
-        <circle cx="21" cy="21" r="2" fill="#fff"/>
-        <g stroke="#fff" strokeWidth="2" strokeLinecap="round">
-          <line x1="21" y1="9" x2="21" y2="13"/>
-          <line x1="21" y1="29" x2="21" y2="33"/>
-          <line x1="9" y1="21" x2="13" y2="21"/>
-          <line x1="29" y1="21" x2="33" y2="21"/>
-        </g>
-      </>
-    ),
+    image: '/icons/Settings_(iOS).png',
   },
 
   /* ── Experiència ── */
@@ -191,19 +165,11 @@ const ICON_CONFIG: Record<string, IconConfig> = {
     ),
   },
 
-  /* ── Navegador / Browser ── */
+  /* ── Navegador / Browser — real icon ── */
   browser: {
-    bg: 'radial-gradient(circle at 36% 30%,#93c5fd,#2563eb 55%,#1e3a8a 100%)',
-    shadowColor: 'rgba(37,99,235,.4)',
-    svgProps: { fill: 'none', stroke: 'rgba(255,255,255,.85)', strokeWidth: '1.4' },
-    icon: (
-      <>
-        <circle cx="21" cy="21" r="13"/>
-        <ellipse cx="21" cy="21" rx="5.5" ry="13"/>
-        <line x1="8" y1="21" x2="34" y2="21"/>
-        <path d="M10 15.5h22M10 26.5h22" opacity=".6"/>
-      </>
-    ),
+    bg: '#fff',
+    shadowColor: 'rgba(0,122,255,.4)',
+    image: '/icons/safari-icon.png',
   },
 };
 
@@ -240,36 +206,53 @@ export default function AppIcon({ app, size = 60 }: Props) {
         `0 ${sh1}px ${Math.round(size * 0.3)}px ${config.shadowColor}`,
       ].join(', '),
     }}>
-      {/* App-specific extras (gloss, scan lines, rings, etc.) */}
-      {config.extra}
+      {config.image ? (
+        /* ── Real PNG icon — fills container, contained within squircle ── */
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={config.image}
+          alt={app}
+          style={{
+            width: '100%', height: '100%',
+            objectFit: 'contain',
+            position: 'relative', zIndex: 3,
+            display: 'block',
+          }}
+        />
+      ) : (
+        <>
+          {/* App-specific extras (gloss, scan lines, rings, etc.) */}
+          {config.extra}
 
-      {/* Top-left light source — mix-blend-mode: screen */}
-      <div style={{
-        position:'absolute', inset:0, zIndex:4, pointerEvents:'none',
-        background:'radial-gradient(circle at 28% 18%, rgba(255,255,255,.38), rgba(255,255,255,.06) 38%, transparent 62%)',
-        mixBlendMode:'screen',
-      }} />
+          {/* Top-left light source — mix-blend-mode: screen */}
+          <div style={{
+            position:'absolute', inset:0, zIndex:4, pointerEvents:'none',
+            background:'radial-gradient(circle at 28% 18%, rgba(255,255,255,.38), rgba(255,255,255,.06) 38%, transparent 62%)',
+            mixBlendMode:'screen',
+          }} />
 
-      {/* Fine top sheen line */}
-      <div style={{
-        position:'absolute', top:0, left:'16%', right:'16%', height:1,
-        zIndex:5, pointerEvents:'none',
-        background:'linear-gradient(90deg, transparent, rgba(255,255,255,.7), transparent)',
-      }} />
+          {/* Fine top sheen line */}
+          <div style={{
+            position:'absolute', top:0, left:'16%', right:'16%', height:1,
+            zIndex:5, pointerEvents:'none',
+            background:'linear-gradient(90deg, transparent, rgba(255,255,255,.7), transparent)',
+          }} />
 
-      {/* Icon SVG */}
-      <svg
-        viewBox="0 0 42 42"
-        style={{ width: iconSz, height: iconSz, position:'relative', zIndex:3, ...svgStyle }}
-        fill={fill}
-        stroke={stroke}
-        strokeWidth={strokeWidth}
-        strokeLinecap={strokeLinecap}
-        strokeLinejoin={strokeLinejoin}
-        aria-hidden="true"
-      >
-        {config.icon}
-      </svg>
+          {/* Icon SVG */}
+          <svg
+            viewBox="0 0 42 42"
+            style={{ width: iconSz, height: iconSz, position:'relative', zIndex:3, ...svgStyle }}
+            fill={fill}
+            stroke={stroke}
+            strokeWidth={strokeWidth}
+            strokeLinecap={strokeLinecap}
+            strokeLinejoin={strokeLinejoin}
+            aria-hidden="true"
+          >
+            {config.icon}
+          </svg>
+        </>
+      )}
     </div>
   );
 }
