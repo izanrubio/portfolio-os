@@ -11,7 +11,9 @@ const INTER  = 'var(--font-inter), Inter, sans-serif';
 const ACCENT = '#00d4ff';
 const GREEN  = '#00ff88';
 
-const SENT_BTN: Record<string, string> = { CAS: '✓ ¡Enviado!', CAT: '✓ Enviat!', ENG: '✓ Message sent!' };
+const SENT_BTN:    Record<string, string> = { CAS: '✓ ¡Enviado!',          CAT: '✓ Enviat!',           ENG: '✓ Message sent!' };
+const LOADING_BTN: Record<string, string> = { CAS: 'Enviando...',           CAT: 'Enviant...',           ENG: 'Sending...' };
+const ERROR_MSG:   Record<string, string> = { CAS: 'Error al enviar, inténtalo de nuevo', CAT: 'Error en enviar, torna-ho a provar', ENG: 'Error sending, please try again' };
 
 type FormKey = 'name' | 'email' | 'subject' | 'message';
 
@@ -93,13 +95,15 @@ export default function ContactWindow() {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const [form, setForm]     = useState<Record<FormKey, string>>({ name: '', email: '', subject: '', message: '' });
-  const [sent, setSent]     = useState(false);
-  const [errors, setErrors] = useState<Set<FormKey>>(new Set());
+  const [sent, setSent]         = useState(false);
+  const [loading, setLoading]   = useState(false);
+  const [apiError, setApiError] = useState(false);
+  const [errors, setErrors]     = useState<Set<FormKey>>(new Set());
   const [btnHovered, setBtnHovered] = useState(false);
 
-  const handleSubmit = useCallback((e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
-    if (sent) return;
+    if (sent || loading) return;
 
     const empty = (Object.keys(form) as FormKey[]).filter(k => !form[k].trim());
     if (empty.length > 0) {
@@ -108,10 +112,29 @@ export default function ContactWindow() {
       return;
     }
 
-    setSent(true);
-    setForm({ name: '', email: '', subject: '', message: '' });
-    setTimeout(() => setSent(false), 2000);
-  }, [form, sent]);
+    setLoading(true);
+    setApiError(false);
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+      if (res.ok) {
+        setSent(true);
+        setForm({ name: '', email: '', subject: '', message: '' });
+        setTimeout(() => setSent(false), 4000);
+      } else {
+        setApiError(true);
+        setTimeout(() => setApiError(false), 3500);
+      }
+    } catch {
+      setApiError(true);
+      setTimeout(() => setApiError(false), 3500);
+    } finally {
+      setLoading(false);
+    }
+  }, [form, sent, loading]);
 
   const handleFocus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     e.currentTarget.style.borderColor = ACCENT;
@@ -327,27 +350,45 @@ export default function ContactWindow() {
 
             <button
               type="submit"
+              disabled={loading || sent}
               style={{
                 marginTop: '6px', width: '100%', padding: '14px',
                 border: 'none', borderRadius: '8px',
                 background: sent ? GREEN : ACCENT,
                 color: '#000', fontFamily: INTER, fontSize: '14px', fontWeight: 700,
-                letterSpacing: '0.01em', cursor: 'pointer',
+                letterSpacing: '0.01em', cursor: loading || sent ? 'default' : 'pointer',
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
                 transition: 'filter .2s ease, transform .2s ease, box-shadow .2s ease, background .35s ease',
                 boxShadow: sent
                   ? '0 8px 24px rgba(0,255,136,0.30)'
-                  : btnHovered ? '0 8px 24px rgba(0,212,255,0.30)' : 'none',
-                filter: !sent && btnHovered ? 'brightness(1.1)' : 'none',
-                transform: !sent && btnHovered ? 'scale(1.01)' : 'scale(1)',
+                  : btnHovered && !loading ? '0 8px 24px rgba(0,212,255,0.30)' : 'none',
+                filter: !sent && !loading && btnHovered ? 'brightness(1.1)' : 'none',
+                transform: !sent && !loading && btnHovered ? 'scale(1.01)' : 'scale(1)',
                 animation: sent ? 'contactSendPop .35s ease' : 'none',
+                opacity: loading ? 0.7 : 1,
               }}
               onMouseEnter={() => setBtnHovered(true)}
               onMouseLeave={() => setBtnHovered(false)}
             >
-              <span>{sent ? (SENT_BTN[lang] ?? '✓ Sent!') : t('contact.form.send', lang)}</span>
-              {!sent && <span style={{ fontFamily: MONO, transition: 'transform .2s ease', transform: btnHovered ? 'translateX(3px)' : 'none' }}>→</span>}
+              {loading
+                ? <><span style={{ width: 14, height: 14, border: '2px solid rgba(0,0,0,0.3)', borderTopColor: '#000', borderRadius: '50%', animation: 'contactSpin .7s linear infinite', display: 'inline-block' }} /><span>{LOADING_BTN[lang] ?? 'Sending...'}</span></>
+                : sent
+                  ? <span>{SENT_BTN[lang] ?? '✓ Sent!'}</span>
+                  : <><span>{t('contact.form.send', lang)}</span><span style={{ fontFamily: MONO, transition: 'transform .2s ease', transform: btnHovered ? 'translateX(3px)' : 'none' }}>→</span></>
+              }
             </button>
+
+            {apiError && (
+              <div style={{
+                marginTop: '10px', padding: '10px 14px', borderRadius: '6px',
+                background: 'rgba(255,71,87,0.10)', border: '1px solid rgba(255,71,87,0.30)',
+                color: '#ff4757', fontFamily: INTER, fontSize: '13px', fontWeight: 500,
+                display: 'flex', alignItems: 'center', gap: '8px',
+              }}>
+                <span style={{ fontSize: 15 }}>✕</span>
+                <span>{ERROR_MSG[lang] ?? 'Error sending, please try again'}</span>
+              </div>
+            )}
           </form>
         </div>
       </div>
@@ -366,6 +407,9 @@ export default function ContactWindow() {
           0%   { transform: scale(1); }
           50%  { transform: scale(1.03); }
           100% { transform: scale(1); }
+        }
+        @keyframes contactSpin {
+          to { transform: rotate(360deg); }
         }
         #ct-name::placeholder, #ct-email::placeholder, #ct-subject::placeholder, #ct-msg::placeholder {
           color: rgba(255,255,255,0.20);

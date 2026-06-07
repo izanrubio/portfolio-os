@@ -65,7 +65,7 @@ export default function Window({
 
     const onMove_ = (ev: MouseEvent) => {
       const x = Math.max(0, Math.min(globalThis.innerWidth - 120, ev.clientX - startX));
-      const y = Math.max(0, Math.min(globalThis.innerHeight - TASKBAR_H - 36, ev.clientY - startY));
+      const y = Math.max(28, Math.min(globalThis.innerHeight - TASKBAR_H - 40, ev.clientY - startY));
       onMove(win.id, { x, y });
 
       const W = globalThis.innerWidth;

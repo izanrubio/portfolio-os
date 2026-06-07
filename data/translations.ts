@@ -115,6 +115,13 @@ const translations: Record<Lang, Record<string, string>> = {
     'edu.eyebrow':          'FORMACIÓN ACADÉMICA',
     'edu.inProgress':       'EN CURSO',
     'edu.finished':         'FINALIZADO',
+    // Experience window
+    'exp.current':   'Actual',
+    'exp.fullTime':  'FULL TIME',
+    'exp.intern':    'PRÁCTICAS',
+    'exp.position':  'POSICIÓN',
+    'exp.active':    'En activo',
+    'exp.available': 'disponible para proyectos',
     // Project categories
     'proj.stastarat.category':    'WEB · ASOCIACIÓN CULTURAL',
     'proj.laraveles.category':    'EDUCACIÓN · CONTENIDO',
@@ -261,6 +268,13 @@ const translations: Record<Lang, Record<string, string>> = {
     'edu.eyebrow':          'FORMACIÓ ACADÈMICA',
     'edu.inProgress':       'EN CURS',
     'edu.finished':         'FINALITZAT',
+    // Experience window
+    'exp.current':   'Actual',
+    'exp.fullTime':  'JORNADA COMPLETA',
+    'exp.intern':    'PRÀCTIQUES',
+    'exp.position':  'POSICIÓ',
+    'exp.active':    'En actiu',
+    'exp.available': 'disponible per a projectes',
     // Project categories
     'proj.stastarat.category':    "WEB · ASSOCIACIÓ CULTURAL",
     'proj.laraveles.category':    'EDUCACIÓ · CONTINGUT',
@@ -407,6 +421,13 @@ const translations: Record<Lang, Record<string, string>> = {
     'edu.eyebrow':          'ACADEMIC BACKGROUND',
     'edu.inProgress':       'IN PROGRESS',
     'edu.finished':         'FINISHED',
+    // Experience window
+    'exp.current':   'Current',
+    'exp.fullTime':  'FULL TIME',
+    'exp.intern':    'INTERNSHIP',
+    'exp.position':  'POSITION',
+    'exp.active':    'Active',
+    'exp.available': 'available for projects',
     // Project categories
     'proj.stastarat.category':    'WEB · CULTURAL ASSOCIATION',
     'proj.laraveles.category':    'EDUCATION · CONTENT',

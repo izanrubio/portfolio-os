@@ -143,6 +143,7 @@ export default function LockScreen({ onUnlocked }: LockScreenProps) {
                 src={personal.photo}
                 alt={personal.shortName}
                 fill
+                sizes="72px"
                 style={{ objectFit: 'cover' }}
               />
             </div>
