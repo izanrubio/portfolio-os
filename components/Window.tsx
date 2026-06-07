@@ -161,7 +161,7 @@ export default function Window({
   const positionStyle: CSSProperties = isMobile
     ? { position: 'fixed', inset: 0, bottom: `${TASKBAR_H}px` }
     : win.isMaximized
-    ? { position: 'fixed', left: 0, top: 0, right: 0, bottom: `${TASKBAR_H}px` }
+    ? { position: 'fixed', left: 0, top: 28, right: 0, bottom: `${TASKBAR_H}px` }
     : {
         position: 'fixed',
         left:   win.position.x,
