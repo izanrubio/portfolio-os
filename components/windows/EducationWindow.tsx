@@ -67,8 +67,11 @@ export default function EducationWindow() {
 
   return (
     <div
-      className="h-full flex flex-col"
       style={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        boxSizing: 'border-box',
         padding: '28px 32px 24px',
         background: bg,
         position: 'relative',
@@ -99,7 +102,7 @@ export default function EducationWindow() {
       </div>
 
       {/* ── Cards ── */}
-      <div className="flex-1 min-h-0 overflow-y-auto" style={{ position: 'relative', zIndex: 1, scrollbarWidth: 'thin', scrollbarColor: isDark ? 'rgba(0,245,255,.2) transparent' : 'rgba(0,0,0,.15) transparent' }}>
+      <div style={{ flex: '1 1 0%', minHeight: 0, overflowY: 'auto', position: 'relative', zIndex: 1, scrollbarWidth: 'thin', scrollbarColor: isDark ? 'rgba(0,245,255,.2) transparent' : 'rgba(0,0,0,.15) transparent' }}>
         {cards.map(({ entry, accent, badgeKey, finished }, idx) => {
           const C = cardStyles(accent);
           return (
