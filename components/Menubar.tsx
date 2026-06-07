@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useLanguage, type Lang } from '@/contexts/LanguageContext';
 import { useTheme } from '@/contexts/ThemeContext';
+import IzanLogo from '@/components/icons/IzanLogo';
 
 const MONO  = 'var(--font-jetbrains), monospace';
 const INTER = 'var(--font-inter), Inter, sans-serif';
@@ -132,12 +133,7 @@ export default function Menubar() {
     >
       {/* Brand */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <svg width="20" height="20" viewBox="0 0 100 100" fill="none" aria-hidden="true">
-          <polygon points="50,8 86.4,29 86.4,71 50,92 13.6,71 13.6,29" stroke="#ffffff" strokeWidth="3.5" strokeLinejoin="round"/>
-          <circle cx="34" cy="33" r="3" fill="#ffffff"/>
-          <line x1="34" y1="40" x2="34" y2="67" stroke="#ffffff" strokeWidth="3.5" strokeLinecap="round"/>
-          <polyline points="44,40 68,40 44,67 68,67" stroke="#ffffff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
+        <IzanLogo size={20} />
         <span style={{ fontFamily: INTER, fontWeight: 700, fontSize: '13px', color: 'var(--menubar-text)' }}>
           IzanOS
         </span>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import IzanLogo from '@/components/icons/IzanLogo';
 
 const BOOT_MESSAGES = [
   '[ OK ] Starting IzanOS kernel...',
@@ -87,19 +88,12 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             >
-              <motion.svg
-                width="80"
-                height="80"
-                viewBox="0 0 100 100"
-                fill="none"
-                animate={{ filter: ['drop-shadow(0 0 8px #00d4ff44)', 'drop-shadow(0 0 18px #00d4ffaa)', 'drop-shadow(0 0 8px #00d4ff44)'] }}
+              <motion.div
+                animate={{ filter: ['drop-shadow(0 0 8px #00f5ff44)', 'drop-shadow(0 0 18px #00f5ffaa)', 'drop-shadow(0 0 8px #00f5ff44)'] }}
                 transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
               >
-                <polygon points="50,8 86.4,29 86.4,71 50,92 13.6,71 13.6,29" stroke="#00d4ff" strokeWidth="3.5" strokeLinejoin="round" fill="none"/>
-                <circle cx="34" cy="33" r="3" fill="#00d4ff"/>
-                <line x1="34" y1="40" x2="34" y2="67" stroke="#00d4ff" strokeWidth="3.5" strokeLinecap="round"/>
-                <polyline points="44,40 68,40 44,67 68,67" stroke="#00d4ff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-              </motion.svg>
+                <IzanLogo size={64} />
+              </motion.div>
             </motion.div>
 
             {/* Text */}
