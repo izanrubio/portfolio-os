@@ -835,9 +835,9 @@ const SET_LABELS: Record<string, [string,string,string,string]> = {
 
 /* app-name translations */
 const APP_LABEL_MAP: Record<string, Record<string,string>> = {
-  CAS: { projects:'Proyectos', about:'Sobre mí',  skills:'Skills',    contact:'Contacto', browser:'Navegador', files:'Archivos', terminal:'Terminal', game:'Juego',    settings:'Ajustes' },
-  CAT: { projects:'Projectes', about:'Sobre mi',  skills:'Skills',    contact:'Contacte', browser:'Navegador', files:'Arxius',   terminal:'Terminal', game:'Joc',      settings:'Ajustos' },
-  ENG: { projects:'Projects',  about:'About',     skills:'Skills',    contact:'Contact',  browser:'Browser',   files:'Files',    terminal:'Terminal', game:'Game',     settings:'Settings' },
+  CAS: { projects:'Proyectos', about:'Sobre mí',  skills:'Skills',    contact:'Contacto', files:'Archivos', terminal:'Terminal', game:'Juego',    settings:'Ajustes' },
+  CAT: { projects:'Projectes', about:'Sobre mi',  skills:'Skills',    contact:'Contacte', files:'Arxius',   terminal:'Terminal', game:'Joc',      settings:'Ajustos' },
+  ENG: { projects:'Projects',  about:'About',     skills:'Skills',    contact:'Contact',  files:'Files',    terminal:'Terminal', game:'Game',     settings:'Settings' },
 };
 
 function SettingsApp() {
