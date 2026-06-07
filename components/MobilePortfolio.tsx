@@ -1107,7 +1107,7 @@ function EducationApp() {
   const { theme } = useTheme();
   const { lang }  = useLanguage();
   const isDark = theme === 'dark';
-  const accent = '#7c3aed';
+  const accent = '#00ff88';
   const COL   = isDark ? '#fff' : '#0f172a';
   const MUTED = isDark ? 'rgba(255,255,255,.5)' : '#64748b';
   const DATE  = isDark ? 'rgba(255,255,255,.4)' : '#94a3b8';
@@ -1129,12 +1129,12 @@ function EducationApp() {
         <div style={{ position: 'absolute', left: 28, top: 14, bottom: 40, width: 2, background: `linear-gradient(180deg, ${accent}, rgba(255,255,255,0.08))`, borderRadius: 2 }} />
         {education.map((e, i) => (
           <div key={e.degree} style={{ position: 'relative', marginBottom: 16, opacity: 0, transform: 'translateY(12px)', animation: `mob-tlrise .5s cubic-bezier(.16,1,.3,1) ${i * 70}ms forwards`, ...(i === education.length - 1 ? { opacity: .85 } as React.CSSProperties : {}) }}>
-            <div style={{ position: 'absolute', left: -19, top: 18, width: 12, height: 12, borderRadius: '50%', zIndex: 2, background: e.current ? accent : (isDark ? '#06070d' : '#f5f7fc'), border: `2px solid ${e.current ? accent : DOT_BORDER}`, boxShadow: e.current ? `0 0 0 4px ${hexToRgba(accent, 0.20)}, 0 0 12px ${accent}` : 'none' }} />
-            <div style={{ ...(e.current ? CARD_HL : CARD_BASE), ...(i === education.length - 1 ? { opacity: .85 } : {}) }}>
+            <div style={{ position: 'absolute', left: -19, top: 18, width: 12, height: 12, borderRadius: '50%', zIndex: 2, background: accent, border: `2px solid ${accent}`, boxShadow: `0 0 0 4px ${hexToRgba(accent, 0.20)}, 0 0 12px ${accent}` }} />
+            <div style={{ ...CARD_HL, ...(i === education.length - 1 ? { opacity: .85 } : {}) }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10 }}>
                 <div>
                   <div style={{ fontSize: 16, fontWeight: 700, color: COL, lineHeight: 1.2 }}>{e.degree}</div>
-                  <div style={{ fontSize: 13, fontWeight: 500, marginTop: 2, color: e.current ? accent : MUTED }}>{e.fullDegree !== e.degree ? e.fullDegree.replace(e.degree + ' — ', '') : e.institute}</div>
+                  <div style={{ fontSize: 13, fontWeight: 500, marginTop: 2, color: accent }}>{e.fullDegree !== e.degree ? e.fullDegree.replace(e.degree + ' — ', '') : e.institute}</div>
                   {e.fullDegree !== e.degree && <div style={{ fontSize: 12, color: MUTED, marginTop: 1 }}>{e.institute}</div>}
                   <div style={{ fontFamily: MONO, fontSize: 11, color: DATE, marginTop: 6 }}>{e.period}</div>
                 </div>
@@ -1143,7 +1143,7 @@ function EducationApp() {
               {e.description && <div style={{ fontSize: 13, color: MUTED, lineHeight: 1.6, marginTop: 10 }}>{t('edu.desc.ciberseguridad', lang)}</div>}
               {e.tags.length > 0 && (
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 12 }}>
-                  {e.tags.map(tag => <span key={tag} style={e.current ? CHIP_HL : CHIP_BASE}>{tag}</span>)}
+                  {e.tags.map(tag => <span key={tag} style={CHIP_HL}>{tag}</span>)}
                 </div>
               )}
             </div>
