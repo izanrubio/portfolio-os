@@ -2,131 +2,227 @@
 
 import { education } from '@/data/content';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { t } from '@/data/translations';
 
-const MONO   = 'var(--font-jetbrains), monospace';
-const INTER  = 'var(--font-inter), Inter, sans-serif';
-const VIOLET = '#7c3aed';
+const MONO  = 'var(--font-jetbrains), monospace';
+const INTER = 'var(--font-inter), Inter, sans-serif';
+const CYAN  = '#00f5ff';
+const GREEN = '#00ff88';
+
+const DAW_ENTRY   = education.find(e => e.degree.includes('DAW'))!;
+const CIBER_ENTRY = education.find(e => e.degree.includes('Ciberseguridad'))!;
+
+/* ── SVG icons ── */
+function IconWeb() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" style={{ width: 20, height: 20 }}>
+      <circle cx="12" cy="12" r="9"/>
+      <path d="M3 12h18"/>
+      <path d="M12 3a13 13 0 0 1 0 18M12 3a13 13 0 0 0 0 18"/>
+    </svg>
+  );
+}
+
+function IconShield() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" style={{ width: 20, height: 20 }}>
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      <path d="M9 12l2 2 4-4"/>
+    </svg>
+  );
+}
 
 export default function EducationWindow() {
   const { theme } = useTheme();
+  const { lang }  = useLanguage();
   const isDark = theme === 'dark';
 
-  const T = {
-    eyebrow:      isDark ? '#b794f6'                    : '#7c3aed',
-    sub:          isDark ? 'rgba(255,255,255,0.40)'     : '#64748b',
-    deco:         isDark ? 'rgba(255,255,255,0.03)'     : 'rgba(0,0,0,0.04)',
-    cardBase:     isDark ? 'rgba(255,255,255,0.03)'     : 'rgba(255,255,255,0.80)',
-    cardBaseBdr:  isDark ? 'rgba(255,255,255,0.08)'     : 'rgba(0,0,0,0.08)',
-    cardBaseLBdr: isDark ? 'rgba(255,255,255,0.20)'     : 'rgba(0,0,0,0.15)',
-    cardHl:       isDark ? 'rgba(124,58,237,0.08)'      : 'rgba(124,58,237,0.06)',
-    cardHlBdr:    isDark ? 'rgba(124,58,237,0.30)'      : 'rgba(124,58,237,0.25)',
-    deg:          isDark ? '#fff'                       : '#0f172a',
-    instMuted:    isDark ? 'rgba(255,255,255,0.50)'     : '#64748b',
-    instCurrent:  isDark ? '#b794f6'                    : VIOLET,
-    per:          isDark ? 'rgba(255,255,255,0.40)'     : '#94a3b8',
-    desc:         isDark ? 'rgba(255,255,255,0.60)'     : '#475569',
-    dotBg:        isDark ? '#0a0a12'                    : '#f8f8ff',
-    dotBdr:       isDark ? 'rgba(255,255,255,0.30)'     : 'rgba(0,0,0,0.20)',
-    chipBase:     { color: isDark ? 'rgba(255,255,255,.7)' : '#475569', bg: isDark ? 'rgba(255,255,255,.05)' : 'rgba(0,0,0,0.05)', bdr: isDark ? 'rgba(255,255,255,.1)' : 'rgba(0,0,0,0.1)' },
-    chipHl:       { color: isDark ? '#c4b5fd' : '#7c3aed', bg: isDark ? 'rgba(124,58,237,.12)' : 'rgba(124,58,237,0.08)', bdr: isDark ? 'rgba(124,58,237,.3)' : 'rgba(124,58,237,0.3)' },
-    badgeDone:    { color: isDark ? 'rgba(255,255,255,.5)' : '#64748b', bg: isDark ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,0.05)', bdr: isDark ? 'rgba(255,255,255,.12)' : 'rgba(0,0,0,0.1)' },
-    scrollThumb:  isDark ? 'rgba(124,58,237,.4) transparent' : 'rgba(124,58,237,.3) transparent',
-  };
+  /* Theme tokens */
+  const bg         = isDark ? 'transparent'               : 'transparent';
+  const decoColor  = isDark ? 'rgba(255,255,255,.025)'    : 'rgba(0,0,0,.04)';
+  const eyebrowCol = isDark ? 'rgba(255,255,255,.35)'     : '#94a3b8';
+  const titleCol   = isDark ? '#ffffff'                   : '#0f172a';
+  const subCol     = isDark ? 'rgba(255,255,255,.35)'     : '#94a3b8';
+
+  /* Card tokens by accent */
+  const cardStyles = (accent: string) => ({
+    bg:     isDark ? `rgba(255,255,255,.03)` : 'rgba(255,255,255,.8)',
+    border: isDark ? `rgba(255,255,255,.08)` : 'rgba(0,0,0,.08)',
+    accentBg:  `${accent}12`,
+    titleCol:  isDark ? '#fff' : '#0f172a',
+    subCol:    isDark ? 'rgba(255,255,255,.5)' : '#64748b',
+    periodCol: isDark ? 'rgba(255,255,255,.35)' : '#94a3b8',
+    descCol:   isDark ? 'rgba(255,255,255,.55)' : '#475569',
+    tagBg:     isDark ? 'rgba(255,255,255,.05)' : 'rgba(0,0,0,.05)',
+    tagBdr:    isDark ? 'rgba(255,255,255,.1)'  : 'rgba(0,0,0,.1)',
+    tagCol:    isDark ? 'rgba(255,255,255,.65)' : '#475569',
+    shadow:    isDark ? 'none' : '0 4px 20px rgba(0,0,0,.06)',
+  });
+
+  const cards = [
+    { entry: DAW_ENTRY,   accent: CYAN,  badgeKey: 'edu.inProgress' as const, finished: false },
+    { entry: CIBER_ENTRY, accent: GREEN, badgeKey: 'edu.finished'   as const, finished: true  },
+  ];
 
   return (
     <div
       className="h-full flex flex-col"
-      style={{ padding: '26px 34px 20px', position: 'relative', overflow: 'hidden', boxShadow: 'inset 0 0 0 1px rgba(124,58,237,0.10)' }}
+      style={{
+        padding: '28px 32px 24px',
+        background: bg,
+        position: 'relative',
+        overflow: 'hidden',
+      }}
     >
+      {/* Watermark */}
+      <div style={{
+        position: 'absolute', right: -10, top: -14, zIndex: 0,
+        fontFamily: INTER, fontWeight: 900, fontSize: 100,
+        lineHeight: 1, color: decoColor, letterSpacing: '-0.04em',
+        pointerEvents: 'none', userSelect: 'none',
+      }}>
+        EDU
+      </div>
+
       {/* ── Hero ── */}
-      <div style={{ flexShrink: 0, marginBottom: 18, position: 'relative' }}>
-        <div style={{ position: 'absolute', right: -6, top: -22, fontFamily: INTER, fontWeight: 900, fontSize: 90, lineHeight: 1, color: T.deco, letterSpacing: '-0.05em', pointerEvents: 'none', whiteSpace: 'nowrap', userSelect: 'none' }}>
-          EDU
+      <div style={{ flexShrink: 0, marginBottom: 22, position: 'relative', zIndex: 1 }}>
+        <div style={{ fontFamily: MONO, fontSize: 9.5, color: eyebrowCol, letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: 5 }}>
+          {t('edu.eyebrow', lang)}
         </div>
-        <div style={{ fontFamily: MONO, fontSize: 10, color: T.eyebrow, letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 600 }}>
-          Formación Académica
-        </div>
-        <h1 style={{ fontSize: 30, fontWeight: 800, letterSpacing: '-0.02em', marginTop: 6, fontFamily: INTER, color: isDark ? '#fff' : '#0f172a' }}>
-          Education<span style={{ color: '#a855f7' }}>.</span>
+        <h1 style={{ fontFamily: INTER, fontSize: 28, fontWeight: 800, color: titleCol, letterSpacing: '-0.02em', lineHeight: 1, margin: 0 }}>
+          Education<span style={{ color: GREEN }}>.</span>
         </h1>
-        <div style={{ fontFamily: MONO, fontSize: 11, color: T.sub, marginTop: 6 }}>
+        <div style={{ fontFamily: MONO, fontSize: 10.5, color: subCol, marginTop: 7 }}>
           IES Nicolau Copèrnic · Terrassa
         </div>
       </div>
 
-      {/* ── Timeline ── */}
-      <div
-        className="flex-1 min-h-0 overflow-y-auto"
-        style={{ position: 'relative', paddingLeft: 26, scrollbarWidth: 'thin', scrollbarColor: T.scrollThumb }}
-      >
-        <div style={{ position: 'absolute', left: 5, top: 6, bottom: 6, width: 2, background: `linear-gradient(180deg,${VIOLET},rgba(255,255,255,.08))`, borderRadius: 2 }} />
+      {/* ── Cards ── */}
+      <div className="flex-1 min-h-0 overflow-y-auto" style={{ position: 'relative', zIndex: 1, scrollbarWidth: 'thin', scrollbarColor: isDark ? 'rgba(0,245,255,.2) transparent' : 'rgba(0,0,0,.15) transparent' }}>
+        {cards.map(({ entry, accent, badgeKey, finished }, idx) => {
+          const C = cardStyles(accent);
+          return (
+            <div key={entry.degree}>
+              {/* Card */}
+              <div style={{
+                background:   C.bg,
+                border:       `1px solid ${C.border}`,
+                borderLeft:   `3px solid ${accent}`,
+                borderRadius: 14,
+                padding:      '18px 20px',
+                boxShadow:    C.shadow,
+                position:     'relative',
+                overflow:     'hidden',
+              }}>
+                {/* Accent glow blob */}
+                <div style={{
+                  position: 'absolute', top: -40, right: -40,
+                  width: 160, height: 160, borderRadius: '50%',
+                  background: `radial-gradient(circle, ${C.accentBg}, transparent 70%)`,
+                  pointerEvents: 'none',
+                }} />
 
-        {education.map((e, i) => (
-          <div key={e.degree} style={{ position: 'relative', marginBottom: 14 }}>
-            {/* Dot */}
-            <div style={{
-              position: 'absolute', left: -24, top: 16,
-              width: 11, height: 11, borderRadius: '50%', zIndex: 2,
-              background: e.current ? VIOLET : T.dotBg,
-              border: `2px solid ${e.current ? VIOLET : T.dotBdr}`,
-              boxShadow: e.current ? `0 0 0 4px rgba(124,58,237,.2),0 0 12px ${VIOLET}` : 'none',
-            }} />
+                {/* Header row */}
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, position: 'relative' }}>
+                  {/* Left: icon + info */}
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
+                    {/* Icon circle */}
+                    <div style={{
+                      width: 44, height: 44, borderRadius: 12, flexShrink: 0,
+                      background: `${accent}18`,
+                      border: `1px solid ${accent}30`,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      color: accent,
+                    }}>
+                      {finished ? <IconShield /> : <IconWeb />}
+                    </div>
 
-            {/* Card */}
-            <div style={{
-              background:   e.current ? T.cardHl    : T.cardBase,
-              border:       `1px solid ${e.current ? T.cardHlBdr : T.cardBaseBdr}`,
-              borderLeft:   `3px solid ${e.current ? VIOLET      : T.cardBaseLBdr}`,
-              borderRadius: 12, padding: '14px 16px',
-              ...(i === education.length - 1 ? { opacity: 0.85 } : {}),
-              ...(isDark ? {} : { boxShadow: '0 2px 8px rgba(0,0,0,.05)' }),
-            }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10 }}>
-                <div>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: T.deg, lineHeight: 1.2, fontFamily: INTER }}>{e.degree}</div>
-                  <div style={{ fontSize: 13, fontWeight: 500, marginTop: 2, fontFamily: INTER, color: e.current ? T.instCurrent : T.instMuted }}>
-                    {e.fullDegree !== e.degree ? e.fullDegree.replace(e.degree + ' — ', '') : e.institute}
+                    {/* Titles */}
+                    <div>
+                      <div style={{ fontFamily: INTER, fontSize: 17, fontWeight: 700, color: C.titleCol, lineHeight: 1.2 }}>
+                        {entry.degree}
+                      </div>
+                      {entry.fullDegree !== entry.degree && (
+                        <div style={{ fontFamily: INTER, fontSize: 12.5, color: accent, fontWeight: 500, marginTop: 3, lineHeight: 1.3 }}>
+                          {entry.fullDegree.replace(entry.degree + ' — ', '')}
+                        </div>
+                      )}
+                      <div style={{ fontFamily: MONO, fontSize: 10, color: C.subCol, marginTop: 4 }}>
+                        {entry.institute}
+                      </div>
+                      <div style={{ fontFamily: MONO, fontSize: 10.5, color: C.periodCol, marginTop: 3 }}>
+                        {entry.period}
+                      </div>
+                    </div>
                   </div>
-                  {e.fullDegree !== e.degree && (
-                    <div style={{ fontSize: 12, color: T.instMuted, fontFamily: INTER }}>{e.institute}</div>
-                  )}
-                  <div style={{ fontFamily: MONO, fontSize: 11, color: T.per, marginTop: 6 }}>{e.period}</div>
+
+                  {/* Badge */}
+                  <span style={{
+                    flexShrink: 0,
+                    display: 'inline-flex', alignItems: 'center', gap: 5,
+                    fontFamily: MONO, fontSize: 8.5, fontWeight: 700,
+                    letterSpacing: '0.14em', textTransform: 'uppercase',
+                    padding: '5px 10px', borderRadius: 999,
+                    color: accent,
+                    background: `${accent}15`,
+                    border: `1px solid ${accent}40`,
+                    whiteSpace: 'nowrap',
+                  }}>
+                    {finished ? (
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 10, height: 10 }}>
+                        <polyline points="20 6 9 17 4 12"/>
+                      </svg>
+                    ) : (
+                      <span style={{ width: 5, height: 5, borderRadius: '50%', background: accent, animation: 'edu-pulse 1.5s ease-in-out infinite', display: 'inline-block', flexShrink: 0 }} />
+                    )}
+                    {t(badgeKey, lang)}
+                  </span>
                 </div>
 
-                {e.current ? (
-                  <span style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 6, fontFamily: MONO, fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '4px 9px', borderRadius: 999, color: T.chipHl.color, background: 'rgba(124,58,237,.15)', border: '1px solid rgba(124,58,237,.4)', whiteSpace: 'nowrap' }}>
-                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: T.chipHl.color, animation: 'edu-pulse 1.5s ease-in-out infinite', display: 'inline-block' }} />
-                    En curso
-                  </span>
-                ) : (
-                  <span style={{ flexShrink: 0, display: 'inline-flex', fontFamily: MONO, fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '4px 9px', borderRadius: 999, color: T.badgeDone.color, background: T.badgeDone.bg, border: `1px solid ${T.badgeDone.bdr}`, whiteSpace: 'nowrap' }}>
-                    Completado
-                  </span>
+                {/* Description */}
+                {entry.description ? (
+                  <div style={{ fontFamily: INTER, fontSize: 12.5, color: C.descCol, lineHeight: 1.65, marginTop: 14, paddingLeft: 58 }}>
+                    {entry.description}
+                  </div>
+                ) : null}
+
+                {/* Tags */}
+                {entry.tags.length > 0 && (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 14, paddingLeft: 58 }}>
+                    {entry.tags.map(tag => (
+                      <span key={tag} style={{
+                        fontFamily: MONO, fontSize: 10, fontWeight: 500,
+                        padding: '3px 8px', borderRadius: 6,
+                        color: finished ? GREEN : CYAN,
+                        background: `${accent}10`,
+                        border: `1px solid ${accent}28`,
+                      }}>
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
                 )}
               </div>
 
-              {e.description && (
-                <div style={{ fontSize: 13, color: T.desc, lineHeight: 1.6, marginTop: 10, fontFamily: INTER }}>{e.description}</div>
-              )}
-
-              {e.tags.length > 0 && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 12 }}>
-                  {e.tags.map(tag => {
-                    const ch = e.current ? T.chipHl : T.chipBase;
-                    return (
-                      <span key={tag} style={{ fontFamily: MONO, fontSize: 10.5, fontWeight: 500, padding: '4px 9px', borderRadius: 6, color: ch.color, background: ch.bg, border: `1px solid ${ch.bdr}` }}>
-                        {tag}
-                      </span>
-                    );
-                  })}
+              {/* Timeline connector between cards */}
+              {idx === 0 && (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '6px 0', gap: 0 }}>
+                  <div style={{ width: 1, height: 14, background: `linear-gradient(180deg, ${CYAN}80, ${GREEN}80)` }} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div style={{ height: 1, width: 32, background: isDark ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.08)' }} />
+                    <div style={{ width: 5, height: 5, borderRadius: '50%', background: isDark ? 'rgba(255,255,255,.2)' : 'rgba(0,0,0,.2)', border: `1px solid ${isDark ? 'rgba(255,255,255,.3)' : 'rgba(0,0,0,.3)'}` }} />
+                    <div style={{ height: 1, width: 32, background: isDark ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.08)' }} />
+                  </div>
+                  <div style={{ width: 1, height: 14, background: `linear-gradient(180deg, ${GREEN}80, ${GREEN}20)` }} />
                 </div>
               )}
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
-      <style>{`@keyframes edu-pulse { 50% { opacity:.3; transform:scale(.7); } }`}</style>
+      <style>{`@keyframes edu-pulse { 50% { opacity:.25; transform:scale(.65); } }`}</style>
     </div>
   );
 }
